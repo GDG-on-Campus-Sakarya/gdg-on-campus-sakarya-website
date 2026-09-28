@@ -1,3 +1,4 @@
+# --- Frontend & Figma Ignores ---
 node_modules/
 dist/
 build/
@@ -12,10 +13,14 @@ logs/
 .claude-replay.*
 .tmp-*
 /.figma/design-context/
-
-# Platform-managed agentplat state, not project source. In the
-# client-initiated single-repo workspace layout (make's `Path: "."` spec) the
-# repo root IS the workspace root, so these land inside this repo rather than
-# beside it.
 /.plugins/
 /.opencode-skills/
+
+# --- Backend & Visual Studio Ignores ---
+.vs/
+bin/
+obj/
+*.user
+*.suo
+.DS_Store
+Thumbs.db
