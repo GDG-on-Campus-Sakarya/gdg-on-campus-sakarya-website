@@ -13,7 +13,7 @@ namespace GDG.Domain.Entities
         // komüniteler arası id'ler proje ekibi id 1 :D
         public int TeamId { get; set; }
 
-        // NP
+        // Navigation Properties
         public Team? Team { get; set; }
         public List<Project> Projects { get; set; } = new List<Project>();
     }
