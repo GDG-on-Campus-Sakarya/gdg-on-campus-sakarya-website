@@ -11,5 +11,6 @@
 
         // Navigation Property: EF Core bu sayede hangi Team'e ait olduğunu anlar
         public Team Team { get; set; }
+        public List<Project> Projects { get; set; } = new List<Project>();
     }
 }
