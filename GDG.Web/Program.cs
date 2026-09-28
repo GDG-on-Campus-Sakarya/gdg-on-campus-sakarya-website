@@ -34,6 +34,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
+app.MapGet("/", () => Results.Redirect("/admin/dashboard"));
+
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 

@@ -1,9 +1,24 @@
 @page "/"
 @inject NavigationManager Navigation
 
+<PageTitle>Yönlendiriliyor... - GDG Sakarya</PageTitle>
+
+<div class="d-flex align-items-center justify-content-center vh-100" style="background-color: var(--google-bg, #F8F9FA);">
+    <div class="text-center">
+        <div class="spinner-border text-primary mb-3" role="status">
+            <span class="visually-hidden">Yükleniyor...</span>
+        </div>
+        <div class="fw-semibold text-dark small">GDG Sakarya Yönetim Paneli</div>
+        <div class="text-muted small mt-1">Dashboard'a yönlendiriliyorsunuz...</div>
+    </div>
+</div>
+
 @code {
-    protected override void OnInitialized()
+    protected override void OnAfterRender(bool firstRender)
     {
-        Navigation.NavigateTo("admin/dashboard");
+        if (firstRender)
+        {
+            Navigation.NavigateTo("admin/dashboard", replace: true);
+        }
     }
 }
