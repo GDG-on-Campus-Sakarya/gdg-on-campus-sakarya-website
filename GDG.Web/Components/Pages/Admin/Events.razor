@@ -1,0 +1,378 @@
+@page "/admin/events"
+@page "/events"
+@rendermode InteractiveServer
+@inject IEventService EventService
+
+<PageTitle>Etkinlikler - Community Admin</PageTitle>
+
+<div class="container-fluid py-4 px-lg-5">
+    <!-- Header -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold mb-1" style="letter-spacing: -0.5px;">
+                <span class="material-symbols-outlined text-primary me-2" style="font-size: 28px;">event</span>Etkinlikler
+            </h2>
+            <p class="text-muted mb-0 small">Atölye, seminer, hackathon ve teknik buluşmaları planlayın ve yönetin.</p>
+        </div>
+        <button class="btn btn-google-primary" @onclick="OpenCreateModal">
+            <span class="material-symbols-outlined" style="font-size: 18px;">event_available</span> Yeni Etkinlik
+        </button>
+    </div>
+
+    <!-- Alert / Toast -->
+    @if (!string.IsNullOrEmpty(statusMessage))
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm d-flex align-items-center gap-2 mb-4" role="alert">
+            <span class="material-symbols-outlined text-success" style="font-size: 20px;">check_circle</span>
+            <div>@statusMessage</div>
+            <button type="button" class="btn-close ms-auto" @onclick="() => statusMessage = null"></button>
+        </div>
+    }
+
+    <!-- Stat Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-xl-4">
+            <div class="g-card p-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="p-3 rounded-circle d-flex align-items-center justify-content-center" style="background-color: var(--google-blue-surface); color: var(--google-blue);">
+                        <span class="material-symbols-outlined" style="font-size: 24px;">calendar_month</span>
+                    </div>
+                    <div>
+                        <div class="text-muted small fw-medium">Toplam Etkinlik</div>
+                        <div class="h4 fw-bold mb-0">@(events?.Count ?? 0)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-4">
+            <div class="g-card p-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="p-3 rounded-circle d-flex align-items-center justify-content-center" style="background-color: var(--google-green-surface); color: var(--google-green);">
+                        <span class="material-symbols-outlined" style="font-size: 24px;">upcoming</span>
+                    </div>
+                    <div>
+                        <div class="text-muted small fw-medium">Yaklaşan Etkinlikler</div>
+                        <div class="h4 fw-bold mb-0 text-success">@(events?.Count(e => !e.IsPast) ?? 0)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-4">
+            <div class="g-card p-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="p-3 rounded-circle d-flex align-items-center justify-content-center" style="background-color: var(--google-surface-variant); color: var(--google-text-secondary);">
+                        <span class="material-symbols-outlined" style="font-size: 24px;">task_alt</span>
+                    </div>
+                    <div>
+                        <div class="text-muted small fw-medium">Tamamlananlar</div>
+                        <div class="h4 fw-bold mb-0 text-muted">@(events?.Count(e => e.IsPast) ?? 0)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search & Events Table -->
+    <div class="g-card overflow-hidden">
+        <div class="p-3 px-4 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2 bg-white">
+            <h5 class="fw-bold mb-0 small text-uppercase text-muted">Etkinlik Listesi</h5>
+            <div class="position-relative" style="min-width: 250px;">
+                <span class="material-symbols-outlined position-absolute top-50 start-0 translate-middle-y ms-3 text-muted" style="font-size: 18px;">search</span>
+                <input type="text" class="form-control rounded-pill border-0 ps-5 small" style="background-color: #F1F3F4;" placeholder="Etkinlik ara..." @bind="searchTerm" @bind:event="oninput" />
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="g-table mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Tarih</th>
+                        <th>Etkinlik Başlığı</th>
+                        <th>Konum / Platform</th>
+                        <th>Açıklama</th>
+                        <th>Durum</th>
+                        <th class="text-end pe-4">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (isLoading)
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <div class="spinner-border spinner-border-sm text-primary me-2"></div> Yükleniyor...
+                            </td>
+                        </tr>
+                    }
+                    else if (FilteredEvents == null || !FilteredEvents.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <span class="material-symbols-outlined d-block fs-1 mb-2 text-secondary">event_busy</span>
+                                Henüz etkinlik eklenmedi veya arama sonucu bulunamadı.
+                                <div class="mt-2">
+                                    <button class="btn btn-google-primary btn-sm" @onclick="OpenCreateModal">+ İlk Etkinliği Ekle</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var ev in FilteredEvents)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="p-2 text-center rounded-3 border" style="min-width: 52px; background-color: var(--google-blue-surface); border-color: #D2E3FC !important;">
+                                            <div class="small fw-bold text-primary" style="font-size: 0.7rem;">@ev.Date.ToString("MMM").ToUpper()</div>
+                                            <div class="fs-6 fw-bold text-dark">@ev.Date.ToString("dd")</div>
+                                        </div>
+                                        <div class="small text-muted font-monospace">@ev.Date.ToString("HH:mm")</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-dark">@ev.Title</div>
+                                    @if (!string.IsNullOrEmpty(ev.RegistrationUrl))
+                                    {
+                                        <a href="@ev.RegistrationUrl" target="_blank" class="small text-primary text-decoration-none d-flex align-items-center gap-1">
+                                            <span class="material-symbols-outlined" style="font-size: 14px;">link</span> Kayıt Formu / RSVP
+                                        </a>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-secondary border font-weight-normal">
+                                        <i class="bi bi-geo-alt me-1"></i>@ev.Location
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="text-truncate text-muted small" style="max-width: 260px;" title="@ev.Description">
+                                        @ev.Description
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (ev.IsPast)
+                                    {
+                                        <span class="chip-status gray">Tamamlandı</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="chip-status green">Yaklaşıyor</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="d-inline-flex gap-1">
+                                        <button class="btn-google-icon" title="Düzenle" @onclick="() => OpenEditModal(ev)">
+                                            <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
+                                        </button>
+                                        <button class="btn-google-icon" style="color: var(--google-red);" title="Sil" @onclick="() => DeleteEvent(ev.Id)">
+                                            <span class="material-symbols-outlined" style="font-size: 18px;">delete</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ======================== ETKİNLİK EKLE / DÜZENLE MODAL ======================== -->
+@if (showModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(32, 33, 36, 0.6); backdrop-filter: blur(2px);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-bottom py-3 px-4">
+                    <h5 class="modal-title fw-bold d-flex align-items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">@(isEditing ? "edit" : "calendar_add_on")</span>
+                        @(isEditing ? "Etkinliği Düzenle" : "Yeni Etkinlik Planla")
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="() => showModal = false"></button>
+                </div>
+                <div class="modal-body p-4">
+                    @if (isEditing)
+                    {
+                        <EditForm Model="editModel" OnValidSubmit="HandleUpdateEvent">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary class="text-danger small mb-3" />
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Etkinlik Başlığı *</label>
+                                <InputText @bind-Value="editModel.Title" class="form-control g-input w-100" placeholder="Örn: Cloud & AI Workshop" />
+                                <ValidationMessage For="() => editModel.Title" class="text-danger small" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Açıklama *</label>
+                                <InputTextArea @bind-Value="editModel.Description" rows="3" class="form-control g-input w-100" placeholder="Etkinliğin konusu ve içeriği..." />
+                                <ValidationMessage For="() => editModel.Description" class="text-danger small" />
+                            </div>
+
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">Tarih & Saat *</label>
+                                    <InputDate Type="InputDateType.DateTimeLocal" @bind-Value="editModel.Date" class="form-control g-input w-100" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">Konum / Platform *</label>
+                                    <InputText @bind-Value="editModel.Location" class="form-control g-input w-100" placeholder="Örn: Hukuk Amfi 1 veya Google Meet" />
+                                    <ValidationMessage For="() => editModel.Location" class="text-danger small" />
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Kayıt / RSVP Bağlantısı</label>
+                                <InputText @bind-Value="editModel.RegistrationUrl" class="form-control g-input w-100" placeholder="https://gdg.community.dev/..." />
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label small fw-semibold">Afiş / Görsel URL</label>
+                                <InputText @bind-Value="editModel.ImageUrl" class="form-control g-input w-100" placeholder="https://..." />
+                            </div>
+
+                            <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                                <button type="button" class="btn btn-google-secondary" @onclick="() => showModal = false">İptal</button>
+                                <button type="submit" class="btn btn-google-primary">Değişiklikleri Kaydet</button>
+                            </div>
+                        </EditForm>
+                    }
+                    else
+                    {
+                        <EditForm Model="createModel" OnValidSubmit="HandleCreateEvent">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary class="text-danger small mb-3" />
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Etkinlik Başlığı *</label>
+                                <InputText @bind-Value="createModel.Title" class="form-control g-input w-100" placeholder="Örn: Cloud & AI Workshop" />
+                                <ValidationMessage For="() => createModel.Title" class="text-danger small" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Açıklama *</label>
+                                <InputTextArea @bind-Value="createModel.Description" rows="3" class="form-control g-input w-100" placeholder="Etkinliğin konusu ve içeriği..." />
+                                <ValidationMessage For="() => createModel.Description" class="text-danger small" />
+                            </div>
+
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">Tarih & Saat *</label>
+                                    <InputDate Type="InputDateType.DateTimeLocal" @bind-Value="createModel.Date" class="form-control g-input w-100" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">Konum / Platform *</label>
+                                    <InputText @bind-Value="createModel.Location" class="form-control g-input w-100" placeholder="Örn: Hukuk Amfi 1 veya Google Meet" />
+                                    <ValidationMessage For="() => createModel.Location" class="text-danger small" />
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Kayıt / RSVP Bağlantısı</label>
+                                <InputText @bind-Value="createModel.RegistrationUrl" class="form-control g-input w-100" placeholder="https://gdg.community.dev/..." />
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label small fw-semibold">Afiş / Görsel URL</label>
+                                <InputText @bind-Value="createModel.ImageUrl" class="form-control g-input w-100" placeholder="https://..." />
+                            </div>
+
+                            <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                                <button type="button" class="btn btn-google-secondary" @onclick="() => showModal = false">İptal</button>
+                                <button type="submit" class="btn btn-google-primary">Etkinliği Kaydet</button>
+                            </div>
+                        </EditForm>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<EventDto>? events;
+    private bool isLoading = true;
+    private string? statusMessage;
+    private string searchTerm = string.Empty;
+
+    private bool showModal = false;
+    private bool isEditing = false;
+    private CreateEventDto createModel = new();
+    private UpdateEventDto editModel = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        isLoading = true;
+        events = await EventService.GetAllAsync();
+        isLoading = false;
+    }
+
+    private IEnumerable<EventDto>? FilteredEvents
+    {
+        get
+        {
+            if (events == null) return null;
+            if (string.IsNullOrWhiteSpace(searchTerm)) return events;
+
+            var term = searchTerm.Trim().ToLower();
+            return events.Where(e => 
+                e.Title.ToLower().Contains(term) ||
+                e.Location.ToLower().Contains(term) ||
+                e.Description.ToLower().Contains(term));
+        }
+    }
+
+    private void OpenCreateModal()
+    {
+        createModel = new CreateEventDto { Date = DateTime.Now.AddDays(7) };
+        isEditing = false;
+        showModal = true;
+    }
+
+    private void OpenEditModal(EventDto ev)
+    {
+        editModel = new UpdateEventDto
+        {
+            Id = ev.Id,
+            Title = ev.Title,
+            Description = ev.Description,
+            Date = ev.Date,
+            Location = ev.Location,
+            ImageUrl = ev.ImageUrl,
+            RegistrationUrl = ev.RegistrationUrl
+        };
+        isEditing = true;
+        showModal = true;
+    }
+
+    private async Task HandleCreateEvent()
+    {
+        await EventService.CreateAsync(createModel);
+        statusMessage = $"'{createModel.Title}' etkinliği eklendi.";
+        showModal = false;
+        await LoadDataAsync();
+    }
+
+    private async Task HandleUpdateEvent()
+    {
+        await EventService.UpdateAsync(editModel);
+        statusMessage = $"'{editModel.Title}' etkinliği güncellendi.";
+        showModal = false;
+        await LoadDataAsync();
+    }
+
+    private async Task DeleteEvent(int id)
+    {
+        var ev = events?.FirstOrDefault(x => x.Id == id);
+        await EventService.DeleteAsync(id);
+        statusMessage = $"'{ev?.Title ?? "Etkinlik"}' silindi.";
+        await LoadDataAsync();
+    }
+}

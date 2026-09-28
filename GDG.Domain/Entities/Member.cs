@@ -15,6 +15,6 @@ namespace GDG.Domain.Entities
 
         // NP
         public Team? Team { get; set; }
-        public ICollection<Project> Projects { get; set; } = new List<Project>();
+        public List<Project> Projects { get; set; } = new List<Project>();
     }
 }

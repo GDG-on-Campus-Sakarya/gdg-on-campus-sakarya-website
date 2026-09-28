@@ -16,7 +16,7 @@ namespace GDG.Domain.Entities
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation properties
-        public ICollection<Technology> Technologies { get; set; } = new List<Technology>();
-        public ICollection<Member> Members { get; set; } = new List<Member>();
+        public List<Technology> Technologies { get; set; } = new List<Technology>();
+        public List<Member> Members { get; set; } = new List<Member>();
     }
 }

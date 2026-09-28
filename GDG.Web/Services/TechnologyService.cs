@@ -9,16 +9,7 @@ namespace GDG.Web.Services
 {
     public class TechnologyService : ITechnologyService
     {
-        private static readonly List<TechnologyDto> _technologies = new()
-        {
-            new TechnologyDto { Id = 1, Name = "C# / .NET 8", ColorHex = "#512BD4", IconClass = "bi-filetype-cs" },
-            new TechnologyDto { Id = 2, Name = "Blazor", ColorHex = "#5C2D91", IconClass = "bi-window-stack" },
-            new TechnologyDto { Id = 3, Name = "PostgreSQL", ColorHex = "#4169E1", IconClass = "bi-database" },
-            new TechnologyDto { Id = 4, Name = "Flutter", ColorHex = "#02569B", IconClass = "bi-phone" },
-            new TechnologyDto { Id = 5, Name = "Python", ColorHex = "#3776AB", IconClass = "bi-filetype-py" },
-            new TechnologyDto { Id = 6, Name = "Google Cloud", ColorHex = "#4285F4", IconClass = "bi-cloud" },
-            new TechnologyDto { Id = 7, Name = "TensorFlow / AI", ColorHex = "#FF6F00", IconClass = "bi-cpu" }
-        };
+        private static readonly List<TechnologyDto> _technologies = new();
 
         public Task<List<TechnologyDto>> GetAllAsync()
         {

@@ -1,0 +1,153 @@
+@page "/admin/settings"
+@rendermode InteractiveServer
+
+<PageTitle>Panel Ayarları - Community Admin</PageTitle>
+
+<div class="container-fluid py-4 px-lg-5" style="max-width: 960px;">
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold mb-1"><span class="material-symbols-outlined text-primary me-2">settings</span>Panel Ayarları</h2>
+            <p class="text-muted small mb-0">Topluluk bilgileri, platform yapılandırması ve genel tercihleri yönetin.</p>
+        </div>
+        <button class="btn btn-google-primary" @onclick="SaveSettings">
+            <span class="material-symbols-outlined" style="font-size: 18px;">save</span> Değişiklikleri Kaydet
+        </button>
+    </div>
+
+    <!-- Alert / Status -->
+    @if (!string.IsNullOrEmpty(statusMessage))
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm d-flex align-items-center gap-2 mb-4" role="alert">
+            <span class="material-symbols-outlined text-success" style="font-size: 20px;">check_circle</span>
+            <div>@statusMessage</div>
+            <button type="button" class="btn-close ms-auto" @onclick="() => statusMessage = null"></button>
+        </div>
+    }
+
+    <!-- Community Profile Settings Card -->
+    <div class="g-card p-4 mb-4">
+        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-primary" style="font-size: 22px;">domain</span>
+            Topluluk Kimliği & İletişim
+        </h5>
+        
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label small fw-semibold">Topluluk Adı</label>
+                <input type="text" class="form-control g-input w-100" @bind="communityName" />
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label small fw-semibold">Bağlı Üniversite</label>
+                <input type="text" class="form-control g-input w-100" @bind="universityName" />
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label small fw-semibold">Kampüs / Konum</label>
+                <input type="text" class="form-control g-input w-100" @bind="campusLocation" />
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label small fw-semibold">İletişim E-Postası</label>
+                <input type="email" class="form-control g-input w-100" @bind="contactEmail" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Social Media Connections -->
+    <div class="g-card p-4 mb-4">
+        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-danger" style="font-size: 22px;">share</span>
+            Sosyal Medya & Platform Bağlantıları
+        </h5>
+        
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label small fw-semibold">GitHub Organization URL</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-github"></i></span>
+                    <input type="text" class="form-control g-input" @bind="githubUrl" />
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label small fw-semibold">Google Developer Platform (gdg.community.dev)</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-google"></i></span>
+                    <input type="text" class="form-control g-input" @bind="communityDevUrl" />
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label small fw-semibold">LinkedIn URL</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-linkedin"></i></span>
+                    <input type="text" class="form-control g-input" @bind="linkedinUrl" />
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label small fw-semibold">Instagram URL</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-instagram"></i></span>
+                    <input type="text" class="form-control g-input" @bind="instagramUrl" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System & Architecture Info -->
+    <div class="g-card p-4">
+        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-success" style="font-size: 22px;">info</span>
+            Sistem & Teknoloji Altyapısı
+        </h5>
+
+        <div class="row g-3 small">
+            <div class="col-sm-6 col-md-3">
+                <div class="p-3 rounded-3 bg-light border text-center">
+                    <div class="text-muted">Platform</div>
+                    <div class="fw-bold text-dark mt-1">.NET 8 / C#</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="p-3 rounded-3 bg-light border text-center">
+                    <div class="text-muted">Arayüz Motoru</div>
+                    <div class="fw-bold text-dark mt-1">Blazor Interactive</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="p-3 rounded-3 bg-light border text-center">
+                    <div class="text-muted">Veri Katmanı</div>
+                    <div class="fw-bold text-dark mt-1">PostgreSQL & EF Core</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="p-3 rounded-3 bg-light border text-center">
+                    <div class="text-muted">Tasarım Dili</div>
+                    <div class="fw-bold text-primary mt-1">Google Workspace</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string communityName = "GDG on Campus Sakarya";
+    private string universityName = "Sakarya Üniversitesi";
+    private string campusLocation = "Esentepe Kampüsü, Serdivan / Sakarya";
+    private string contactEmail = "info@gdgsakarya.com";
+
+    private string githubUrl = "https://github.com/GDG-on-Campus-Sakarya";
+    private string communityDevUrl = "https://gdg.community.dev/gdg-on-campus-sakarya-university-sakarya-turkey/";
+    private string linkedinUrl = "https://linkedin.com/company/gdgsakarya";
+    private string instagramUrl = "https://instagram.com/gdgsakarya";
+
+    private string? statusMessage;
+
+    private void SaveSettings()
+    {
+        statusMessage = "Ayarlar başarıyla kaydedildi.";
+    }
+}

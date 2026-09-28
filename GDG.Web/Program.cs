@@ -8,9 +8,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// Project & Technology Services (In-memory mock until database is ready)
+// Core Panel Services (Project, Technology, Member, Team, Event)
 builder.Services.AddSingleton<ITechnologyService, TechnologyService>();
 builder.Services.AddSingleton<IProjectService, ProjectService>();
+builder.Services.AddSingleton<IMemberService, MemberService>();
+builder.Services.AddSingleton<ITeamService, TeamService>();
+builder.Services.AddSingleton<IEventService, EventService>();
 
 var app = builder.Build();
 

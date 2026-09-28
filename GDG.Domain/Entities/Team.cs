@@ -9,7 +9,6 @@ namespace GDG.Domain.Entities
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
 
-        // Bir ekibin birden fazla üyesi olabilir (One-to-Many)
-        public ICollection<Member> Members { get; set; } = new List<Member>();
+        public List<Member> Members { get; set; } = new List<Member>();
     }
 }

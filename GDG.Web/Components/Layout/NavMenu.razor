@@ -1,36 +1,144 @@
-<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">GDG.Web</a>
+<div class="sidebar-wrapper d-flex flex-column h-100 bg-white border-end" style="border-color: #E0E2E6 !important;">
+    <!-- Brand / Community Header -->
+    <div class="px-4 py-3 d-flex align-items-center gap-3 border-bottom" style="border-color: #ECEFF1 !important; min-height: 65px;">
+        <div class="d-flex align-items-center justify-content-center rounded-3 shadow-sm" style="width: 38px; height: 38px; background: #FFFFFF; border: 1px solid #E0E2E6;">
+            <!-- Google 4-color dot cluster -->
+            <div class="d-flex flex-wrap" style="width: 18px; height: 18px; gap: 2px;">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #4285F4;"></span>
+                <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #EA4335;"></span>
+                <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #FBBC05;"></span>
+                <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #34A853;"></span>
+            </div>
+        </div>
+        <div class="overflow-hidden">
+            <div class="fw-bold text-dark text-truncate" style="font-size: 0.95rem; letter-spacing: -0.2px;">Community Admin</div>
+            <div class="text-muted text-truncate" style="font-size: 0.725rem;">GDG on Campus Sakarya</div>
+        </div>
+    </div>
+
+    <!-- Navigation List -->
+    <div class="nav-scrollable flex-grow-1 px-3 py-3 overflow-y-auto">
+        <nav class="d-flex flex-column gap-1">
+            <!-- Section: DASHBOARD -->
+            <div class="nav-item">
+                <NavLink class="nav-pill-link" href="admin/dashboard" Match="NavLinkMatch.All">
+                    <span class="material-symbols-outlined nav-icon">dashboard</span>
+                    <span class="nav-text">Dashboard</span>
+                </NavLink>
+            </div>
+
+            <!-- Section: CONTENT -->
+            <div class="nav-section-title mt-3 mb-1 px-3">İçerik Yönetimi</div>
+
+            <div class="nav-item">
+                <NavLink class="nav-pill-link" href="admin/projects" Match="NavLinkMatch.Prefix">
+                    <span class="material-symbols-outlined nav-icon">folder_open</span>
+                    <span class="nav-text">Projeler</span>
+                </NavLink>
+            </div>
+
+            <div class="nav-item">
+                <NavLink class="nav-pill-link" href="admin/technologies" Match="NavLinkMatch.Prefix">
+                    <span class="material-symbols-outlined nav-icon">code</span>
+                    <span class="nav-text">Teknolojiler</span>
+                </NavLink>
+            </div>
+
+            <div class="nav-item">
+                <NavLink class="nav-pill-link" href="admin/events" Match="NavLinkMatch.Prefix">
+                    <span class="material-symbols-outlined nav-icon">event</span>
+                    <span class="nav-text">Etkinlikler</span>
+                </NavLink>
+            </div>
+
+            <!-- Section: PEOPLE -->
+            <div class="nav-section-title mt-3 mb-1 px-3">Topluluk & Ekip</div>
+
+            <div class="nav-item">
+                <NavLink class="nav-pill-link" href="admin/members" Match="NavLinkMatch.Prefix">
+                    <span class="material-symbols-outlined nav-icon">group</span>
+                    <span class="nav-text">Üyeler</span>
+                </NavLink>
+            </div>
+
+            <div class="nav-item">
+                <NavLink class="nav-pill-link" href="admin/teams" Match="NavLinkMatch.Prefix">
+                    <span class="material-symbols-outlined nav-icon">groups</span>
+                    <span class="nav-text">Ekipler</span>
+                </NavLink>
+            </div>
+
+            <!-- Section: SYSTEM -->
+            <div class="nav-section-title mt-3 mb-1 px-3">Sistem</div>
+
+            <div class="nav-item">
+                <NavLink class="nav-pill-link" href="admin/settings" Match="NavLinkMatch.Prefix">
+                    <span class="material-symbols-outlined nav-icon">settings</span>
+                    <span class="nav-text">Ayarlar</span>
+                </NavLink>
+            </div>
+        </nav>
+    </div>
+
+    <!-- User / Admin Quick Card at Bottom -->
+    <div class="p-3 border-top mt-auto" style="border-color: #ECEFF1 !important; background-color: #FAFBFD;">
+        <div class="d-flex align-items-center gap-3">
+            <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm" 
+                 style="width: 36px; height: 36px; background-color: #4285F4; font-size: 0.85rem;">
+                EY
+            </div>
+            <div class="overflow-hidden flex-grow-1">
+                <div class="fw-semibold text-dark text-truncate" style="font-size: 0.85rem;">Enes Yel</div>
+                <div class="text-muted text-truncate" style="font-size: 0.725rem;">Lead Administrator</div>
+            </div>
+            <a href="admin/settings" class="btn-google-icon" title="Profil & Ayarlar">
+                <span class="material-symbols-outlined" style="font-size: 18px;">tune</span>
+            </a>
+        </div>
     </div>
 </div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+<style>
+    .nav-section-title {
+        font-size: 0.685rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.75px;
+        color: #80868B;
+    }
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
+    .nav-pill-link {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 0.6rem 1rem;
+        border-radius: 24px;
+        color: #5F6368;
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: background-color 0.15s ease, color 0.15s ease;
+    }
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
+    .nav-pill-link:hover {
+        background-color: #F1F3F4;
+        color: #202124;
+    }
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="projects">
-                <span class="bi bi-kanban-nav-menu" aria-hidden="true"></span> Projeler
-            </NavLink>
-        </div>
+    .nav-pill-link.active {
+        background-color: #E8F0FE !important;
+        color: #1967D2 !important;
+        font-weight: 600;
+    }
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="admin/projects">
-                <span class="bi bi-gear-fill-nav-menu" aria-hidden="true"></span> Admin Projeler
-            </NavLink>
-        </div>
-    </nav>
-</div>
+    .nav-pill-link.active .nav-icon {
+        color: #1967D2 !important;
+        font-variation-settings: 'FILL' 1;
+    }
 
+    .nav-icon {
+        font-size: 20px;
+        color: #5F6368;
+        transition: color 0.15s ease;
+    }
+</style>
