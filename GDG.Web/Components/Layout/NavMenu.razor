@@ -1,144 +1,55 @@
-<div class="sidebar-wrapper d-flex flex-column h-100 bg-white border-end" style="border-color: #E0E2E6 !important;">
-    <!-- Brand / Community Header -->
-    <div class="px-4 py-3 d-flex align-items-center gap-3 border-bottom" style="border-color: #ECEFF1 !important; min-height: 65px;">
-        <div class="d-flex align-items-center justify-content-center rounded-3 shadow-sm" style="width: 38px; height: 38px; background: #FFFFFF; border: 1px solid #E0E2E6;">
-            <!-- Google 4-color dot cluster -->
-            <div class="d-flex flex-wrap" style="width: 18px; height: 18px; gap: 2px;">
-                <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #4285F4;"></span>
-                <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #EA4335;"></span>
-                <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #FBBC05;"></span>
-                <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #34A853;"></span>
-            </div>
+@* NavMenu Component (CSS-only Mobile Toggle) *@
+<div class="nav-container container-custom">
+    <!-- Brand Logo -->
+    <a href="/" class="navbar-brand" aria-label="GDG on Campus Sakarya Ana Sayfa">
+        <GdgBracketsLogo CssClass="gdg-logo-icon" Width="36" Height="22" />
+        <div class="brand-text-group">
+            <span class="brand-title">GDG on Campus</span>
+            <span class="brand-subtitle">Sakarya</span>
         </div>
-        <div class="overflow-hidden">
-            <div class="fw-bold text-dark text-truncate" style="font-size: 0.95rem; letter-spacing: -0.2px;">Community Admin</div>
-            <div class="text-muted text-truncate" style="font-size: 0.725rem;">GDG on Campus Sakarya</div>
-        </div>
-    </div>
+    </a>
 
-    <!-- Navigation List -->
-    <div class="nav-scrollable flex-grow-1 px-3 py-3 overflow-y-auto">
-        <nav class="d-flex flex-column gap-1">
-            <!-- Section: DASHBOARD -->
-            <div class="nav-item">
-                <NavLink class="nav-pill-link" href="admin/dashboard" Match="NavLinkMatch.All">
-                    <span class="material-symbols-outlined nav-icon">dashboard</span>
-                    <span class="nav-text">Dashboard</span>
+    <!-- CSS Mobile Menu Checkbox Toggle -->
+    <input type="checkbox" id="nav-toggle-checkbox" class="nav-toggle-checkbox" aria-label="Menüyü Aç/Kapat" />
+    <label for="nav-toggle-checkbox" class="nav-toggle-label" aria-label="Menü">
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+    </label>
+
+    <!-- Navigation Content -->
+    <nav class="nav-menu" aria-label="Ana Navigasyon">
+        <ul class="nav-list">
+            <li class="nav-item">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    Ana Sayfa
                 </NavLink>
-            </div>
-
-            <!-- Section: CONTENT -->
-            <div class="nav-section-title mt-3 mb-1 px-3">İçerik Yönetimi</div>
-
-            <div class="nav-item">
-                <NavLink class="nav-pill-link" href="admin/projects" Match="NavLinkMatch.Prefix">
-                    <span class="material-symbols-outlined nav-icon">folder_open</span>
-                    <span class="nav-text">Projeler</span>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link" href="events">
+                    Etkinlikler
                 </NavLink>
-            </div>
-
-            <div class="nav-item">
-                <NavLink class="nav-pill-link" href="admin/technologies" Match="NavLinkMatch.Prefix">
-                    <span class="material-symbols-outlined nav-icon">code</span>
-                    <span class="nav-text">Teknolojiler</span>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link" href="team">
+                    Ekibimiz
                 </NavLink>
-            </div>
-
-            <div class="nav-item">
-                <NavLink class="nav-pill-link" href="admin/events" Match="NavLinkMatch.Prefix">
-                    <span class="material-symbols-outlined nav-icon">event</span>
-                    <span class="nav-text">Etkinlikler</span>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link" href="projects">
+                    Projeler
                 </NavLink>
-            </div>
+            </li>
+        </ul>
 
-            <!-- Section: PEOPLE -->
-            <div class="nav-section-title mt-3 mb-1 px-3">Topluluk & Ekip</div>
-
-            <div class="nav-item">
-                <NavLink class="nav-pill-link" href="admin/members" Match="NavLinkMatch.Prefix">
-                    <span class="material-symbols-outlined nav-icon">group</span>
-                    <span class="nav-text">Üyeler</span>
-                </NavLink>
-            </div>
-
-            <div class="nav-item">
-                <NavLink class="nav-pill-link" href="admin/teams" Match="NavLinkMatch.Prefix">
-                    <span class="material-symbols-outlined nav-icon">groups</span>
-                    <span class="nav-text">Ekipler</span>
-                </NavLink>
-            </div>
-
-            <!-- Section: SYSTEM -->
-            <div class="nav-section-title mt-3 mb-1 px-3">Sistem</div>
-
-            <div class="nav-item">
-                <NavLink class="nav-pill-link" href="admin/settings" Match="NavLinkMatch.Prefix">
-                    <span class="material-symbols-outlined nav-icon">settings</span>
-                    <span class="nav-text">Ayarlar</span>
-                </NavLink>
-            </div>
-        </nav>
-    </div>
-
-    <!-- User / Admin Quick Card at Bottom -->
-    <div class="p-3 border-top mt-auto" style="border-color: #ECEFF1 !important; background-color: #FAFBFD;">
-        <div class="d-flex align-items-center gap-3">
-            <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm" 
-                 style="width: 36px; height: 36px; background-color: #4285F4; font-size: 0.85rem;">
-                EY
-            </div>
-            <div class="overflow-hidden flex-grow-1">
-                <div class="fw-semibold text-dark text-truncate" style="font-size: 0.85rem;">Enes Yel</div>
-                <div class="text-muted text-truncate" style="font-size: 0.725rem;">Lead Administrator</div>
-            </div>
-            <a href="admin/settings" class="btn-google-icon" title="Profil & Ayarlar">
-                <span class="material-symbols-outlined" style="font-size: 18px;">tune</span>
+        <!-- Right Action Button -->
+        <div class="nav-actions">
+            <a href="https://gdg.community.dev/gdg-on-campus-sakarya-university-sakarya-turkey/" target="_blank" rel="noopener noreferrer" class="btn-cta">
+                <span>Bize Katıl</span>
+                <svg class="btn-arrow" viewBox="0 0 20 20" width="18" height="18" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                </svg>
             </a>
         </div>
-    </div>
+    </nav>
 </div>
-
-<style>
-    .nav-section-title {
-        font-size: 0.685rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.75px;
-        color: #80868B;
-    }
-
-    .nav-pill-link {
-        display: flex;
-        align-items: center;
-        gap: 0.85rem;
-        padding: 0.6rem 1rem;
-        border-radius: 24px;
-        color: #5F6368;
-        text-decoration: none;
-        font-size: 0.875rem;
-        font-weight: 500;
-        transition: background-color 0.15s ease, color 0.15s ease;
-    }
-
-    .nav-pill-link:hover {
-        background-color: #F1F3F4;
-        color: #202124;
-    }
-
-    .nav-pill-link.active {
-        background-color: #E8F0FE !important;
-        color: #1967D2 !important;
-        font-weight: 600;
-    }
-
-    .nav-pill-link.active .nav-icon {
-        color: #1967D2 !important;
-        font-variation-settings: 'FILL' 1;
-    }
-
-    .nav-icon {
-        font-size: 20px;
-        color: #5F6368;
-        transition: color 0.15s ease;
-    }
-</style>

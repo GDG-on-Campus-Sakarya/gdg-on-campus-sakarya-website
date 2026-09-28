@@ -1,0 +1,114 @@
+/* ProjectCard Isolated Component Styles */
+.project-card {
+    display: flex;
+    flex-direction: column;
+    padding: 2.25rem 2rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    background-color: #FFFFFF;
+    transition: all var(--transition-normal);
+    height: 100%;
+}
+
+.theme-blue {
+    background-color: var(--tint-blue-bg);
+    border-color: var(--tint-blue-border);
+}
+
+.theme-green {
+    background-color: var(--tint-green-bg);
+    border-color: var(--tint-green-border);
+}
+
+.theme-yellow {
+    background-color: var(--tint-yellow-bg);
+    border-color: var(--tint-yellow-border);
+}
+
+.project-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.card-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.category-tag {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.theme-blue .category-tag { color: var(--color-gdg-blue); }
+.theme-green .category-tag { color: var(--color-gdg-green); }
+
+.project-number {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    opacity: 0.7;
+}
+
+.project-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--color-text-main);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.875rem;
+    line-height: 1.25;
+}
+
+.project-description {
+    font-size: 0.9375rem;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    margin-bottom: 1.75rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.tech-stack-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.75rem;
+    margin-top: auto;
+}
+
+.tech-pill {
+    padding: 0.35rem 0.75rem;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-text-main);
+}
+
+.card-bottom-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text-main);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.action-btn:hover {
+    color: var(--color-primary);
+}
