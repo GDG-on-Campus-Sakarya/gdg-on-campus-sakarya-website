@@ -1,0 +1,542 @@
+@page "/admin/projects"
+@rendermode InteractiveServer
+@inject IProjectService ProjectService
+@inject ITechnologyService TechnologyService
+
+<PageTitle>Admin - Proje ve Teknoloji Yönetimi</PageTitle>
+
+<div class="admin-projects-container container-fluid py-4 px-lg-5">
+    <!-- Header -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 border-bottom pb-3">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="bi bi-kanban text-primary me-2"></i>Proje ve Teknoloji Yönetimi</h2>
+            <p class="text-muted mb-0 small">GDG Sakarya projelerini, detaylarını ve kullanılan teknolojileri buradan yönetebilirsiniz.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary btn-sm rounded-pill px-3" @onclick="() => showTechModal = true">
+                <i class="bi bi-tags me-1"></i> Teknolojileri Yönet (@(technologies?.Count ?? 0))
+            </button>
+            <button class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm" @onclick="OpenCreateModal">
+                <i class="bi bi-plus-lg me-1"></i> Yeni Proje Ekle
+            </button>
+        </div>
+    </div>
+
+    <!-- Alert / Status Message -->
+    @if (!string.IsNullOrEmpty(statusMessage))
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm d-flex align-items-center gap-2" role="alert">
+            <i class="bi bi-check-circle-fill fs-5"></i>
+            <div>@statusMessage</div>
+            <button type="button" class="btn-close ms-auto" @onclick="() => statusMessage = null"></button>
+        </div>
+    }
+
+    <!-- Stat Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-xl-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="p-3 rounded-4 bg-primary bg-opacity-10 text-primary">
+                        <i class="bi bi-folder-fill fs-3"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small fw-semibold">Toplam Proje</div>
+                        <div class="h3 fw-bold mb-0">@(projects?.Count ?? 0)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="p-3 rounded-4 bg-warning bg-opacity-10 text-warning">
+                        <i class="bi bi-star-fill fs-3"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small fw-semibold">Öne Çıkan Projeler</div>
+                        <div class="h3 fw-bold mb-0">@(projects?.Count(p => p.IsFeatured) ?? 0)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="p-3 rounded-4 bg-success bg-opacity-10 text-success">
+                        <i class="bi bi-cpu-fill fs-3"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small fw-semibold">Kayıtlı Teknoloji</div>
+                        <div class="h3 fw-bold mb-0">@(technologies?.Count ?? 0)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Projects Table Card -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+        <div class="card-header bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0">Proje Listesi</h5>
+            <div class="input-group" style="max-width: 280px;">
+                <span class="input-group-text bg-light border-0"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" class="form-control bg-light border-0 small" placeholder="Tabloda ara..." @bind="tableSearch" @bind:event="oninput" />
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4" style="width: 70px;">Görsel</th>
+                        <th>Proje Adı</th>
+                        <th>Açıklama</th>
+                        <th>Teknolojiler</th>
+                        <th>Durum</th>
+                        <th class="text-end pe-4">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (isLoading)
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <div class="spinner-border spinner-border-sm text-primary me-2"></div> Yükleniyor...
+                            </td>
+                        </tr>
+                    }
+                    else if (FilteredTableProjects == null || !FilteredTableProjects.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-2 d-block mb-2 text-secondary"></i>
+                                Henüz proje bulunamadı veya arama sonucu boş.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var proj in FilteredTableProjects)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <img src="@proj.ImageUrl" alt="@proj.Name" class="rounded-3 object-fit-cover shadow-sm" style="width: 50px; height: 42px;"
+                                         onerror="this.src='https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=120&q=80';" />
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-dark">@proj.Name</div>
+                                    <div class="d-flex gap-2 small text-muted">
+                                        @if (!string.IsNullOrEmpty(proj.GitHubUrl))
+                                        {
+                                            <a href="@proj.GitHubUrl" target="_blank" class="text-decoration-none text-muted"><i class="bi bi-github"></i> Repo</a>
+                                        }
+                                        @if (!string.IsNullOrEmpty(proj.LiveDemoUrl))
+                                        {
+                                            <a href="@proj.LiveDemoUrl" target="_blank" class="text-decoration-none text-primary"><i class="bi bi-box-arrow-up-right"></i> Canlı</a>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="text-truncate text-muted small" style="max-width: 320px;" title="@proj.Description">
+                                        @proj.Description
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-wrap gap-1" style="max-width: 250px;">
+                                        @foreach (var tech in proj.Technologies)
+                                        {
+                                            <span class="badge bg-light text-dark border rounded-pill px-2 py-1 small fw-normal">
+                                                <span style="background-color: @(tech.ColorHex ?? "#4285F4"); display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:4px;"></span>
+                                                @tech.Name
+                                            </span>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (proj.IsFeatured)
+                                    {
+                                        <span class="badge bg-warning text-dark rounded-pill px-2 py-1 small fw-bold">
+                                            <i class="bi bi-star-fill me-1"></i> Öne Çıkan
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-light text-secondary border rounded-pill px-2 py-1 small fw-normal">
+                                            Standart
+                                        </span>
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-primary rounded-start-pill px-3" @onclick="() => OpenEditModal(proj)">
+                                            <i class="bi bi-pencil-square me-1"></i> Düzenle
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger rounded-end-pill px-3" @onclick="() => ConfirmDeleteProject(proj.Id)">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ======================== PROJE EKLE / DÜZENLE MODAL ======================== -->
+@if (showProjectModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-bottom py-3">
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi @(isEditing ? "bi-pencil-square text-primary" : "bi-plus-circle-fill text-success") me-2"></i>
+                        @(isEditing ? "Projeyi Düzenle" : "Yeni Proje Ekle")
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="CloseProjectModal"></button>
+                </div>
+
+                <div class="modal-body p-4">
+                    @if (isEditing)
+                    {
+                        <EditForm Model="editModel" OnValidSubmit="HandleUpdateProject">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary class="text-danger small mb-3" />
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Proje Adı *</label>
+                                <InputText @bind-Value="editModel.Name" class="form-control rounded-3" placeholder="Örn: GDG Sakarya Website" />
+                                <ValidationMessage For="() => editModel.Name" class="text-danger small" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Açıklama *</label>
+                                <InputTextArea @bind-Value="editModel.Description" rows="3" class="form-control rounded-3" placeholder="Projenin amacını ve kapsamını kısaca açıklayın..." />
+                                <ValidationMessage For="() => editModel.Description" class="text-danger small" />
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">GitHub URL</label>
+                                    <InputText @bind-Value="editModel.GitHubUrl" class="form-control rounded-3" placeholder="https://github.com/..." />
+                                    <ValidationMessage For="() => editModel.GitHubUrl" class="text-danger small" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Canlı Demo URL</label>
+                                    <InputText @bind-Value="editModel.LiveDemoUrl" class="form-control rounded-3" placeholder="https://example.com" />
+                                    <ValidationMessage For="() => editModel.LiveDemoUrl" class="text-danger small" />
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Kapak Görseli URL</label>
+                                <InputText @bind-Value="editModel.ImageUrl" class="form-control rounded-3" placeholder="https://images.unsplash.com/..." />
+                                <div class="form-text small">Boş bırakırsanız varsayılan bir yazılım görseli atanacaktır.</div>
+                            </div>
+
+                            <!-- Technology Multi-Selection -->
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold d-block">Kullanılan Teknolojiler</label>
+                                <div class="d-flex flex-wrap gap-2 p-3 bg-light rounded-3 border">
+                                    @if (technologies != null)
+                                    {
+                                        @foreach (var tech in technologies)
+                                        {
+                                            var isChecked = editModel.SelectedTechnologyIds.Contains(tech.Id);
+                                            <div class="form-check form-check-inline m-0">
+                                                <input class="form-check-input" type="checkbox" id="@($"edit-tech-{tech.Id}")"
+                                                       checked="@isChecked"
+                                                       @onchange="(e) => ToggleTechSelection(editModel.SelectedTechnologyIds, tech.Id, e.Value)" />
+                                                <label class="form-check-label small fw-medium" for="@($"edit-tech-{tech.Id}")">
+                                                    @tech.Name
+                                                </label>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="form-check form-switch mb-4">
+                                <InputCheckbox @bind-Value="editModel.IsFeatured" class="form-check-input" id="editIsFeatured" />
+                                <label class="form-check-label fw-semibold" for="editIsFeatured">Ana sayfada ve listenin başında öne çıkar</label>
+                            </div>
+
+                            <div class="d-flex justify-content-end gap-2">
+                                <button type="button" class="btn btn-light rounded-pill px-4" @onclick="CloseProjectModal">İptal</button>
+                                <button type="submit" class="btn btn-primary rounded-pill px-4">Değişiklikleri Kaydet</button>
+                            </div>
+                        </EditForm>
+                    }
+                    else
+                    {
+                        <EditForm Model="createModel" OnValidSubmit="HandleCreateProject">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary class="text-danger small mb-3" />
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Proje Adı *</label>
+                                <InputText @bind-Value="createModel.Name" class="form-control rounded-3" placeholder="Örn: GDG Sakarya Website" />
+                                <ValidationMessage For="() => createModel.Name" class="text-danger small" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Açıklama *</label>
+                                <InputTextArea @bind-Value="createModel.Description" rows="3" class="form-control rounded-3" placeholder="Projenin amacını ve kapsamını kısaca açıklayın..." />
+                                <ValidationMessage For="() => createModel.Description" class="text-danger small" />
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">GitHub URL</label>
+                                    <InputText @bind-Value="createModel.GitHubUrl" class="form-control rounded-3" placeholder="https://github.com/..." />
+                                    <ValidationMessage For="() => createModel.GitHubUrl" class="text-danger small" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Canlı Demo URL</label>
+                                    <InputText @bind-Value="createModel.LiveDemoUrl" class="form-control rounded-3" placeholder="https://example.com" />
+                                    <ValidationMessage For="() => createModel.LiveDemoUrl" class="text-danger small" />
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Kapak Görseli URL</label>
+                                <InputText @bind-Value="createModel.ImageUrl" class="form-control rounded-3" placeholder="https://images.unsplash.com/..." />
+                                <div class="form-text small">Boş bırakırsanız varsayılan bir yazılım görseli atanacaktır.</div>
+                            </div>
+
+                            <!-- Technology Multi-Selection -->
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold d-block">Kullanılan Teknolojiler</label>
+                                <div class="d-flex flex-wrap gap-2 p-3 bg-light rounded-3 border">
+                                    @if (technologies != null)
+                                    {
+                                        @foreach (var tech in technologies)
+                                        {
+                                            var isChecked = createModel.SelectedTechnologyIds.Contains(tech.Id);
+                                            <div class="form-check form-check-inline m-0">
+                                                <input class="form-check-input" type="checkbox" id="@($"create-tech-{tech.Id}")"
+                                                       checked="@isChecked"
+                                                       @onchange="(e) => ToggleTechSelection(createModel.SelectedTechnologyIds, tech.Id, e.Value)" />
+                                                <label class="form-check-label small fw-medium" for="@($"create-tech-{tech.Id}")">
+                                                    @tech.Name
+                                                </label>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="form-check form-switch mb-4">
+                                <InputCheckbox @bind-Value="createModel.IsFeatured" class="form-check-input" id="createIsFeatured" />
+                                <label class="form-check-label fw-semibold" for="createIsFeatured">Ana sayfada ve listenin başında öne çıkar</label>
+                            </div>
+
+                            <div class="d-flex justify-content-end gap-2">
+                                <button type="button" class="btn btn-light rounded-pill px-4" @onclick="CloseProjectModal">İptal</button>
+                                <button type="submit" class="btn btn-primary rounded-pill px-4">Projeyi Kaydet</button>
+                            </div>
+                        </EditForm>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- ======================== TEKNOLOJİ YÖNETİMİ MODAL ======================== -->
+@if (showTechModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-bottom py-3">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-tags text-primary me-2"></i>Teknolojileri Yönet</h5>
+                    <button type="button" class="btn-close" @onclick="() => showTechModal = false"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <!-- Create Tech Mini Form -->
+                    <div class="p-3 bg-light rounded-3 mb-4 border">
+                        <h6 class="fw-bold mb-2 small text-uppercase text-muted">Yeni Teknoloji Ekle</h6>
+                        <div class="row g-2">
+                            <div class="col-7">
+                                <input type="text" class="form-control form-control-sm" placeholder="Teknoloji Adı (örn: React)" @bind="newTechName" />
+                            </div>
+                            <div class="col-3">
+                                <input type="color" class="form-control form-control-sm form-control-color w-100" @bind="newTechColor" title="Renk seç" />
+                            </div>
+                            <div class="col-2">
+                                <button class="btn btn-primary btn-sm w-100" @onclick="HandleCreateTech" disabled="@string.IsNullOrWhiteSpace(newTechName)">
+                                    Ekle
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tech List -->
+                    <div class="list-group list-group-flush rounded-3 border">
+                        @if (technologies != null)
+                        {
+                            @foreach (var t in technologies)
+                            {
+                                <div class="list-group-item d-flex align-items-center justify-content-between py-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span style="background-color: @(t.ColorHex ?? "#4285F4"); width: 12px; height: 12px; border-radius: 50%;"></span>
+                                        <span class="fw-medium">@t.Name</span>
+                                    </div>
+                                    <button class="btn btn-outline-danger btn-sm border-0" @onclick="() => HandleDeleteTech(t.Id)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="modal-footer border-top py-2">
+                    <button type="button" class="btn btn-secondary btn-sm rounded-pill px-3" @onclick="() => showTechModal = false">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<ProjectDto>? projects;
+    private List<TechnologyDto>? technologies;
+    private bool isLoading = true;
+    private string? statusMessage;
+    private string tableSearch = string.Empty;
+
+    // Modals
+    private bool showProjectModal = false;
+    private bool showTechModal = false;
+    private bool isEditing = false;
+
+    // Forms
+    private CreateProjectDto createModel = new();
+    private UpdateProjectDto editModel = new();
+
+    // New tech fields
+    private string newTechName = string.Empty;
+    private string newTechColor = "#4285F4";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        isLoading = true;
+        technologies = await TechnologyService.GetAllAsync();
+        projects = await ProjectService.GetAllAsync();
+        isLoading = false;
+    }
+
+    private IEnumerable<ProjectDto>? FilteredTableProjects
+    {
+        get
+        {
+            if (projects == null) return null;
+            if (string.IsNullOrWhiteSpace(tableSearch)) return projects;
+
+            var term = tableSearch.Trim().ToLower();
+            return projects.Where(p => 
+                p.Name.ToLower().Contains(term) ||
+                p.Description.ToLower().Contains(term) ||
+                p.Technologies.Any(t => t.Name.ToLower().Contains(term)));
+        }
+    }
+
+    private void OpenCreateModal()
+    {
+        createModel = new CreateProjectDto();
+        isEditing = false;
+        showProjectModal = true;
+    }
+
+    private void OpenEditModal(ProjectDto project)
+    {
+        editModel = new UpdateProjectDto
+        {
+            Id = project.Id,
+            Name = project.Name,
+            Description = project.Description,
+            ImageUrl = project.ImageUrl,
+            GitHubUrl = project.GitHubUrl,
+            LiveDemoUrl = project.LiveDemoUrl,
+            IsFeatured = project.IsFeatured,
+            SelectedTechnologyIds = project.Technologies.Select(t => t.Id).ToList()
+        };
+        isEditing = true;
+        showProjectModal = true;
+    }
+
+    private void CloseProjectModal()
+    {
+        showProjectModal = false;
+    }
+
+    private void ToggleTechSelection(List<int> selectedList, int techId, object? isChecked)
+    {
+        bool selected = isChecked is bool b && b;
+        if (selected)
+        {
+            if (!selectedList.Contains(techId)) selectedList.Add(techId);
+        }
+        else
+        {
+            selectedList.Remove(techId);
+        }
+    }
+
+    private async Task HandleCreateProject()
+    {
+        await ProjectService.CreateAsync(createModel);
+        statusMessage = $"'{createModel.Name}' başarıyla oluşturuldu.";
+        CloseProjectModal();
+        await LoadDataAsync();
+    }
+
+    private async Task HandleUpdateProject()
+    {
+        await ProjectService.UpdateAsync(editModel);
+        statusMessage = $"'{editModel.Name}' başarıyla güncellendi.";
+        CloseProjectModal();
+        await LoadDataAsync();
+    }
+
+    private async Task ConfirmDeleteProject(int id)
+    {
+        var proj = projects?.FirstOrDefault(p => p.Id == id);
+        await ProjectService.DeleteAsync(id);
+        statusMessage = $"'{proj?.Name ?? "Proje"}' silindi.";
+        await LoadDataAsync();
+    }
+
+    private async Task HandleCreateTech()
+    {
+        if (string.IsNullOrWhiteSpace(newTechName)) return;
+
+        await TechnologyService.CreateAsync(new CreateTechnologyDto
+        {
+            Name = newTechName.Trim(),
+            ColorHex = newTechColor
+        });
+
+        newTechName = string.Empty;
+        technologies = await TechnologyService.GetAllAsync();
+        statusMessage = "Yeni teknoloji eklendi.";
+    }
+
+    private async Task HandleDeleteTech(int id)
+    {
+        await TechnologyService.DeleteAsync(id);
+        technologies = await TechnologyService.GetAllAsync();
+        projects = await ProjectService.GetAllAsync();
+        statusMessage = "Teknoloji silindi.";
+    }
+}

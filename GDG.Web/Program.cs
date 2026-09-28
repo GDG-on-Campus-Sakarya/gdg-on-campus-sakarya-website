@@ -1,5 +1,7 @@
 using GDG.Infrastructure.Contexts;
 using GDG.Web.Components;
+using GDG.Application.Interfaces;
+using GDG.Web.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +11,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+// Project & Technology Services (In-memory mock until database is ready)
+builder.Services.AddSingleton<ITechnologyService, TechnologyService>();
+builder.Services.AddSingleton<IProjectService, ProjectService>();
 
 var app = builder.Build();
 
