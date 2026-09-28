@@ -1,10 +1,16 @@
 using GDG.Web.Components;
+using GDG.Application.Interfaces;
+using GDG.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+// Project & Technology Services (In-memory mock until database is ready)
+builder.Services.AddSingleton<ITechnologyService, TechnologyService>();
+builder.Services.AddSingleton<IProjectService, ProjectService>();
 
 var app = builder.Build();
 
