@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-labelledby="title description">
+  <title id="title">Google Developer icon</title>
+  <desc id="description">Red and blue rounded pills form the left angle bracket. Green and yellow rounded pills form the right angle bracket.</desc>
+  <g fill="none" stroke-linecap="round" stroke-width="72">
+    <path d="M320 125 190 250" stroke="#EA4335"/>
+    <path d="M190 250 320 375" stroke="#4285F4"/>
+    <path d="M480 125 610 250" stroke="#34A853"/>
+    <path d="M610 250 480 375" stroke="#FBBC04"/>
+  </g>
+</svg>
