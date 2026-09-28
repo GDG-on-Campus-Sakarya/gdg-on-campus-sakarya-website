@@ -1,23 +1,92 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
+@inject NavigationManager Navigation
 
-<div class="page">
-    <div class="sidebar">
+<div class="google-admin-layout d-flex vh-100 overflow-hidden">
+    <!-- Left Sidebar -->
+    <aside class="google-sidebar flex-shrink-0" style="width: 260px; height: 100vh;">
         <NavMenu />
-    </div>
+    </aside>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+    <!-- Main Content Area -->
+    <div class="google-main-wrapper d-flex flex-column flex-grow-1 overflow-hidden" style="background-color: #F8F9FA;">
+        <!-- Top Google Header -->
+        <header class="google-top-header d-flex align-items-center justify-content-between px-4 bg-white border-bottom flex-shrink-0" 
+                style="height: 65px; border-color: #E0E2E6 !important; z-index: 100;">
+            <!-- Left: Breadcrumb / Section Info -->
+            <div class="d-flex align-items-center gap-2">
+                <span class="d-none d-md-inline text-muted small fw-medium">GDG Sakarya</span>
+                <span class="d-none d-md-inline text-muted small">/</span>
+                <span class="fw-semibold text-dark small" style="letter-spacing: -0.1px;">Yönetim Platformu</span>
+            </div>
 
-        <article class="content px-4">
+            <!-- Center: Google Workspace Global Search Bar -->
+            <div class="google-search-container flex-grow-1 mx-4 d-none d-sm-block" style="max-width: 520px;">
+                <div class="position-relative">
+                    <span class="material-symbols-outlined position-absolute top-50 start-0 translate-middle-y ms-3 text-muted" style="font-size: 20px;">
+                        search
+                    </span>
+                    <input type="text" 
+                           class="form-control rounded-pill border-0 ps-5 pe-4 py-2" 
+                           placeholder="Projeler, üyeler, teknolojiler veya etkinliklerde ara..." 
+                           style="background-color: #F1F3F4; font-size: 0.875rem; transition: background-color 0.2s, box-shadow 0.2s;" />
+                </div>
+            </div>
+
+            <!-- Right: Actions & Profile -->
+            <div class="d-flex align-items-center gap-2">
+                <!-- Quick Create Button -->
+                <div class="dropdown">
+                    <button class="btn btn-google-primary btn-sm py-2 px-3 dropdown-toggle shadow-none" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="material-symbols-outlined" style="font-size: 18px;">add</span>
+                        <span class="d-none d-md-inline">Hızlı Ekle</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border rounded-4 py-2" style="border-color: #E0E2E6;">
+                        <li><a class="dropdown-item py-2 small d-flex align-items-center gap-2" href="admin/projects"><span class="material-symbols-outlined text-primary" style="font-size: 18px;">folder_open</span> Proje Ekle</a></li>
+                        <li><a class="dropdown-item py-2 small d-flex align-items-center gap-2" href="admin/events"><span class="material-symbols-outlined text-success" style="font-size: 18px;">event</span> Etkinlik Ekle</a></li>
+                        <li><a class="dropdown-item py-2 small d-flex align-items-center gap-2" href="admin/members"><span class="material-symbols-outlined text-info" style="font-size: 18px;">group</span> Üye Ekle</a></li>
+                        <li><a class="dropdown-item py-2 small d-flex align-items-center gap-2" href="admin/technologies"><span class="material-symbols-outlined text-warning" style="font-size: 18px;">code</span> Teknoloji Ekle</a></li>
+                        <li><a class="dropdown-item py-2 small d-flex align-items-center gap-2" href="admin/teams"><span class="material-symbols-outlined text-danger" style="font-size: 18px;">groups</span> Ekip Oluştur</a></li>
+                    </ul>
+                </div>
+
+                <!-- Notifications -->
+                <button class="btn-google-icon" title="Bildirimler">
+                    <span class="material-symbols-outlined" style="font-size: 20px;">notifications</span>
+                </button>
+
+                <!-- Help -->
+                <button class="btn-google-icon d-none d-md-flex" title="Yardım & Dokümantasyon">
+                    <span class="material-symbols-outlined" style="font-size: 20px;">help</span>
+                </button>
+
+                <!-- Admin Avatar Profile -->
+                <div class="dropdown ms-1">
+                    <button class="btn p-0 border-0 rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm" 
+                             style="width: 36px; height: 36px; background: linear-gradient(135deg, #4285F4, #34A853); font-size: 0.85rem;">
+                            EY
+                        </div>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border rounded-4 py-2 mt-2" style="border-color: #E0E2E6; min-width: 210px;">
+                        <li class="px-3 py-2 border-bottom">
+                            <div class="fw-bold small text-dark">Enes Yel</div>
+                            <div class="text-muted small" style="font-size: 0.75rem;">enesyel@gdgsakarya.com</div>
+                        </li>
+                        <li><a class="dropdown-item py-2 small mt-1 d-flex align-items-center gap-2" href="admin/settings"><span class="material-symbols-outlined" style="font-size: 18px;">settings</span> Panel Ayarları</a></li>
+                        <li><a class="dropdown-item py-2 small d-flex align-items-center gap-2 text-danger" href="admin/dashboard"><span class="material-symbols-outlined" style="font-size: 18px;">logout</span> Çıkış Yap</a></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <!-- Scrollable Page Body -->
+        <main class="google-page-content flex-grow-1 overflow-y-auto" style="scroll-behavior: smooth;">
             @Body
-        </article>
-    </main>
+        </main>
+    </div>
 </div>
 
-<div id="blazor-error-ui">
-    An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
+<div id="blazor-error-ui" class="bg-danger text-white py-2 px-3 position-fixed bottom-0 start-50 translate-middle-x rounded-pill shadow-lg d-none" style="z-index: 9999;">
+    <span>Beklenmeyen bir hata oluştu.</span>
+    <a href="" class="reload text-white text-decoration-underline ms-2">Yenile</a>
 </div>

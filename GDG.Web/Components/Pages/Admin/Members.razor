@@ -1,0 +1,448 @@
+@page "/admin/members"
+@page "/members"
+@rendermode InteractiveServer
+@inject IMemberService MemberService
+@inject IProjectService ProjectService
+
+<PageTitle>Üyeler - Community Admin</PageTitle>
+
+<div class="container-fluid py-4 px-lg-5">
+    <!-- Header -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold mb-1" style="letter-spacing: -0.5px;">
+                <span class="material-symbols-outlined text-success me-2" style="font-size: 28px;">group</span>Üyeler
+            </h2>
+            <p class="text-muted mb-0 small">Topluluk çekirdek ekibini, liderleri ve aktif proje geliştiricilerini yönetin.</p>
+        </div>
+        <button class="btn btn-google-primary" @onclick="OpenCreateModal">
+            <span class="material-symbols-outlined" style="font-size: 18px;">person_add</span> Yeni Üye Ekle
+        </button>
+    </div>
+
+    <!-- Alert / Toast -->
+    @if (!string.IsNullOrEmpty(statusMessage))
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm d-flex align-items-center gap-2 mb-4" role="alert">
+            <span class="material-symbols-outlined text-success" style="font-size: 20px;">check_circle</span>
+            <div>@statusMessage</div>
+            <button type="button" class="btn-close ms-auto" @onclick="() => statusMessage = null"></button>
+        </div>
+    }
+
+    <!-- Stat Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-xl-4">
+            <div class="g-card p-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="p-3 rounded-circle d-flex align-items-center justify-content-center" style="background-color: var(--google-green-surface); color: var(--google-green);">
+                        <span class="material-symbols-outlined" style="font-size: 24px;">group</span>
+                    </div>
+                    <div>
+                        <div class="text-muted small fw-medium">Toplam Kayıtlı Üye</div>
+                        <div class="h4 fw-bold mb-0">@(members?.Count ?? 0)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-4">
+            <div class="g-card p-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="p-3 rounded-circle d-flex align-items-center justify-content-center" style="background-color: var(--google-blue-surface); color: var(--google-blue);">
+                        <span class="material-symbols-outlined" style="font-size: 24px;">assignment_ind</span>
+                    </div>
+                    <div>
+                        <div class="text-muted small fw-medium">Proje Görevlendirmeleri</div>
+                        <div class="h4 fw-bold mb-0">@(members?.Sum(m => m.ProjectIds.Count) ?? 0)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-4">
+            <div class="g-card p-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="p-3 rounded-circle d-flex align-items-center justify-content-center" style="background-color: var(--google-yellow-surface); color: #B06000;">
+                        <span class="material-symbols-outlined" style="font-size: 24px;">badge</span>
+                    </div>
+                    <div>
+                        <div class="text-muted small fw-medium">Farklı Rol Sayısı</div>
+                        <div class="h4 fw-bold mb-0">@(members?.Select(m => m.Role).Distinct().Count() ?? 0)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search & Members Table -->
+    <div class="g-card overflow-hidden">
+        <div class="p-3 px-4 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2 bg-white">
+            <h5 class="fw-bold mb-0 small text-uppercase text-muted">Üye Listesi</h5>
+            <div class="position-relative" style="min-width: 250px;">
+                <span class="material-symbols-outlined position-absolute top-50 start-0 translate-middle-y ms-3 text-muted" style="font-size: 18px;">search</span>
+                <input type="text" class="form-control rounded-pill border-0 ps-5 small" style="background-color: #F1F3F4;" placeholder="Üye veya rol ara..." @bind="searchTerm" @bind:event="oninput" />
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="g-table mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Üye Bilgisi</th>
+                        <th>Rol / Unvan</th>
+                        <th>Dahil Olduğu Projeler</th>
+                        <th>Bağlantılar</th>
+                        <th class="text-end pe-4">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (isLoading)
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <div class="spinner-border spinner-border-sm text-primary me-2"></div> Yükleniyor...
+                            </td>
+                        </tr>
+                    }
+                    else if (FilteredMembers == null || !FilteredMembers.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <span class="material-symbols-outlined d-block fs-1 mb-2 text-secondary">person_off</span>
+                                Henüz üye eklenmedi veya arama sonucu bulunamadı.
+                                <div class="mt-2">
+                                    <button class="btn btn-google-primary btn-sm" @onclick="OpenCreateModal">+ İlk Üyeyi Ekle</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var m in FilteredMembers)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm"
+                                             style="width: 38px; height: 38px; background: linear-gradient(135deg, #4285F4, #34A853); font-size: 0.85rem;">
+                                            @(string.IsNullOrEmpty(m.FullName) ? "?" : m.FullName.Substring(0, 1).ToUpper())
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark">@m.FullName</div>
+                                            <div class="text-muted small">@(m.Email ?? "E-posta belirtilmedi")</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="chip-status blue">
+                                        @m.Role
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-wrap gap-1" style="max-width: 280px;">
+                                        @if (m.ProjectIds != null && m.ProjectIds.Any())
+                                        {
+                                            @foreach (var pId in m.ProjectIds)
+                                            {
+                                                var proj = allProjects?.FirstOrDefault(p => p.Id == pId);
+                                                if (proj != null)
+                                                {
+                                                    <span class="badge bg-light text-dark border rounded-pill small">
+                                                        <span class="material-symbols-outlined text-muted me-1" style="font-size: 14px;">folder</span>@proj.Name
+                                                    </span>
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small fst-italic">Henüz atanmadı</span>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        @if (!string.IsNullOrEmpty(m.GitHubUrl))
+                                        {
+                                            <a href="@m.GitHubUrl" target="_blank" class="btn-google-icon" title="GitHub">
+                                                <i class="bi bi-github"></i>
+                                            </a>
+                                        }
+                                        @if (!string.IsNullOrEmpty(m.LinkedInUrl))
+                                        {
+                                            <a href="@m.LinkedInUrl" target="_blank" class="btn-google-icon" title="LinkedIn">
+                                                <i class="bi bi-linkedin text-primary"></i>
+                                            </a>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="d-inline-flex gap-1">
+                                        <button class="btn-google-icon" title="Düzenle" @onclick="() => OpenEditModal(m)">
+                                            <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
+                                        </button>
+                                        <button class="btn-google-icon" style="color: var(--google-red);" title="Sil" @onclick="() => DeleteMember(m.Id)">
+                                            <span class="material-symbols-outlined" style="font-size: 18px;">delete</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ======================== ÜYE EKLE / DÜZENLE MODAL ======================== -->
+@if (showModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(32, 33, 36, 0.6); backdrop-filter: blur(2px);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-bottom py-3 px-4">
+                    <h5 class="modal-title fw-bold d-flex align-items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">@(isEditing ? "edit" : "person_add")</span>
+                        @(isEditing ? "Üyeyi Düzenle" : "Yeni Üye Kaydı")
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="() => showModal = false"></button>
+                </div>
+                <div class="modal-body p-4">
+                    @if (isEditing)
+                    {
+                        <EditForm Model="editModel" OnValidSubmit="HandleUpdateMember">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary class="text-danger small mb-3" />
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Ad Soyad *</label>
+                                <InputText @bind-Value="editModel.FullName" class="form-control g-input w-100" placeholder="Örn: Ayşe Yılmaz" />
+                                <ValidationMessage For="() => editModel.FullName" class="text-danger small" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Rol / Unvan *</label>
+                                <InputText @bind-Value="editModel.Role" class="form-control g-input w-100" placeholder="Örn: Core Team, Mobile Lead, Full Stack Dev" />
+                                <ValidationMessage For="() => editModel.Role" class="text-danger small" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">E-Posta</label>
+                                <InputText @bind-Value="editModel.Email" class="form-control g-input w-100" placeholder="ornek@gdgsakarya.com" />
+                            </div>
+
+                            <div class="row g-2 mb-3">
+                                <div class="col-6">
+                                    <label class="form-label small fw-semibold">GitHub URL</label>
+                                    <InputText @bind-Value="editModel.GitHubUrl" class="form-control g-input w-100" placeholder="https://github.com/..." />
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label small fw-semibold">LinkedIn URL</label>
+                                    <InputText @bind-Value="editModel.LinkedInUrl" class="form-control g-input w-100" placeholder="https://linkedin.com/in/..." />
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label small fw-semibold d-block">Dahil Olduğu Projeler</label>
+                                <div class="p-3 bg-light rounded-3 border" style="max-height: 150px; overflow-y: auto;">
+                                    @if (allProjects != null && allProjects.Any())
+                                    {
+                                        @foreach (var proj in allProjects)
+                                        {
+                                            var isChecked = editModel.SelectedProjectIds.Contains(proj.Id);
+                                            <div class="form-check mb-1">
+                                                <input class="form-check-input" type="checkbox" id="@($"edit-proj-{proj.Id}")"
+                                                       checked="@isChecked"
+                                                       @onchange="(e) => ToggleProjectSelection(editModel.SelectedProjectIds, proj.Id, e.Value)" />
+                                                <label class="form-check-label small" for="@($"edit-proj-{proj.Id}")">
+                                                    @proj.Name
+                                                </label>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="text-muted small">Henüz kayıtlı proje yok.</div>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                                <button type="button" class="btn btn-google-secondary" @onclick="() => showModal = false">İptal</button>
+                                <button type="submit" class="btn btn-google-primary">Değişiklikleri Kaydet</button>
+                            </div>
+                        </EditForm>
+                    }
+                    else
+                    {
+                        <EditForm Model="createModel" OnValidSubmit="HandleCreateMember">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary class="text-danger small mb-3" />
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Ad Soyad *</label>
+                                <InputText @bind-Value="createModel.FullName" class="form-control g-input w-100" placeholder="Örn: Mehmet Demir" />
+                                <ValidationMessage For="() => createModel.FullName" class="text-danger small" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Rol / Unvan *</label>
+                                <InputText @bind-Value="createModel.Role" class="form-control g-input w-100" placeholder="Örn: AI Researcher, Backend Lead" />
+                                <ValidationMessage For="() => createModel.Role" class="text-danger small" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">E-Posta</label>
+                                <InputText @bind-Value="createModel.Email" class="form-control g-input w-100" placeholder="ornek@gdgsakarya.com" />
+                            </div>
+
+                            <div class="row g-2 mb-3">
+                                <div class="col-6">
+                                    <label class="form-label small fw-semibold">GitHub URL</label>
+                                    <InputText @bind-Value="createModel.GitHubUrl" class="form-control g-input w-100" placeholder="https://github.com/..." />
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label small fw-semibold">LinkedIn URL</label>
+                                    <InputText @bind-Value="createModel.LinkedInUrl" class="form-control g-input w-100" placeholder="https://linkedin.com/in/..." />
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label small fw-semibold d-block">Dahil Olduğu Projeler</label>
+                                <div class="p-3 bg-light rounded-3 border" style="max-height: 150px; overflow-y: auto;">
+                                    @if (allProjects != null && allProjects.Any())
+                                    {
+                                        @foreach (var proj in allProjects)
+                                        {
+                                            var isChecked = createModel.SelectedProjectIds.Contains(proj.Id);
+                                            <div class="form-check mb-1">
+                                                <input class="form-check-input" type="checkbox" id="@($"create-proj-{proj.Id}")"
+                                                       checked="@isChecked"
+                                                       @onchange="(e) => ToggleProjectSelection(createModel.SelectedProjectIds, proj.Id, e.Value)" />
+                                                <label class="form-check-label small" for="@($"create-proj-{proj.Id}")">
+                                                    @proj.Name
+                                                </label>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="text-muted small">Henüz kayıtlı proje yok.</div>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                                <button type="button" class="btn btn-google-secondary" @onclick="() => showModal = false">İptal</button>
+                                <button type="submit" class="btn btn-google-primary">Üyeyi Kaydet</button>
+                            </div>
+                        </EditForm>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<MemberDto>? members;
+    private List<ProjectDto>? allProjects;
+    private bool isLoading = true;
+    private string? statusMessage;
+    private string searchTerm = string.Empty;
+
+    private bool showModal = false;
+    private bool isEditing = false;
+    private CreateMemberDto createModel = new();
+    private UpdateMemberDto editModel = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        isLoading = true;
+        allProjects = await ProjectService.GetAllAsync();
+        members = await MemberService.GetAllAsync();
+        isLoading = false;
+    }
+
+    private IEnumerable<MemberDto>? FilteredMembers
+    {
+        get
+        {
+            if (members == null) return null;
+            if (string.IsNullOrWhiteSpace(searchTerm)) return members;
+
+            var term = searchTerm.Trim().ToLower();
+            return members.Where(m => 
+                m.FullName.ToLower().Contains(term) ||
+                m.Role.ToLower().Contains(term) ||
+                (m.Email != null && m.Email.ToLower().Contains(term)));
+        }
+    }
+
+    private void OpenCreateModal()
+    {
+        createModel = new CreateMemberDto();
+        isEditing = false;
+        showModal = true;
+    }
+
+    private void OpenEditModal(MemberDto member)
+    {
+        editModel = new UpdateMemberDto
+        {
+            Id = member.Id,
+            FullName = member.FullName,
+            Role = member.Role,
+            TeamId = member.TeamId,
+            Email = member.Email,
+            GitHubUrl = member.GitHubUrl,
+            LinkedInUrl = member.LinkedInUrl,
+            SelectedProjectIds = new List<int>(member.ProjectIds)
+        };
+        isEditing = true;
+        showModal = true;
+    }
+
+    private void ToggleProjectSelection(List<int> selectedList, int projId, object? isChecked)
+    {
+        bool selected = isChecked is bool b && b;
+        if (selected)
+        {
+            if (!selectedList.Contains(projId)) selectedList.Add(projId);
+        }
+        else
+        {
+            selectedList.Remove(projId);
+        }
+    }
+
+    private async Task HandleCreateMember()
+    {
+        await MemberService.CreateAsync(createModel);
+        statusMessage = $"'{createModel.FullName}' başarıyla eklendi.";
+        showModal = false;
+        await LoadDataAsync();
+    }
+
+    private async Task HandleUpdateMember()
+    {
+        await MemberService.UpdateAsync(editModel);
+        statusMessage = $"'{editModel.FullName}' başarıyla güncellendi.";
+        showModal = false;
+        await LoadDataAsync();
+    }
+
+    private async Task DeleteMember(int id)
+    {
+        var m = members?.FirstOrDefault(x => x.Id == id);
+        await MemberService.DeleteAsync(id);
+        statusMessage = $"'{m?.FullName ?? "Üye"}' silindi.";
+        await LoadDataAsync();
+    }
+}

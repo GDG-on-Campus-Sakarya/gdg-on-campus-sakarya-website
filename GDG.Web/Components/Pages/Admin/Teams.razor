@@ -1,0 +1,374 @@
+@page "/admin/teams"
+@page "/teams"
+@rendermode InteractiveServer
+@inject ITeamService TeamService
+@inject IMemberService MemberService
+
+<PageTitle>Ekipler - Community Admin</PageTitle>
+
+<div class="container-fluid py-4 px-lg-5">
+    <!-- Header -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold mb-1" style="letter-spacing: -0.5px;">
+                <span class="material-symbols-outlined text-danger me-2" style="font-size: 28px;">groups</span>Ekipler / Çalışma Grupları
+            </h2>
+            <p class="text-muted mb-0 small">Kulüp bünyesindeki yazılım, tasarım, organizasyon ve araştırma ekiplerini yönetin.</p>
+        </div>
+        <button class="btn btn-google-primary" @onclick="OpenCreateModal">
+            <span class="material-symbols-outlined" style="font-size: 18px;">add</span> Yeni Ekip Oluştur
+        </button>
+    </div>
+
+    <!-- Alert / Toast -->
+    @if (!string.IsNullOrEmpty(statusMessage))
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm d-flex align-items-center gap-2 mb-4" role="alert">
+            <span class="material-symbols-outlined text-success" style="font-size: 20px;">check_circle</span>
+            <div>@statusMessage</div>
+            <button type="button" class="btn-close ms-auto" @onclick="() => statusMessage = null"></button>
+        </div>
+    }
+
+    <!-- Stat Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6">
+            <div class="g-card p-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="p-3 rounded-circle d-flex align-items-center justify-content-center" style="background-color: var(--google-red-surface); color: var(--google-red);">
+                        <span class="material-symbols-outlined" style="font-size: 24px;">groups</span>
+                    </div>
+                    <div>
+                        <div class="text-muted small fw-medium">Toplam Çalışma Grubu</div>
+                        <div class="h4 fw-bold mb-0">@(teams?.Count ?? 0)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6">
+            <div class="g-card p-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="p-3 rounded-circle d-flex align-items-center justify-content-center" style="background-color: var(--google-blue-surface); color: var(--google-blue);">
+                        <span class="material-symbols-outlined" style="font-size: 24px;">group</span>
+                    </div>
+                    <div>
+                        <div class="text-muted small fw-medium">Ekiplerdeki Toplam Üye</div>
+                        <div class="h4 fw-bold mb-0">@(teams?.Sum(t => t.Members.Count) ?? 0)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teams Grid -->
+    <div class="g-card overflow-hidden">
+        <div class="p-3 px-4 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2 bg-white">
+            <h5 class="fw-bold mb-0 small text-uppercase text-muted">Kayıtlı Ekipler</h5>
+            <div class="position-relative" style="min-width: 250px;">
+                <span class="material-symbols-outlined position-absolute top-50 start-0 translate-middle-y ms-3 text-muted" style="font-size: 18px;">search</span>
+                <input type="text" class="form-control rounded-pill border-0 ps-5 small" style="background-color: #F1F3F4;" placeholder="Ekip ara..." @bind="searchTerm" @bind:event="oninput" />
+            </div>
+        </div>
+
+        <div class="p-4">
+            @if (isLoading)
+            {
+                <div class="text-center py-5 text-muted">
+                    <div class="spinner-border spinner-border-sm text-primary me-2"></div> Yükleniyor...
+                </div>
+            }
+            else if (FilteredTeams == null || !FilteredTeams.Any())
+            {
+                <div class="text-center py-5 text-muted">
+                    <span class="material-symbols-outlined d-block fs-1 mb-2 text-secondary">group_off</span>
+                    Henüz ekip oluşturulmadı veya arama sonucu bulunamadı.
+                    <div class="mt-2">
+                        <button class="btn btn-google-primary btn-sm" @onclick="OpenCreateModal">+ İlk Ekibi Oluştur</button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="row g-4">
+                    @foreach (var team in FilteredTeams)
+                    {
+                        <div class="col-lg-6">
+                            <div class="g-card p-4 h-100 d-flex flex-column justify-content-between bg-white">
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="p-3 rounded-circle d-flex align-items-center justify-content-center" style="background-color: var(--google-red-surface); color: var(--google-red);">
+                                                <span class="material-symbols-outlined" style="font-size: 22px;">shield</span>
+                                            </div>
+                                            <div>
+                                                <h5 class="fw-bold text-dark mb-0">@team.Name</h5>
+                                                <span class="chip-status blue mt-1">@(team.Members.Count) Üye</span>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-1">
+                                            <button class="btn-google-icon" title="Düzenle" @onclick="() => OpenEditModal(team)">
+                                                <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
+                                            </button>
+                                            <button class="btn-google-icon" style="color: var(--google-red);" title="Sil" @onclick="() => DeleteTeam(team.Id)">
+                                                <span class="material-symbols-outlined" style="font-size: 18px;">delete</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <p class="text-muted small mb-4">
+                                        @(string.IsNullOrEmpty(team.Description) ? "Açıklama belirtilmedi." : team.Description)
+                                    </p>
+                                </div>
+
+                                <div class="border-top pt-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="small fw-semibold text-muted text-uppercase" style="font-size: 0.75rem;">
+                                            Ekip Üyeleri
+                                        </span>
+                                    </div>
+
+                                    @if (team.Members.Any())
+                                    {
+                                        <div class="d-flex flex-wrap gap-2">
+                                            @foreach (var member in team.Members)
+                                            {
+                                                <span class="badge bg-light text-dark border rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2">
+                                                    <span class="rounded-circle bg-primary bg-opacity-25 text-primary small fw-bold d-inline-flex align-items-center justify-content-center" style="width: 20px; height: 20px;">
+                                                        @member.FullName.Substring(0, 1).ToUpper()
+                                                    </span>
+                                                    <span>@member.FullName</span>
+                                                    <span class="text-muted small">(@member.Role)</span>
+                                                </span>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small fst-italic">Bu ekibe henüz üye atanmadı.</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- ======================== EKİP EKLE / DÜZENLE MODAL ======================== -->
+@if (showModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(32, 33, 36, 0.6); backdrop-filter: blur(2px);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-bottom py-3 px-4">
+                    <h5 class="modal-title fw-bold d-flex align-items-center gap-2">
+                        <span class="material-symbols-outlined text-danger">@(isEditing ? "edit" : "group_add")</span>
+                        @(isEditing ? "Ekibi Düzenle" : "Yeni Ekip Oluştur")
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="() => showModal = false"></button>
+                </div>
+                <div class="modal-body p-4">
+                    @if (isEditing)
+                    {
+                        <EditForm Model="editModel" OnValidSubmit="HandleUpdateTeam">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary class="text-danger small mb-3" />
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Ekip Adı *</label>
+                                <InputText @bind-Value="editModel.Name" class="form-control g-input w-100" placeholder="Örn: Yazılım & Mobil Ekibi" />
+                                <ValidationMessage For="() => editModel.Name" class="text-danger small" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Açıklama</label>
+                                <InputTextArea @bind-Value="editModel.Description" rows="3" class="form-control g-input w-100" placeholder="Ekibin hedefleri ve sorumlulukları..." />
+                            </div>
+
+                            <!-- Ekibe Üye Ekleme / Seçme -->
+                            <div class="mb-4">
+                                <label class="form-label small fw-semibold d-block">Ekip Üyeleri (Seç / Ata)</label>
+                                <div class="p-3 bg-light rounded-3 border" style="max-height: 200px; overflow-y: auto;">
+                                    @if (allMembers != null && allMembers.Any())
+                                    {
+                                        @foreach (var member in allMembers)
+                                        {
+                                            var isChecked = editModel.SelectedMemberIds.Contains(member.Id);
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" id="@($"edit-member-{member.Id}")"
+                                                       checked="@isChecked"
+                                                       @onchange="(e) => ToggleMemberSelection(editModel.SelectedMemberIds, member.Id, e.Value)" />
+                                                <label class="form-check-label small" for="@($"edit-member-{member.Id}")">
+                                                    <strong>@member.FullName</strong> <span class="text-muted">(@member.Role)</span>
+                                                </label>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="text-muted small">Henüz kayıtlı üye bulunmuyor. Önce Üyeler Paneli'nden üye ekleyebilirsiniz.</div>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                                <button type="button" class="btn btn-google-secondary" @onclick="() => showModal = false">İptal</button>
+                                <button type="submit" class="btn btn-google-primary">Kaydet</button>
+                            </div>
+                        </EditForm>
+                    }
+                    else
+                    {
+                        <EditForm Model="createModel" OnValidSubmit="HandleCreateTeam">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary class="text-danger small mb-3" />
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Ekip Adı *</label>
+                                <InputText @bind-Value="createModel.Name" class="form-control g-input w-100" placeholder="Örn: Tasarım & UI/UX Ekibi" />
+                                <ValidationMessage For="() => createModel.Name" class="text-danger small" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Açıklama</label>
+                                <InputTextArea @bind-Value="createModel.Description" rows="3" class="form-control g-input w-100" placeholder="Ekibin hedefleri ve sorumlulukları..." />
+                            </div>
+
+                            <!-- Ekibe Üye Ekleme / Seçme -->
+                            <div class="mb-4">
+                                <label class="form-label small fw-semibold d-block">Ekibe Eklenecek Üyeler</label>
+                                <div class="p-3 bg-light rounded-3 border" style="max-height: 200px; overflow-y: auto;">
+                                    @if (allMembers != null && allMembers.Any())
+                                    {
+                                        @foreach (var member in allMembers)
+                                        {
+                                            var isChecked = createModel.SelectedMemberIds.Contains(member.Id);
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" id="@($"create-member-{member.Id}")"
+                                                       checked="@isChecked"
+                                                       @onchange="(e) => ToggleMemberSelection(createModel.SelectedMemberIds, member.Id, e.Value)" />
+                                                <label class="form-check-label small" for="@($"create-member-{member.Id}")">
+                                                    <strong>@member.FullName</strong> <span class="text-muted">(@member.Role)</span>
+                                                </label>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="text-muted small">Henüz kayıtlı üye bulunmuyor. Önce Üyeler Paneli'nden üye ekleyebilirsiniz.</div>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                                <button type="button" class="btn btn-google-secondary" @onclick="() => showModal = false">İptal</button>
+                                <button type="submit" class="btn btn-google-primary">Ekibi Oluştur</button>
+                            </div>
+                        </EditForm>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<TeamDto>? teams;
+    private List<MemberDto>? allMembers;
+    private bool isLoading = true;
+    private string? statusMessage;
+    private string searchTerm = string.Empty;
+
+    private bool showModal = false;
+    private bool isEditing = false;
+    private CreateTeamDto createModel = new();
+    private UpdateTeamDto editModel = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        isLoading = true;
+        allMembers = await MemberService.GetAllAsync();
+        teams = await TeamService.GetAllAsync();
+        isLoading = false;
+    }
+
+    private IEnumerable<TeamDto>? FilteredTeams
+    {
+        get
+        {
+            if (teams == null) return null;
+            if (string.IsNullOrWhiteSpace(searchTerm)) return teams;
+
+            var term = searchTerm.Trim().ToLower();
+            return teams.Where(t => 
+                t.Name.ToLower().Contains(term) ||
+                t.Description.ToLower().Contains(term) ||
+                t.Members.Any(m => m.FullName.ToLower().Contains(term)));
+        }
+    }
+
+    private void OpenCreateModal()
+    {
+        createModel = new CreateTeamDto();
+        isEditing = false;
+        showModal = true;
+    }
+
+    private void OpenEditModal(TeamDto team)
+    {
+        editModel = new UpdateTeamDto
+        {
+            Id = team.Id,
+            Name = team.Name,
+            Description = team.Description,
+            SelectedMemberIds = team.Members.Select(m => m.Id).ToList()
+        };
+        isEditing = true;
+        showModal = true;
+    }
+
+    private void ToggleMemberSelection(List<int> selectedList, int memberId, object? isChecked)
+    {
+        bool selected = isChecked is bool b && b;
+        if (selected)
+        {
+            if (!selectedList.Contains(memberId)) selectedList.Add(memberId);
+        }
+        else
+        {
+            selectedList.Remove(memberId);
+        }
+    }
+
+    private async Task HandleCreateTeam()
+    {
+        await TeamService.CreateAsync(createModel);
+        statusMessage = $"'{createModel.Name}' ekibi başarıyla oluşturuldu.";
+        showModal = false;
+        await LoadDataAsync();
+    }
+
+    private async Task HandleUpdateTeam()
+    {
+        await TeamService.UpdateAsync(editModel);
+        statusMessage = $"'{editModel.Name}' ekibi güncellendi.";
+        showModal = false;
+        await LoadDataAsync();
+    }
+
+    private async Task DeleteTeam(int id)
+    {
+        var t = teams?.FirstOrDefault(x => x.Id == id);
+        await TeamService.DeleteAsync(id);
+        statusMessage = $"'{t?.Name ?? "Ekip"}' silindi.";
+        await LoadDataAsync();
+    }
+}

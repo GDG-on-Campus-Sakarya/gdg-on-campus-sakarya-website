@@ -7,7 +7,7 @@ namespace GDG.Application.Interfaces
     public interface IProjectService
     {
         // interfaces 
-        // bütün metodlar asenkron + ileride hangfire workers ( sistem tıkanmaması için )
+        // bütün metodlar asenkron + ileride hangfire workers ( sistem tıkanmaması için + zaman alan işlemler )
 
 
         Task<List<ProjectDto>> GetAllAsync(int? technologyId = null, bool? featuredOnly = null);
