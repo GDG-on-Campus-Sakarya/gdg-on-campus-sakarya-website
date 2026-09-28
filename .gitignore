@@ -1,17 +1,26 @@
-# Visual Studio
-.vs/
+# --- Frontend & Figma Ignores ---
+node_modules/
+dist/
+build/
+.cache/
+.env*
+.vite/
+vite.config.*.timestamp-*
+*.tsbuildinfo
+*-debug.log*
+logs/
+*.log
+.claude-replay.*
+.tmp-*
+/.figma/design-context/
+/.plugins/
+/.opencode-skills/
 
-# Build results
+# --- Backend & Visual Studio Ignores ---
+.vs/
 bin/
 obj/
-
-# User-specific files
 *.user
 *.suo
-
-# Logs
-*.log
-
-# OS files
 .DS_Store
 Thumbs.db

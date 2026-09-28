@@ -1,0 +1,61 @@
+:root {
+  /* Brand colors */
+  --blue: #0b57d0;
+  --blue-bright: #4285f4;
+  --blue-soft: #eaf2ff;
+  --red: #ea4335;
+  --red-soft: #fce8e6;
+  --yellow: #f9ab00;
+  --yellow-soft: #fff4d5;
+  --green: #1e8e3e;
+  --green-soft: #e6f4ea;
+
+  /* Semantic colors */
+  --ink: #1f1f1f;
+  --muted: #5f6368;
+  --outline: #dfe1e5;
+  --surface: #ffffff;
+  --surface-soft: #f8f9fa;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* Shape */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-pill: 999px;
+
+  /* Layout */
+  --page-gutter: clamp(24px, 5vw, 80px);
+  --max-width: 1280px;
+
+  /* Typography */
+  --font-family: "Inter", "Google Sans", Arial, sans-serif;
+  --font-display-large: clamp(54px, 6vw, 84px);
+  --font-display-medium: clamp(38px, 4.2vw, 56px);
+  --font-display-small: clamp(28px, 3vw, 40px);
+  --font-body-large: 18px;
+  --font-body: 14px;
+  --font-label: 12px;
+
+  /* Elevation */
+  --shadow-card: 0 18px 38px color-mix(in srgb, var(--ink) 8%, transparent);
+  --shadow-action: 0 8px 20px color-mix(in srgb, var(--blue) 20%, transparent);
+
+  font-family: var(--font-family);
+  color: var(--ink);
+  background: var(--surface);
+  font-synthesis: none;
+}

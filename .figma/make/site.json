@@ -1,0 +1,12 @@
+{
+  "title": "GDG on Campus Sakarya",
+  "language": "tr",
+  "description": "Modern desktop homepage showcasing GDG on Campus Sakarya's events, projects, and community stats with clear navigation and engaging calls to action.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
