@@ -1,0 +1,117 @@
+/* MemberCard Isolated Component Styles */
+.member-card {
+    display: flex;
+    flex-direction: column;
+    background-color: #FFFFFF;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+    transition: all var(--transition-normal);
+    height: 100%;
+}
+
+.member-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Avatar Header Area */
+.avatar-area {
+    height: 220px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.tint-blue .avatar-area { background-color: var(--tint-blue-bg); }
+.tint-orange .avatar-area { background-color: #FFF7ED; }
+.tint-yellow .avatar-area { background-color: var(--tint-yellow-bg); }
+.tint-green .avatar-area { background-color: var(--tint-green-bg); }
+
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    color: var(--color-text-muted);
+    opacity: 0.7;
+}
+
+.placeholder-icon {
+    width: 36px;
+    height: 36px;
+    padding: 8px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: var(--radius-full);
+}
+
+.placeholder-text {
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+/* Info Row */
+.member-info-row {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    background-color: #FFFFFF;
+}
+
+.name-role-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.member-name {
+    font-size: 1.125rem;
+    font-weight: 800;
+    color: var(--color-text-main);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+}
+
+.member-role {
+    font-size: 0.84375rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+}
+
+.social-icons-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.social-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-bg-page);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    transition: all var(--transition-fast);
+    text-decoration: none;
+}
+
+.social-icon-btn:hover {
+    background-color: var(--color-primary);
+    color: #FFFFFF;
+    border-color: var(--color-primary);
+    transform: translateY(-1px);
+}

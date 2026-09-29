@@ -1,23 +1,10 @@
-using GDG.Infrastructure.Contexts;
 using GDG.Web.Components;
-using GDG.Application.Interfaces;
-using GDG.Web.Services;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-
-// Core Panel Services (Project, Technology, Member, Team, Event)
-builder.Services.AddSingleton<ITechnologyService, TechnologyService>();
-builder.Services.AddSingleton<IProjectService, ProjectService>();
-builder.Services.AddSingleton<IMemberService, MemberService>();
-builder.Services.AddSingleton<ITeamService, TeamService>();
-builder.Services.AddSingleton<IEventService, EventService>();
 
 var app = builder.Build();
 
@@ -33,8 +20,6 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
-
-app.MapGet("/", () => Results.Redirect("/admin/dashboard"));
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
