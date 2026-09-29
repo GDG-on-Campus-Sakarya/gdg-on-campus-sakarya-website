@@ -8,70 +8,70 @@
     <!-- SECTION 1: HERO BANNER -->
     <section class="hero-section text-center">
         <div class="container-custom">
-            <!-- GDG Symbol Logo -->
+            <!-- GDG Brackets Logo -->
             <div class="hero-logo-box">
-                <GdgBracketsLogo Width="100" Height="60" />
+                <GdgBracketsLogo Width="80" Height="50" />
             </div>
 
-            <!-- Main Heading -->
+            <!-- Main Heading with Brand Colors -->
             <h1 class="hero-title">
                 <span class="c-blue">GDG</span> <span class="c-red">on</span> <span class="c-yellow">Campus</span> <span class="c-green">Sakarya</span>
             </h1>
 
             <!-- Subtitle -->
             <p class="hero-subtitle">
-                Merak eden, üreten ve paylaşan öğrencileri bir araya getiriyoruz. Geleceğin teknolojilerini birlikte keşfetmeye hazır mısın?
+                Merak eden, üreten ve paylaşan öğrencileri bir araya getiriyoruz. Geleceğin teknolojilerini Sakarya Üniversitesi'nde birlikte keşfetmeye hazır mısın?
             </p>
 
             <!-- Hero Action Buttons -->
             <div class="hero-actions">
-                <a href="projects" class="btn-hero-primary">
+                <a href="/projects" class="btn-action-primary hero-btn">
                     <span>Projeleri İncele</span>
-                    <svg viewBox="0 0 20 20" width="18" height="18" fill="currentColor" aria-hidden="true">
-                        <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
                     </svg>
                 </a>
-                <a href="events" class="btn-hero-secondary">
+                <a href="/events" class="btn-action-outlined hero-btn">
                     <span>Etkinliklere Göz At</span>
                 </a>
             </div>
 
-            <!-- Scroll Down Pill Indicator -->
+            <!-- Scroll Down Indicator -->
             <div class="scroll-indicator" aria-hidden="true">
                 <div class="scroll-dot"></div>
             </div>
         </div>
     </section>
 
-    <!-- SECTION 2: TOP GRID (UPCOMING EVENT COUNTDOWN & QUICK STATS) -->
-    <section class="section-padding">
+    <!-- SECTION 2: TOP BENTO GRID (UPCOMING EVENT COUNTDOWN & QUICK STATS) -->
+    <section class="section-container">
         <div class="container-custom">
-            <div class="top-grid">
-                <!-- Left Main Countdown Card -->
-                <div class="upcoming-card">
-                    <div class="upcoming-tag">
-                        <span class="dot-indicator"></span>
-                        <span>@upcomingEvent.CategoryTag</span>
+            <div class="top-bento-grid">
+                <!-- Left Countdown Bento Card -->
+                <div class="countdown-card">
+                    <div class="countdown-badge">
+                        <span class="pulse-dot" aria-hidden="true"></span>
+                        <span>@(string.IsNullOrWhiteSpace(upcomingEvent.CategoryTag) ? "YAKLAŞAN ETKİNLİK" : upcomingEvent.CategoryTag)</span>
                     </div>
 
-                    <h2 class="upcoming-title">@upcomingEvent.Title</h2>
-                    <p class="upcoming-sub">İlk etkinliğimize kalan süre</p>
+                    <h2 class="countdown-title">@upcomingEvent.Title</h2>
+                    <p class="countdown-sub">İlk etkinliğimize kalan süre</p>
 
-                    <!-- Countdown Boxes -->
-                    <div class="countdown-row">
-                        <div class="countdown-box">
+                    <!-- Countdown Numbers Grid -->
+                    <div class="countdown-boxes-grid">
+                        <div class="cd-box">
                             <span class="cd-num">@days.ToString("D2")</span>
                             <span class="cd-label">Gün</span>
                         </div>
-                        <div class="countdown-box">
+                        <div class="cd-box">
                             <span class="cd-num">@hours.ToString("D2")</span>
                             <span class="cd-label">Saat</span>
                         </div>
-                        <div class="countdown-box">
+                        <div class="cd-box">
                             <span class="cd-num">@minutes.ToString("D2")</span>
                             <span class="cd-label">Dakika</span>
                         </div>
-                        <div class="countdown-box">
+                        <div class="cd-box">
                             <span class="cd-num">@seconds.ToString("D2")</span>
                             <span class="cd-label">Saniye</span>
                         </div>
@@ -79,12 +79,12 @@
                 </div>
 
                 <!-- Right Column Stacked Cards -->
-                <div class="right-stats-stack">
-                    <!-- Top Member Stat Card -->
-                    <div class="stat-card green-stat-bg">
-                        <div class="stat-header">
-                            <div class="stat-icon-box">
-                                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <div class="bento-stats-stack">
+                    <!-- Member Stat Card -->
+                    <div class="stat-card green-stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-icon-wrap" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                     <line x1="18" y1="20" x2="18" y2="10"></line>
                                     <line x1="12" y1="20" x2="12" y2="4"></line>
                                     <line x1="6" y1="20" x2="6" y2="14"></line>
@@ -92,28 +92,28 @@
                             </div>
                             <span class="growth-badge">+18% bu dönem</span>
                         </div>
-                        <div class="stat-main">
-                            <h3 class="stat-number">50+</h3>
-                            <h4 class="stat-title">Aktif Üye</h4>
+                        <div class="stat-card-content">
+                            <span class="stat-number">50+</span>
+                            <span class="stat-label">Aktif Üye</span>
                         </div>
                         <p class="stat-desc">Birlikte öğrenen, paylaşan ve üreten bir topluluk.</p>
                     </div>
 
-                    <!-- Bottom Discord Card -->
-                    <div class="stat-card yellow-stat-bg">
-                        <div class="discord-row">
-                            <div class="discord-left">
-                                <div class="discord-icon-box">
-                                    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+                    <!-- Discord Community Card -->
+                    <div class="stat-card yellow-stat-card">
+                        <div class="discord-card-row">
+                            <div class="discord-info">
+                                <div class="discord-icon-wrap" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
                                         <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .373-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.893.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
                                     </svg>
                                 </div>
                                 <div class="discord-texts">
-                                    <h4 class="discord-title">Sohbete katıl, bağlantıda kal.</h4>
+                                    <h3 class="discord-title">Sohbete katıl, bağlantıda kal.</h3>
                                     <p class="discord-sub">Discord sunucumuzda yerini al.</p>
                                 </div>
                             </div>
-                            <a href="https://discord.gg" target="_blank" rel="noopener noreferrer" class="circle-arrow-btn" aria-label="Discord Sunucusuna Katıl">
+                            <a href="https://discord.gg" target="_blank" rel="noopener noreferrer" class="circle-action-btn" aria-label="Discord Sunucusuna Katıl">
                                 <svg viewBox="0 0 20 20" width="18" height="18" fill="currentColor" aria-hidden="true">
                                     <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
                                 </svg>
@@ -126,11 +126,14 @@
     </section>
 
     <!-- SECTION 3: EVENTS LISTING -->
-    <section class="section-padding">
+    <section class="section-container" id="etkinlikler">
         <div class="container-custom">
             <div class="section-header-row">
-                <h2 class="section-heading">Etkinliklerimiz</h2>
-                <a href="events" class="see-all-link">
+                <div>
+                    <span class="section-kicker kicker-blue">ETKİNLİKLERİMİZ</span>
+                    <h2 class="section-heading">Yaklaşan Buluşmalar</h2>
+                </div>
+                <a href="/events" class="see-all-action" aria-label="Tüm etkinlikleri görüntüle">
                     <span>Tüm etkinlikler</span>
                     <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor" aria-hidden="true">
                         <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
@@ -157,16 +160,24 @@
     </section>
 
     <!-- SECTION 4: OUR TEAM -->
-    <section class="section-padding">
+    <section class="section-container" id="ekibimiz">
         <div class="container-custom">
-            <div class="section-header-row align-items-end">
+            <div class="section-header-row">
                 <div>
-                    <span class="section-tag tag-red">BİZİ TANIYIN</span>
+                    <span class="section-kicker kicker-red">BİZİ TANIYIN</span>
                     <h2 class="section-heading">Ekibimiz</h2>
                 </div>
-                <p class="section-side-desc">
-                    Farklı disiplinlerden, aynı meraktan. Topluluğu birlikte büyütüyoruz.
-                </p>
+                <div class="header-right-meta">
+                    <p class="section-side-desc">
+                        Farklı disiplinlerden, aynı meraktan. Topluluğu birlikte büyütüyoruz.
+                    </p>
+                    <a href="/team" class="see-all-action" aria-label="Tüm ekip üyelerini görüntüle">
+                        <span>Tüm ekibi gör</span>
+                        <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </a>
+                </div>
             </div>
 
             @if (members != null && members.Any())
@@ -188,16 +199,24 @@
     </section>
 
     <!-- SECTION 5: CLUB PROJECTS -->
-    <section class="section-padding mb-5">
+    <section class="section-container pb-section" id="projeler">
         <div class="container-custom">
-            <div class="section-header-row align-items-end">
+            <div class="section-header-row">
                 <div>
-                    <span class="section-tag tag-green">FİKİRDEN ÜRÜNE</span>
+                    <span class="section-kicker kicker-green">FİKİRDEN ÜRÜNE</span>
                     <h2 class="section-heading">Kulüp Projeleri</h2>
                 </div>
-                <p class="section-side-desc">
-                    Teknolojiyi gerçek sorunlara çözüm üretmek için kullanıyoruz.
-                </p>
+                <div class="header-right-meta">
+                    <p class="section-side-desc">
+                        Teknolojiyi gerçek sorunlara çözüm üretmek için kullanıyoruz.
+                    </p>
+                    <a href="/projects" class="see-all-action" aria-label="Tüm projeleri görüntüle">
+                        <span>Tüm projeler</span>
+                        <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </a>
+                </div>
             </div>
 
             @if (projects != null && projects.Any())

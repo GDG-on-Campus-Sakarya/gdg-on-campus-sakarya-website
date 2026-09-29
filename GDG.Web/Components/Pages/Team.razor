@@ -1,0 +1,146 @@
+@page "/team"
+@using GDG.Web.Models
+@using GDG.Web.Services
+
+<PageTitle>Ekibimiz - GDG on Campus Sakarya</PageTitle>
+
+<div class="team-page-wrapper">
+    <!-- PAGE HERO -->
+    <PageHeader Tag="BİZİ TANIYIN"
+                TagColor="red"
+                Title="Çekirdek Ekibimiz"
+                Subtitle="Farklı disiplinlerden, aynı meraktan. Sakarya Üniversitesi'nde teknoloji ekosistemini birlikte büyütüyoruz.">
+    </PageHeader>
+
+    <div class="container-custom">
+        <!-- TEAM FILTER TABS -->
+        <section class="team-filter-section">
+            <div class="tabs-group" role="tablist">
+                <button class="filter-tab @(selectedDepartment == "all" ? "active" : "")" @onclick='() => FilterDepartment("all")' role="tab" aria-selected="@(selectedDepartment == "all")">
+                    Tüm Ekip (@allMembers.Count)
+                </button>
+                <button class="filter-tab @(selectedDepartment == "Yönetim" ? "active" : "")" @onclick='() => FilterDepartment("Yönetim")' role="tab" aria-selected="@(selectedDepartment == "Yönetim")">
+                    Liderlik
+                </button>
+                <button class="filter-tab @(selectedDepartment == "Yazılım" ? "active" : "")" @onclick='() => FilterDepartment("Yazılım")' role="tab" aria-selected="@(selectedDepartment == "Yazılım")">
+                    Teknoloji & Yazılım
+                </button>
+                <button class="filter-tab @(selectedDepartment == "Organizasyon" ? "active" : "")" @onclick='() => FilterDepartment("Organizasyon")' role="tab" aria-selected="@(selectedDepartment == "Organizasyon")">
+                    Organizasyon
+                </button>
+                <button class="filter-tab @(selectedDepartment == "Medya" ? "active" : "")" @onclick='() => FilterDepartment("Medya")' role="tab" aria-selected="@(selectedDepartment == "Medya")">
+                    Medya & Tasarım
+                </button>
+            </div>
+        </section>
+
+        <!-- MEMBERS GRID -->
+        <section class="members-section" aria-label="Ekip Üyeleri">
+            @if (filteredMembers.Any())
+            {
+                <div class="members-grid">
+                    @foreach (var member in filteredMembers)
+                    {
+                        <MemberCard @key="member.Id" Item="member" />
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-team-state">
+                    <p>Bu departmanda henüz listelenen üye bulunmamaktadır.</p>
+                </div>
+            }
+        </section>
+
+        <!-- JOIN THE TEAM CTA -->
+        <section class="team-join-cta">
+            <div class="join-card">
+                <div class="join-content">
+                    <span class="section-kicker kicker-blue">ARAMIZA KATIL</span>
+                    <h2 class="join-title">Topluluğun Geleceğini Birlikte İnşa Edelim</h2>
+                    <p class="join-desc">
+                        GDG on Campus Sakarya çekirdek ekibinde organizasyon, tasarım, yazılım geliştirme veya sponsorluk alanlarında aktif rol almak ister misin?
+                    </p>
+                    <div class="join-actions">
+                        <a href="https://gdg.community.dev/gdg-on-campus-sakarya-university-sakarya-turkey/" target="_blank" rel="noopener noreferrer" class="btn-action-primary">
+                            <span>Bize Katıl</span>
+                            <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                        </a>
+                        <a href="/contact" class="btn-action-outlined">
+                            <span>Soru Sor</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+@code {
+    private List<MemberViewModel> allMembers = new();
+    private string selectedDepartment = "all";
+
+    private IEnumerable<MemberViewModel> filteredMembers =>
+        selectedDepartment == "all"
+            ? allMembers
+            : allMembers.Where(m => string.Equals(m.TeamName, selectedDepartment, StringComparison.OrdinalIgnoreCase));
+
+    protected override void OnInitialized()
+    {
+        var baseList = MockDataService.GetMembers();
+        allMembers = new List<MemberViewModel>(baseList);
+
+        // Enrich team list with realistic core team members if only 4 exist
+        if (allMembers.Count <= 4)
+        {
+            allMembers.Add(new MemberViewModel
+            {
+                Id = 5,
+                FullName = "Batuhan",
+                Role = "Mobile Lead",
+                TeamName = "Yazılım",
+                CardColor = "blue",
+                GitHubUrl = "https://github.com",
+                LinkedInUrl = "https://linkedin.com"
+            });
+            allMembers.Add(new MemberViewModel
+            {
+                Id = 6,
+                FullName = "Zeynep",
+                Role = "UI/UX Designer",
+                TeamName = "Medya",
+                CardColor = "yellow",
+                GitHubUrl = "https://github.com",
+                LinkedInUrl = "https://linkedin.com"
+            });
+            allMembers.Add(new MemberViewModel
+            {
+                Id = 7,
+                FullName = "Emre",
+                Role = "Event Coordinator",
+                TeamName = "Organizasyon",
+                CardColor = "orange",
+                GitHubUrl = "https://github.com",
+                LinkedInUrl = "https://linkedin.com"
+            });
+            allMembers.Add(new MemberViewModel
+            {
+                Id = 8,
+                FullName = "Selin",
+                Role = "Community Lead",
+                TeamName = "Yönetim",
+                CardColor = "green",
+                GitHubUrl = "https://github.com",
+                LinkedInUrl = "https://linkedin.com"
+            });
+        }
+    }
+
+    private void FilterDepartment(string dept)
+    {
+        selectedDepartment = dept;
+    }
+}

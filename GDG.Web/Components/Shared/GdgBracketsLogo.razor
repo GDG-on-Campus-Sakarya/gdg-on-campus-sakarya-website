@@ -1,15 +1,17 @@
-@* GDG chevron logo: left top red / bottom blue, right top green / bottom yellow *@
+@* Official GDG brackets chevron logo: left top red / bottom blue, right top green / bottom yellow *@
 <svg class="@CssClass"
-     viewBox="0 0 40 24"
+     viewBox="0 0 800 500"
      width="@Width"
      height="@Height"
      fill="none"
      xmlns="http://www.w3.org/2000/svg"
      aria-hidden="true">
-    <path d="M10 2L2 12" stroke="var(--color-gdg-red)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M2 12L10 22" stroke="var(--color-gdg-blue)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M30 2L38 12" stroke="var(--color-gdg-green)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M38 12L30 22" stroke="var(--color-gdg-yellow)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+    <g fill="none" stroke-linecap="round" stroke-width="74">
+        <path d="M320 125 190 250" stroke="var(--red)" />
+        <path d="M190 250 320 375" stroke="var(--blue-bright)" />
+        <path d="M480 125 610 250" stroke="var(--green)" />
+        <path d="M610 250 480 375" stroke="var(--yellow)" />
+    </g>
 </svg>
 
 @code {
@@ -17,8 +19,8 @@
     public string CssClass { get; set; } = string.Empty;
 
     [Parameter]
-    public int Width { get; set; } = 36;
+    public int Width { get; set; } = 40;
 
     [Parameter]
-    public int Height { get; set; } = 22;
+    public int Height { get; set; } = 25;
 }

@@ -1,0 +1,217 @@
+@page "/events"
+@using GDG.Web.Models
+@using GDG.Web.Services
+
+<PageTitle>Etkinlikler - GDG on Campus Sakarya</PageTitle>
+
+<div class="events-page-wrapper">
+    <!-- PAGE HERO -->
+    <PageHeader Tag="TOPLULUK BULUŞMALARI"
+                TagColor="blue"
+                Title="Etkinlikler & Atölyeler"
+                Subtitle="Sakarya Üniversitesi kampüsünde düzenlediğimiz teknik atölyeler, söyleşiler, Google I/O Extended ve açık laboratuvarlar.">
+    </PageHeader>
+
+    <div class="container-custom">
+        <!-- FEATURED EVENT HERO CARD -->
+        @if (featuredEvent != null)
+        {
+            <section class="featured-event-section" aria-label="Öne Çıkan Etkinlik">
+                <article class="featured-card">
+                    <div class="featured-content">
+                        <div class="featured-kicker">
+                            <span class="pulse-dot" aria-hidden="true"></span>
+                            <span>ÖNE ÇIKAN ETKİNLİK</span>
+                        </div>
+                        <h2 class="featured-title">@featuredEvent.Title</h2>
+                        <p class="featured-desc">@featuredEvent.Description</p>
+
+                        <div class="featured-meta-row">
+                            <div class="meta-chip">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <span>@featuredEvent.FormattedDate</span>
+                            </div>
+                            <div class="meta-chip">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                                <span>@featuredEvent.Time</span>
+                            </div>
+                            <div class="meta-chip">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                                <span>@featuredEvent.Location</span>
+                            </div>
+                        </div>
+
+                        <div class="featured-actions">
+                            <a href="https://gdg.community.dev/gdg-on-campus-sakarya-university-sakarya-turkey/" target="_blank" rel="noopener noreferrer" class="btn-action-primary">
+                                <span>Etkinliğe Kaydol</span>
+                                <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                </svg>
+                            </a>
+                            <a href="https://calendar.google.com" target="_blank" rel="noopener noreferrer" class="btn-action-outlined">
+                                <span>Takvime Ekle</span>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            </section>
+        }
+
+        <!-- EVENT FILTER TABS -->
+        <section class="events-list-section">
+            <div class="filter-tabs-bar">
+                <div class="tabs-group" role="tablist">
+                    <button class="filter-tab @(selectedTab == "all" ? "active" : "")" @onclick='() => SetTab("all")' role="tab" aria-selected="@(selectedTab == "all")">
+                        Tümü (@allEventsCount)
+                    </button>
+                    <button class="filter-tab @(selectedTab == "upcoming" ? "active" : "")" @onclick='() => SetTab("upcoming")' role="tab" aria-selected="@(selectedTab == "upcoming")">
+                        Yaklaşan (@upcomingList.Count)
+                    </button>
+                    <button class="filter-tab @(selectedTab == "past" ? "active" : "")" @onclick='() => SetTab("past")' role="tab" aria-selected="@(selectedTab == "past")">
+                        Geçmiş (@pastList.Count)
+                    </button>
+                </div>
+            </div>
+
+            <!-- UPCOMING EVENTS SECTION (if selectedTab != past) -->
+            @if (selectedTab != "past" && displayedUpcoming.Any())
+            {
+                <div class="events-group-wrapper">
+                    <div class="group-header">
+                        <span class="section-kicker kicker-blue">TAKVİM</span>
+                        <h2 class="group-title">Yaklaşan Etkinlikler</h2>
+                    </div>
+
+                    <div class="events-grid">
+                        @foreach (var ev in displayedUpcoming)
+                        {
+                            <EventCard @key="ev.Id" Item="ev" />
+                        }
+                    </div>
+                </div>
+            }
+
+            <!-- PAST EVENTS SECTION (if selectedTab != upcoming) -->
+            @if (selectedTab != "upcoming" && displayedPast.Any())
+            {
+                <div class="events-group-wrapper @(selectedTab == "all" ? "mt-5 pt-3" : "")">
+                    <div class="group-header">
+                        <span class="section-kicker kicker-green">GERİYE BAKTIĞIMIZDA</span>
+                        <h2 class="group-title">Geçmiş Buluşmalar</h2>
+                    </div>
+
+                    <div class="events-grid">
+                        @foreach (var ev in displayedPast)
+                        {
+                            <EventCard @key="ev.Id" Item="ev" />
+                        }
+                    </div>
+                </div>
+            }
+
+            <!-- EMPTY STATE -->
+            @if (!displayedUpcoming.Any() && !displayedPast.Any())
+            {
+                <div class="empty-events-state">
+                    <div class="empty-icon" aria-hidden="true">📅</div>
+                    <h3 class="empty-title">Bu kategoride henüz etkinlik bulunmuyor.</h3>
+                    <p class="empty-desc">Yeni atölyeler ve etkinlik takvimi çok yakında burada paylaşılacaktır.</p>
+                    <button class="btn-action-outlined mt-3" @onclick='() => SetTab("all")'>
+                        Tüm Etkinlikleri Göster
+                    </button>
+                </div>
+            }
+        </section>
+
+        <!-- HOST AN EVENT CTA -->
+        <section class="events-cta-banner">
+            <div class="cta-inner">
+                <span class="section-kicker kicker-yellow">TOPLULUK İÇİN ÜRET</span>
+                <h2 class="cta-title">Bir konuda atölye vermek veya konuşmacı olmak ister misin?</h2>
+                <p class="cta-desc">
+                    Bildiğin bir teknolojiyi veya deneyimini Sakarya Üniversitesi öğrencileriyle paylaşmak istiyorsan kapımız her zaman açık.
+                </p>
+                <a href="/contact" class="btn-action-primary mt-2">
+                    <span>Bizimle İletişime Geç</span>
+                </a>
+            </div>
+        </section>
+    </div>
+</div>
+
+@code {
+    private EventViewModel? featuredEvent;
+    private List<EventViewModel> upcomingList = new();
+    private List<EventViewModel> pastList = new();
+    private string selectedTab = "all";
+
+    private int allEventsCount => upcomingList.Count + pastList.Count;
+
+    private IEnumerable<EventViewModel> displayedUpcoming =>
+        selectedTab == "past" ? Enumerable.Empty<EventViewModel>() : upcomingList;
+
+    private IEnumerable<EventViewModel> displayedPast =>
+        selectedTab == "upcoming" ? Enumerable.Empty<EventViewModel>() : pastList;
+
+    protected override void OnInitialized()
+    {
+        featuredEvent = MockDataService.GetUpcomingEvent();
+        upcomingList = MockDataService.GetEvents();
+
+        pastList = new List<EventViewModel>
+        {
+            new EventViewModel
+            {
+                Id = 101,
+                Title = "Flutter ile Sıfırdan Mobil Uygulama",
+                Description = "Mobil uygulama geliştirmeye ilk adım: Widget mimarisi, state yönetimi ve ilk Flutter app projesi.",
+                Date = DateTime.Now.AddDays(-30),
+                FormattedDate = "15 ŞUBAT 2026",
+                Time = "14:00",
+                Location = "Mühendislik Fakültesi Lab 3",
+                CategoryTag = "MOBILE WORKSHOP",
+                CategoryColor = "blue"
+            },
+            new EventViewModel
+            {
+                Id = 102,
+                Title = "Google Cloud & Firebase Hands-on",
+                Description = "Serverless mimariler, Cloud Functions ve Firestore entegrasyonu ile gerçek zamanlı backend kurma.",
+                Date = DateTime.Now.AddDays(-60),
+                FormattedDate = "18 OCAK 2026",
+                Time = "13:30",
+                Location = "SAÜ Kültür ve Kongre Merkezi",
+                CategoryTag = "CLOUD & BACKEND",
+                CategoryColor = "green"
+            },
+            new EventViewModel
+            {
+                Id = 103,
+                Title = "Solution Challenge 2026 Bilgilendirme",
+                Description = "Birleşmiş Milletler Sürdürülebilir Kalkınma Hedefleri doğrultusunda proje geliştirme ve küresel yarışma hazırlığı.",
+                Date = DateTime.Now.AddDays(-90),
+                FormattedDate = "12 ARALIK 2025",
+                Time = "15:00",
+                Location = "Çevrim İçi (Google Meet)",
+                CategoryTag = "GLOBAL COMPETITION",
+                CategoryColor = "yellow"
+            }
+        };
+    }
+
+    private void SetTab(string tab)
+    {
+        selectedTab = tab;
+    }
+}

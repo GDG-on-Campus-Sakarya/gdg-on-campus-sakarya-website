@@ -2,17 +2,19 @@
 .member-card {
     display: flex;
     flex-direction: column;
-    background-color: #FFFFFF;
+    background-color: var(--surface);
     border-radius: var(--radius-lg);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--outline);
     overflow: hidden;
     transition: all var(--transition-normal);
     height: 100%;
+    box-shadow: var(--shadow-sm);
 }
 
 .member-card:hover {
     transform: translateY(-4px);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-card);
+    border-color: rgba(11, 87, 208, 0.25);
 }
 
 /* Avatar Header Area */
@@ -22,13 +24,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--outline);
+    overflow: hidden;
 }
 
-.tint-blue .avatar-area { background-color: var(--tint-blue-bg); }
-.tint-orange .avatar-area { background-color: #FFF7ED; }
-.tint-yellow .avatar-area { background-color: var(--tint-yellow-bg); }
-.tint-green .avatar-area { background-color: var(--tint-green-bg); }
+.tint-blue .avatar-area { background-color: var(--blue-soft); }
+.tint-orange .avatar-area,
+.tint-red .avatar-area { background-color: var(--red-soft); }
+.tint-yellow .avatar-area { background-color: var(--yellow-soft); }
+.tint-green .avatar-area { background-color: var(--green-soft); }
 
 .avatar-img {
     width: 100%;
@@ -41,58 +45,83 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.625rem;
-    color: var(--color-text-muted);
-    opacity: 0.7;
+    gap: var(--space-2);
+    color: var(--muted);
 }
 
-.placeholder-icon {
-    width: 36px;
-    height: 36px;
-    padding: 8px;
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: var(--radius-full);
+.placeholder-icon-wrap {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--surface);
+    border-radius: var(--radius-pill);
+    box-shadow: 0 2px 8px rgba(31, 31, 31, 0.06);
+    color: var(--muted);
 }
 
 .placeholder-text {
     font-size: 0.8125rem;
     font-weight: 600;
+    color: var(--muted);
 }
 
 /* Info Row */
 .member-info-row {
-    padding: 1.25rem 1.5rem;
+    padding: var(--space-5) var(--space-6);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    background-color: #FFFFFF;
+    gap: var(--space-3);
+    background-color: var(--surface);
+    flex-grow: 1;
 }
 
 .name-role-group {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 2px;
+    min-width: 0;
 }
 
 .member-name {
-    font-size: 1.125rem;
-    font-weight: 800;
-    color: var(--color-text-main);
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--ink);
     letter-spacing: -0.01em;
-    line-height: 1.2;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .member-role {
-    font-size: 0.84375rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.member-team-badge {
+    display: inline-block;
+    font-size: 0.6875rem;
     font-weight: 600;
-    color: var(--color-text-muted);
+    color: var(--blue);
+    background-color: var(--blue-soft);
+    padding: 1px 6px;
+    border-radius: var(--radius-sm);
+    width: fit-content;
+    margin-top: 2px;
 }
 
 .social-icons-group {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--space-2);
+    flex-shrink: 0;
 }
 
 .social-icon-btn {
@@ -102,16 +131,16 @@
     width: 34px;
     height: 34px;
     border-radius: var(--radius-sm);
-    background-color: var(--color-bg-page);
-    color: var(--color-text-muted);
-    border: 1px solid var(--color-border);
+    background-color: var(--surface-soft);
+    color: var(--muted);
+    border: 1px solid var(--outline);
     transition: all var(--transition-fast);
     text-decoration: none;
 }
 
 .social-icon-btn:hover {
-    background-color: var(--color-primary);
-    color: #FFFFFF;
-    border-color: var(--color-primary);
+    background-color: var(--blue);
+    color: #ffffff;
+    border-color: var(--blue);
     transform: translateY(-1px);
 }

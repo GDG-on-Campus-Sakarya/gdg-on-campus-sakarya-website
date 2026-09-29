@@ -11,9 +11,14 @@
 .navbar-brand {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: var(--space-3);
     text-decoration: none;
     z-index: 1002;
+    transition: opacity var(--transition-fast);
+}
+
+.navbar-brand:hover {
+    opacity: 0.9;
 }
 
 .brand-text-group {
@@ -23,16 +28,16 @@
 }
 
 .brand-title {
-    font-size: 1.125rem;
-    font-weight: 800;
-    color: var(--color-text-main);
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--ink);
     letter-spacing: -0.02em;
 }
 
 .brand-subtitle {
     font-size: 0.8125rem;
-    font-weight: 600;
-    color: var(--color-text-muted);
+    font-weight: 500;
+    color: var(--muted);
 }
 
 /* Checkbox Toggle (Mobile) */
@@ -43,18 +48,25 @@
 .nav-toggle-label {
     display: none;
     flex-direction: column;
-    justify-content: space-between;
-    width: 28px;
-    height: 20px;
+    justify-content: space-around;
+    width: 32px;
+    height: 32px;
+    padding: 4px;
     cursor: pointer;
     z-index: 1002;
+    border-radius: var(--radius-sm);
+    transition: background-color var(--transition-fast);
+}
+
+.nav-toggle-label:hover {
+    background-color: var(--surface-soft);
 }
 
 .hamburger-bar {
     display: block;
     width: 100%;
-    height: 3px;
-    background-color: var(--color-text-main);
+    height: 2px;
+    background-color: var(--ink);
     border-radius: 2px;
     transition: all var(--transition-fast);
 }
@@ -63,13 +75,13 @@
 .nav-menu {
     display: flex;
     align-items: center;
-    gap: 2.5rem;
+    gap: var(--space-8);
 }
 
 .nav-list {
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: var(--space-6);
     list-style: none;
     margin: 0;
     padding: 0;
@@ -83,25 +95,25 @@
 }
 
 ::deep .nav-link {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     height: 100%;
-    padding: 0 0.25rem;
+    padding: 0 var(--space-2);
     font-size: 0.9375rem;
     font-weight: 500;
-    color: var(--color-text-muted);
+    color: var(--muted);
     text-decoration: none;
     position: relative;
     transition: color var(--transition-fast);
 }
 
 ::deep .nav-link:hover {
-    color: var(--color-text-main);
+    color: var(--ink);
 }
 
 ::deep .nav-link.active {
-    font-weight: 700;
-    color: var(--color-text-main);
+    font-weight: 600;
+    color: var(--blue);
 }
 
 ::deep .nav-link.active::after {
@@ -111,7 +123,7 @@
     left: 0;
     width: 100%;
     height: 3px;
-    background-color: var(--color-primary);
+    background-color: var(--blue);
     border-radius: 3px 3px 0 0;
 }
 
@@ -124,23 +136,24 @@
 .btn-cta {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    background-color: var(--color-primary);
-    color: #FFFFFF;
+    gap: var(--space-2);
+    background-color: var(--blue);
+    color: #ffffff !important;
     font-weight: 600;
-    font-size: 0.9375rem;
-    padding: 0.625rem 1.375rem;
+    font-size: 0.875rem;
+    padding: 0.625rem 1.25rem;
     border-radius: var(--radius-pill);
     text-decoration: none;
-    box-shadow: 0 4px 14px rgba(26, 115, 232, 0.25);
+    box-shadow: var(--shadow-action);
     transition: all var(--transition-fast);
+    line-height: 1.2;
 }
 
 .btn-cta:hover {
     background-color: var(--color-primary-hover);
-    color: #FFFFFF;
+    color: #ffffff !important;
     transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(26, 115, 232, 0.35);
+    box-shadow: 0 10px 24px rgba(11, 87, 208, 0.28);
 }
 
 .btn-arrow {
@@ -161,15 +174,16 @@
         position: fixed;
         top: 0;
         right: -100%;
-        width: 80%;
+        width: 82%;
         max-width: 320px;
         height: 100vh;
-        background-color: #FFFFFF;
-        box-shadow: -8px 0 24px rgba(0, 0, 0, 0.12);
+        background-color: var(--surface);
+        box-shadow: -4px 0 24px rgba(31, 31, 31, 0.12);
+        border-left: 1px solid var(--outline);
         flex-direction: column;
         align-items: flex-start;
-        padding: 6rem 2rem 2rem 2rem;
-        gap: 2rem;
+        padding: 5.5rem 1.75rem 2rem 1.75rem;
+        gap: var(--space-6);
         transition: right var(--transition-normal);
         z-index: 1001;
     }
@@ -189,8 +203,8 @@
     ::deep .nav-link {
         width: 100%;
         padding: 0.875rem 0;
-        font-size: 1.0625rem;
-        border-bottom: 1px solid var(--color-border);
+        font-size: 1rem;
+        border-bottom: 1px solid var(--outline);
     }
 
     ::deep .nav-link.active::after {
@@ -198,17 +212,20 @@
     }
 
     ::deep .nav-link.active {
-        color: var(--color-primary);
+        color: var(--blue);
+        font-weight: 700;
     }
 
     .nav-actions {
         width: 100%;
-        margin-top: 1rem;
+        margin-top: var(--space-4);
     }
 
     .btn-cta {
         width: 100%;
         justify-content: center;
+        padding: 0.75rem 1.25rem;
+        font-size: 0.9375rem;
     }
 
     /* Checkbox open state */
@@ -217,7 +234,7 @@
     }
 
     .nav-toggle-checkbox:checked ~ .nav-toggle-label .hamburger-bar:nth-child(1) {
-        transform: translateY(8px) rotate(45deg);
+        transform: translateY(7px) rotate(45deg);
     }
 
     .nav-toggle-checkbox:checked ~ .nav-toggle-label .hamburger-bar:nth-child(2) {
@@ -225,6 +242,6 @@
     }
 
     .nav-toggle-checkbox:checked ~ .nav-toggle-label .hamburger-bar:nth-child(3) {
-        transform: translateY(-9px) rotate(-45deg);
+        transform: translateY(-7px) rotate(-45deg);
     }
 }

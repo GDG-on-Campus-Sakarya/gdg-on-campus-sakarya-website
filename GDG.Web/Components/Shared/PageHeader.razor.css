@@ -1,0 +1,62 @@
+/* PageHeader Isolated Component Styles */
+.page-header-section {
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-8);
+}
+
+.header-kicker {
+    display: inline-block;
+    font-size: var(--font-label);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: var(--space-3);
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-pill);
+}
+
+.kicker-blue {
+    background-color: var(--blue-soft);
+    color: var(--blue);
+}
+
+.kicker-red {
+    background-color: var(--red-soft);
+    color: var(--red);
+}
+
+.kicker-yellow {
+    background-color: var(--yellow-soft);
+    color: #92400e;
+}
+
+.kicker-green {
+    background-color: var(--green-soft);
+    color: var(--green);
+}
+
+.header-title {
+    font-size: var(--font-display-medium);
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+    margin-bottom: var(--space-3);
+}
+
+.header-subtitle {
+    font-size: clamp(1rem, 1.8vw, 1.1875rem);
+    color: var(--muted);
+    max-width: 640px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.header-actions {
+    margin-top: var(--space-6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+}

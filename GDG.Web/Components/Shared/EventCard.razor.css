@@ -2,54 +2,56 @@
 .event-card {
     display: flex;
     flex-direction: column;
-    background-color: #FFFFFF;
+    background-color: var(--surface);
     border-radius: var(--radius-lg);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--outline);
     overflow: hidden;
     transition: all var(--transition-normal);
     height: 100%;
     position: relative;
+    box-shadow: var(--shadow-sm);
 }
 
 .event-card:hover {
     transform: translateY(-4px);
-    box-shadow: var(--shadow-md);
-    border-color: rgba(66, 133, 244, 0.3);
+    box-shadow: var(--shadow-card);
+    border-color: rgba(11, 87, 208, 0.3);
 }
 
 /* Header Visual Banner */
 .card-banner {
-    height: 150px;
+    height: 154px;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    transition: transform var(--transition-normal);
 }
 
 .tint-blue .card-banner {
-    background-color: var(--tint-blue-bg);
+    background-color: var(--blue-soft);
 }
 
 .tint-red .card-banner {
-    background-color: var(--tint-red-bg);
+    background-color: var(--red-soft);
 }
 
 .tint-yellow .card-banner {
-    background-color: var(--tint-yellow-bg);
+    background-color: var(--yellow-soft);
 }
 
 .tint-green .card-banner {
-    background-color: var(--tint-green-bg);
+    background-color: var(--green-soft);
 }
 
 /* Subtle Grid Pattern Overlay */
 .banner-grid-overlay {
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(rgba(0, 0, 0, 0.06) 1px, transparent 1px);
+    background-image: radial-gradient(rgba(31, 31, 31, 0.08) 1px, transparent 1px);
     background-size: 16px 16px;
-    opacity: 0.6;
+    opacity: 0.5;
 }
 
 .banner-img {
@@ -66,18 +68,20 @@
 }
 
 .symbol-text {
-    font-size: 2.5rem;
+    font-size: 2.25rem;
     font-weight: 800;
     letter-spacing: -0.04em;
+    font-family: var(--font-family-base);
 }
 
-.text-blue { color: var(--color-gdg-blue); }
-.text-red { color: var(--color-gdg-red); }
-.text-yellow { color: #D97706; }
+.text-blue { color: var(--blue); }
+.text-red { color: var(--red); }
+.text-yellow { color: #b45309; }
+.text-green { color: var(--green); }
 
 /* Card Body */
 .card-body {
-    padding: 1.5rem;
+    padding: var(--space-6);
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -90,22 +94,22 @@
     border-radius: var(--radius-sm);
     font-size: 0.75rem;
     font-weight: 700;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    margin-bottom: 1rem;
+    margin-bottom: var(--space-3);
 }
 
-.tint-blue .date-badge { background: #DBEAFE; color: #1E40AF; }
-.tint-red .date-badge { background: #FEE2E2; color: #991B1B; }
-.tint-yellow .date-badge { background: #FEF08A; color: #854D0E; }
-.tint-green .date-badge { background: #DCFCE7; color: #166534; }
+.tint-blue .date-badge { background: var(--blue-soft); color: var(--blue); border: 1px solid var(--tint-blue-border); }
+.tint-red .date-badge { background: var(--red-soft); color: var(--red); border: 1px solid var(--tint-red-border); }
+.tint-yellow .date-badge { background: var(--yellow-soft); color: #92400e; border: 1px solid var(--tint-yellow-border); }
+.tint-green .date-badge { background: var(--green-soft); color: var(--green); border: 1px solid var(--tint-green-border); }
 
 .event-title {
     font-size: 1.1875rem;
     font-weight: 700;
-    color: var(--color-text-main);
+    color: var(--ink);
     line-height: 1.35;
-    margin-bottom: 1.25rem;
+    margin-bottom: var(--space-4);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -115,16 +119,21 @@
 .event-meta {
     display: flex;
     flex-direction: column;
-    gap: 0.625rem;
+    gap: var(--space-2);
     margin-top: auto;
     font-size: 0.875rem;
-    color: var(--color-text-muted);
+    color: var(--muted);
 }
 
 .meta-item {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--space-2);
+}
+
+.meta-item svg {
+    flex-shrink: 0;
+    color: var(--muted);
 }
 
 .location-text {
@@ -136,16 +145,16 @@
 
 /* Card Footer */
 .card-footer {
-    padding: 1rem 1.5rem;
-    border-top: 1px solid var(--color-border);
-    background-color: rgba(248, 250, 252, 0.5);
+    padding: var(--space-4) var(--space-6);
+    border-top: 1px solid var(--outline);
+    background-color: var(--surface-soft);
 }
 
 .calendar-link {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    color: var(--color-text-muted);
+    color: var(--muted);
     font-size: 0.875rem;
     font-weight: 600;
     text-decoration: none;
@@ -153,5 +162,5 @@
 }
 
 .calendar-link:hover {
-    color: var(--color-primary);
+    color: var(--blue);
 }

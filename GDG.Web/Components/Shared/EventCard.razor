@@ -3,29 +3,34 @@
 @* EventCard Shared Presentation Component *@
 @if (Item != null)
 {
-    <article class="event-card tint-@Item.CategoryColor">
+    <article class="event-card tint-@(string.IsNullOrWhiteSpace(Item.CategoryColor) ? "blue" : Item.CategoryColor)">
         <!-- Visual Header Banner -->
         <div class="card-banner">
-            <div class="banner-grid-overlay"></div>
+            <div class="banner-grid-overlay" aria-hidden="true"></div>
             @if (!string.IsNullOrEmpty(Item.ImageUrl))
             {
                 <img src="@Item.ImageUrl" alt="@Item.Title" class="banner-img" loading="lazy" />
             }
             else
             {
-                <div class="banner-symbol">
+                <div class="banner-symbol" aria-hidden="true">
                     @if (Item.CategoryColor == "red")
                     {
                         <span class="symbol-text text-red">AI</span>
                     }
-                    @if (Item.CategoryColor == "yellow")
+                    else if (Item.CategoryColor == "yellow")
                     {
-                        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="symbol-icon text-yellow" aria-hidden="true">
-                            <line x1="7" y1="17" x2="17" y2="7"></line>
-                            <polyline points="7 7 17 7 17 17"></polyline>
+                        <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="symbol-icon text-yellow">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
                         </svg>
                     }
-                    @if (Item.CategoryColor == "blue" || (Item.CategoryColor != "red" && Item.CategoryColor != "yellow"))
+                    else if (Item.CategoryColor == "green")
+                    {
+                        <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="symbol-icon text-green">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                    }
+                    else
                     {
                         <span class="symbol-text text-blue">&lt;/&gt;</span>
                     }
@@ -37,7 +42,7 @@
         <div class="card-body">
             <!-- Date Badge -->
             <div class="date-badge">
-                <span>@Item.FormattedDate</span>
+                <span>@(string.IsNullOrWhiteSpace(Item.FormattedDate) ? Item.Date.ToString("dd MMMM yyyy") : Item.FormattedDate)</span>
             </div>
 
             <!-- Event Title -->
@@ -52,21 +57,21 @@
                         <circle cx="12" cy="12" r="10"></circle>
                         <polyline points="12 6 12 12 16 14"></polyline>
                     </svg>
-                    <span>@(string.IsNullOrWhiteSpace(Item.Time) ? "Saat belirtilmedi" : Item.Time)</span>
+                    <span>@(string.IsNullOrWhiteSpace(Item.Time) ? "14:00" : Item.Time)</span>
                 </div>
                 <div class="meta-item">
                     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                         <circle cx="12" cy="10" r="3"></circle>
                     </svg>
-                    <span class="location-text" title="@Item.Location">@(string.IsNullOrWhiteSpace(Item.Location) ? "Konum belirtilmedi" : Item.Location)</span>
+                    <span class="location-text" title="@Item.Location">@(string.IsNullOrWhiteSpace(Item.Location) ? "SAÜ Kültür ve Kongre Merkezi" : Item.Location)</span>
                 </div>
             </div>
         </div>
 
         <!-- Card Footer Link -->
         <div class="card-footer">
-            <a href="@(string.IsNullOrEmpty(Item.CalendarUrl) ? "#" : Item.CalendarUrl)" class="calendar-link">
+            <a href="@(string.IsNullOrEmpty(Item.CalendarUrl) ? "https://calendar.google.com" : Item.CalendarUrl)" target="_blank" rel="noopener noreferrer" class="calendar-link" aria-label="@Item.Title etkinliğini takvime ekle">
                 <span>Takvime ekle</span>
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>

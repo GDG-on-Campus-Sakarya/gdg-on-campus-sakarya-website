@@ -1,0 +1,126 @@
+@page "/projects"
+@using GDG.Web.Models
+@using GDG.Web.Services
+
+<PageTitle>Projeler - GDG on Campus Sakarya</PageTitle>
+
+<div class="projects-page-wrapper">
+    <!-- PAGE HERO -->
+    <PageHeader Tag="ÖĞREN VE ÜRET"
+                TagColor="green"
+                Title="Topluluk Projeleri"
+                Subtitle="Öğrenciler tarafından geliştirilen açık kaynaklı yazılımlar, kampüs araçları ve teknoloji çözümleri.">
+    </PageHeader>
+
+    <div class="container-custom">
+        <!-- TECH FILTER TABS -->
+        <section class="projects-filter-section">
+            <div class="tabs-group" role="tablist">
+                <button class="filter-tab @(selectedCategory == "all" ? "active" : "")" @onclick='() => FilterCategory("all")' role="tab" aria-selected="@(selectedCategory == "all")">
+                    Tüm Projeler (@allProjects.Count)
+                </button>
+                <button class="filter-tab @(selectedCategory == "KAMPÜS TEKNOLOJİSİ" ? "active" : "")" @onclick='() => FilterCategory("KAMPÜS TEKNOLOJİSİ")' role="tab" aria-selected="@(selectedCategory == "KAMPÜS TEKNOLOJİSİ")">
+                    Kampüs Çözümleri
+                </button>
+                <button class="filter-tab @(selectedCategory == "AKILLI ŞEHİR" ? "active" : "")" @onclick='() => FilterCategory("AKILLI ŞEHİR")' role="tab" aria-selected="@(selectedCategory == "AKILLI ŞEHİR")">
+                    Açık Veri & Şehir
+                </button>
+                <button class="filter-tab @(selectedCategory == "YAPAY ZEKA" ? "active" : "")" @onclick='() => FilterCategory("YAPAY ZEKA")' role="tab" aria-selected="@(selectedCategory == "YAPAY ZEKA")">
+                    Yapay Zeka
+                </button>
+            </div>
+        </section>
+
+        <!-- PROJECTS GRID -->
+        <section class="projects-grid-section" aria-label="Projeler Listesi">
+            @if (filteredProjects.Any())
+            {
+                <div class="projects-grid">
+                    @foreach (var p in filteredProjects)
+                    {
+                        <ProjectCard @key="p.Id" Item="p" />
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-projects-state">
+                    <p>Bu alanda henüz proje bulunmamaktadır.</p>
+                </div>
+            }
+        </section>
+
+        <!-- PROPOSE A PROJECT CTA -->
+        <section class="propose-project-cta">
+            <div class="propose-card">
+                <div class="propose-content">
+                    <span class="section-kicker kicker-green">AÇIK KAYNAK RUHU</span>
+                    <h2 class="propose-title">Bir Fikrin mi Var? Birlikte Geliştirelim.</h2>
+                    <p class="propose-desc">
+                        Topluluk bünyesinde yeni bir açık kaynak proje başlatabilir veya mevcut projelere katkıda bulunabilirsin. Takım arkadaşları bulup birlikte kodlayalım.
+                    </p>
+                    <div class="propose-actions">
+                        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="btn-action-primary">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+                                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+                            </svg>
+                            <span>GitHub Organizasyonumuz</span>
+                        </a>
+                        <a href="/contact" class="btn-action-outlined">
+                            <span>Proje Öner</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+@code {
+    private List<ProjectViewModel> allProjects = new();
+    private string selectedCategory = "all";
+
+    private IEnumerable<ProjectViewModel> filteredProjects =>
+        selectedCategory == "all"
+            ? allProjects
+            : allProjects.Where(p => string.Equals(p.Category, selectedCategory, StringComparison.OrdinalIgnoreCase));
+
+    protected override void OnInitialized()
+    {
+        var baseProjects = MockDataService.GetProjects();
+        allProjects = new List<ProjectViewModel>(baseProjects);
+
+        if (allProjects.Count <= 2)
+        {
+            allProjects.Add(new ProjectViewModel
+            {
+                Id = 3,
+                Name = "Sakarya Kampüs Asistanı",
+                Description = "Gemini API destekli, öğrencilerin yemekhane menüsü, ring saatleri ve ders programlarını sorgulayabildiği akıllı asistan.",
+                Category = "YAPAY ZEKA",
+                ProjectNumber = "03",
+                ThemeColor = "yellow",
+                GitHubUrl = "https://github.com",
+                LiveUrl = "https://campus.gdgoncampus.dev",
+                Technologies = new List<string> { "Python", "Gemini API", "Next.js", "Docker" }
+            });
+            allProjects.Add(new ProjectViewModel
+            {
+                Id = 4,
+                Name = "GDG Sakarya Web Platformu",
+                Description = "Topluluğun etkinliklerini, üye profillerini ve açık kaynak projelerini tanıtan modern Blazor Web uygulaması.",
+                Category = "KAMPÜS TEKNOLOJİSİ",
+                ProjectNumber = "04",
+                ThemeColor = "red",
+                GitHubUrl = "https://github.com",
+                LiveUrl = "https://sakarya.gdgoncampus.dev",
+                Technologies = new List<string> { "C#", "ASP.NET Core 8", "Blazor", "Tailwind tokens" }
+            });
+        }
+    }
+
+    private void FilterCategory(string cat)
+    {
+        selectedCategory = cat;
+    }
+}
