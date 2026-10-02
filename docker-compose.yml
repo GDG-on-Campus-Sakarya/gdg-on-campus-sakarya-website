@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:18
+    container_name: gdg-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-gdg_dev_password}
+      POSTGRES_DB: gdg_sakarya_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - gdg_pgdata:/var/lib/postgresql
+
+volumes:
+  gdg_pgdata:
