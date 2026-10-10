@@ -37,8 +37,14 @@ namespace GDG.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("text");
+
                     b.Property<string>("Location")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RegistrationUrl")
                         .HasColumnType("text");
 
                     b.Property<string>("Title")
@@ -58,8 +64,20 @@ namespace GDG.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AvatarUrl")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("text");
+
                     b.Property<string>("FullName")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("GitHubUrl")
+                        .HasColumnType("text");
+
+                    b.Property<string>("LinkedInUrl")
                         .HasColumnType("text");
 
                     b.Property<string>("Role")
@@ -84,12 +102,23 @@ namespace GDG.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("GitHubUrl")
-                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LiveDemoUrl")
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
@@ -129,6 +158,12 @@ namespace GDG.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ColorHex")
+                        .HasColumnType("text");
+
+                    b.Property<string>("IconClass")
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
