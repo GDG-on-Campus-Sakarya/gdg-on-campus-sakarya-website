@@ -20,17 +20,22 @@
                     Tüm Ekip (@allMembers.Count)
                 </button>
                 <button class="filter-tab @(selectedDepartment == "Yönetim" ? "active" : "")" @onclick='() => FilterDepartment("Yönetim")' role="tab" aria-selected="@(selectedDepartment == "Yönetim")">
-                    Liderlik
+                    Liderler
                 </button>
-                <button class="filter-tab @(selectedDepartment == "Yazılım" ? "active" : "")" @onclick='() => FilterDepartment("Yazılım")' role="tab" aria-selected="@(selectedDepartment == "Yazılım")">
-                    Teknoloji & Yazılım
+                <button class="filter-tab @(selectedDepartment == "Medya" ? "active" : "")" @onclick='() => FilterDepartment("Medya")' role="tab" aria-selected="@(selectedDepartment == "Medya")">
+                    Sosyal Medya
                 </button>
                 <button class="filter-tab @(selectedDepartment == "Organizasyon" ? "active" : "")" @onclick='() => FilterDepartment("Organizasyon")' role="tab" aria-selected="@(selectedDepartment == "Organizasyon")">
                     Organizasyon
                 </button>
-                <button class="filter-tab @(selectedDepartment == "Medya" ? "active" : "")" @onclick='() => FilterDepartment("Medya")' role="tab" aria-selected="@(selectedDepartment == "Medya")">
-                    Medya & Tasarım
+                <button class="filter-tab @(selectedDepartment == "Sponsorluk" ? "active" : "")" @onclick='() => FilterDepartment("Sponsorluk")' role="tab" aria-selected="@(selectedDepartment == "Sponsorluk")">
+                    Sponsorluk
                 </button>
+                <button class="filter-tab @(selectedDepartment == "Yazılım" ? "active" : "")" @onclick='() => FilterDepartment("Yazılım")' role="tab" aria-selected="@(selectedDepartment == "Yazılım")">
+                    Proje
+                </button>
+ 
+          
             </div>
         </section>
 
