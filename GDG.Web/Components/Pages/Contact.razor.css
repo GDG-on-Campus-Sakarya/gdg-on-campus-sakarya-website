@@ -64,6 +64,7 @@
     display: flex;
     align-items: flex-start;
     gap: var(--space-4);
+    min-width: 0;
 }
 
 .info-icon {
@@ -82,6 +83,7 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
+    min-width: 0;
 }
 
 .info-label {
@@ -96,6 +98,7 @@
     font-size: 0.9375rem;
     font-weight: 600;
     color: var(--ink);
+    overflow-wrap: break-word;
 }
 
 .info-sub {
@@ -109,6 +112,8 @@
     color: var(--blue);
     text-decoration: none;
     transition: color var(--transition-fast);
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .info-value-link:hover {
@@ -134,14 +139,15 @@
     display: flex;
     align-items: center;
     gap: var(--space-3);
+    flex-wrap: wrap;
 }
 
 .social-circle-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 38px;
-    height: 38px;
+    width: 44px;
+    height: 44px;
     border-radius: var(--radius-pill);
     background-color: var(--surface-soft);
     color: var(--ink);
