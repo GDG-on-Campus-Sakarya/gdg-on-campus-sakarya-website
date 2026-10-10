@@ -1,6 +1,8 @@
 using GDG.Application.Interfaces;
 using GDG.Web.Components;
 using GDG.Web.Services;
+using GDG.Infrastructure.Contexts;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseStaticWebAssets();
 
 // Add services to the container.
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
