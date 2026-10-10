@@ -2,6 +2,7 @@ using GDG.Application.Interfaces;
 using GDG.Web.Components;
 using GDG.Web.Services;
 using GDG.Infrastructure.Contexts;
+using GDG.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +22,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Core Admin Panel Services
 builder.Services.AddScoped<ITechnologyService, TechnologyService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
+// Gerçek (veritabanına bağlı) servisler: GDG.Infrastructure/Services
 builder.Services.AddScoped<IMemberService, MemberService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IEventService, EventService>();

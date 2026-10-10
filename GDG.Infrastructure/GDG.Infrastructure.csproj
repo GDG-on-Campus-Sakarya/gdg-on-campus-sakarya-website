@@ -18,6 +18,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GDG.Domain\GDG.Domain.csproj" />
+    <!-- Gerçek servisler Application'daki interface'leri ve DTO'ları uygular. -->
+    <ProjectReference Include="..\GDG.Application\GDG.Application.csproj" />
   </ItemGroup>
 
 </Project>
