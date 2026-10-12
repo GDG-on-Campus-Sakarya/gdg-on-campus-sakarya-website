@@ -1,0 +1,27 @@
+# --- Frontend & Figma Ignores ---
+node_modules/
+dist/
+build/
+.cache/
+.env*
+.vite/
+vite.config.*.timestamp-*
+*.tsbuildinfo
+*-debug.log*
+logs/
+*.log
+.claude-replay.*
+.tmp-*
+/.figma/design-context/
+/.plugins/
+/.opencode-skills/
+
+# --- Backend & Visual Studio Ignores ---
+.vs/
+bin/
+obj/
+*.user
+*.suo
+.DS_Store
+Thumbs.db
+*.zip

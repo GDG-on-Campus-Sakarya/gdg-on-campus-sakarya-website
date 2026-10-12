@@ -1,0 +1,9 @@
+@using GDG.Web.Models
+
+@* Reusable standard TeamMemberCard forwarding directly to MemberCard *@
+<MemberCard Item="Item" />
+
+@code {
+    [Parameter, EditorRequired]
+    public MemberViewModel? Item { get; set; }
+}

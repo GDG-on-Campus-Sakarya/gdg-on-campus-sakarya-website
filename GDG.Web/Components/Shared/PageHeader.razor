@@ -1,0 +1,46 @@
+@* Reusable PageHeader for public pages *@
+<section class="page-header-section text-center">
+    <div class="container-custom">
+        @if (!string.IsNullOrEmpty(Tag))
+        {
+            <div class="header-kicker kicker-@TagColor">
+                @Tag
+            </div>
+        }
+
+        <h1 class="header-title">
+            @Title
+        </h1>
+
+        @if (!string.IsNullOrEmpty(Subtitle))
+        {
+            <p class="header-subtitle">
+                @Subtitle
+            </p>
+        }
+
+        @if (ChildContent != null)
+        {
+            <div class="header-actions">
+                @ChildContent
+            </div>
+        }
+    </div>
+</section>
+
+@code {
+    [Parameter]
+    public string? Tag { get; set; }
+
+    [Parameter]
+    public string TagColor { get; set; } = "blue"; // "blue", "red", "yellow", "green"
+
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = string.Empty;
+
+    [Parameter]
+    public string? Subtitle { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

@@ -1,0 +1,26 @@
+@* Official GDG brackets chevron logo: left top red / bottom blue, right top green / bottom yellow *@
+<svg class="@CssClass"
+     viewBox="0 0 800 500"
+     width="@Width"
+     height="@Height"
+     fill="none"
+     xmlns="http://www.w3.org/2000/svg"
+     aria-hidden="true">
+    <g fill="none" stroke-linecap="round" stroke-width="74">
+        <path d="M320 125 190 250" stroke="var(--red)" />
+        <path d="M190 250 320 375" stroke="var(--blue-bright)" />
+        <path d="M480 125 610 250" stroke="var(--green)" />
+        <path d="M610 250 480 375" stroke="var(--yellow)" />
+    </g>
+</svg>
+
+@code {
+    [Parameter]
+    public string CssClass { get; set; } = string.Empty;
+
+    [Parameter]
+    public int Width { get; set; } = 40;
+
+    [Parameter]
+    public int Height { get; set; } = 25;
+}
