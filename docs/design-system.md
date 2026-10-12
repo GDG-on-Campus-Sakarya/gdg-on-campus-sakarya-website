@@ -24,6 +24,8 @@ Yeni componentlerde sabit renk değeri yazmak yerine semantik token kullanın.
 
 ## 2. Figma dosya yapısı
 
+Figma Proje Bağlantısı: [gdg_web_design Figma Make Projesi](https://www.figma.com/make/W5DjiAxUUrhzEo5fBiNqG7/gdg_web_design?t=IOPnDdJ2Jq0B4gaM-1&preview-route=%2Findex.html)
+
 Figma projesinde aşağıdaki sayfaları oluşturun:
 
 1. `00 — Cover`
@@ -31,6 +33,7 @@ Figma projesinde aşağıdaki sayfaları oluşturun:
 3. `02 — Components`
 4. `03 — Home`
 5. `04 — Events`
+6. `05 — Event Details`
 
 `Foundations` sayfasında renk, tipografi, spacing ve radius değerleri;
 `Components` sayfasında tekrar kullanılan componentler bulunmalıdır.
