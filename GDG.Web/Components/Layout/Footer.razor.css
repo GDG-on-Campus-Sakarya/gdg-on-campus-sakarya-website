@@ -63,6 +63,7 @@
     color: var(--muted);
     max-width: 380px;
     line-height: 1.6;
+    overflow-wrap: break-word;
 }
 
 .footer-title {
@@ -111,8 +112,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: var(--radius-pill);
     background-color: var(--surface-soft);
     color: var(--ink);

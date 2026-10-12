@@ -379,8 +379,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
     border-radius: var(--radius-pill);
     background-color: var(--ink);
     color: #ffffff;
