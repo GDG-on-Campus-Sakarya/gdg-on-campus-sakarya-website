@@ -36,6 +36,9 @@ kullanın.
 
 - Ana sayfa: `index.html`
 - Etkinlikler: `index.html?page=events`
+- Ekibimiz: `index.html?page=team`
+- Projeler: `index.html?page=projects`
+- Etkinlik Detayı: `index.html?page=event-details`
 
 Query tabanlı sayfa seçimi bilinçli bir tercihtir. Böylece production çıktısı
 bir ZIP içinden veya basit bir statik sunucudan ek yönlendirme ayarı olmadan
@@ -84,9 +87,11 @@ UI değişikliğinden sonra:
 
 1. Ana sayfayı kontrol edin.
 2. `?page=events` sayfasını kontrol edin.
-3. Mobil kırılımı kontrol edin.
-4. `pnpm run build` komutunu çalıştırın.
-5. ZIP teslimi gerekiyorsa `pnpm run build:portable` kullanın.
+3. `?page=team` sayfasını kontrol edin.
+4. `?page=projects` sayfasını kontrol edin.
+5. Mobil kırılımı kontrol edin.
+6. `pnpm run build` komutunu çalıştırın.
+7. ZIP teslimi gerekiyorsa `pnpm run build:portable` kullanın.
 
 ## ZIP çıktısı
 
