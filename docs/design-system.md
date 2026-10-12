@@ -24,6 +24,8 @@ Yeni componentlerde sabit renk değeri yazmak yerine semantik token kullanın.
 
 ## 2. Figma dosya yapısı
 
+Figma Proje Bağlantısı: [gdg_web_design Figma Make Projesi](https://www.figma.com/make/W5DjiAxUUrhzEo5fBiNqG7/gdg_web_design?t=IOPnDdJ2Jq0B4gaM-1&preview-route=%2Findex.html)
+
 Figma projesinde aşağıdaki sayfaları oluşturun:
 
 1. `00 — Cover`
@@ -31,6 +33,9 @@ Figma projesinde aşağıdaki sayfaları oluşturun:
 3. `02 — Components`
 4. `03 — Home`
 5. `04 — Events`
+   - Alt görünüm / Detay: `Events / Event Details` (Etkinlik Detayı)
+6. `05 — Team`
+7. `06 — Projects`
 
 `Foundations` sayfasında renk, tipografi, spacing ve radius değerleri;
 `Components` sayfasında tekrar kullanılan componentler bulunmalıdır.
@@ -108,7 +113,7 @@ Frontend karşılığı:
 <Action href="index.html?page=events" kind="outlined">Detaylar</Action>
 ```
 
-### Navigation item
+### Navigation item & Navbar Yapısı
 
 Figma component adı: `Navigation Item`
 
@@ -117,6 +122,12 @@ Properties:
 - `State`: Default / Hover / Active
 
 Frontend sınıfları: `.nav-link` ve `.nav-link--active`.
+
+> **Önemli:** Navbar'da "Ekibimiz", "Etkinlikler" ve "Projeler" bağlantıları artık sayfa içi çapa linki (`#`) değil, ayrı sayfalara yönlendirilmektedir:
+> - **Ana Sayfa:** `index.html`
+> - **Etkinlikler:** `index.html?page=events`
+> - **Ekibimiz:** `index.html?page=team`
+> - **Projeler:** `index.html?page=projects`
 
 ### Event card
 
@@ -129,7 +140,7 @@ Figma component adı: `Card / Event`
 - Başlık
 - Saat
 - Konum
-- Takvime ekle aksiyonu
+- Detaylar ve Takvime ekle aksiyonları
 
 Frontend karşılığı: `EventCard`.
 
@@ -139,31 +150,101 @@ Figma component adı: `Card / Team Member`
 
 İçerik alanları:
 
-- Profil görseli
+- Profil görseli (görsel olmadığında bozulmayan baş harf/avatar alanı)
 - İsim
 - Rol
 - GitHub ve LinkedIn aksiyonları
 
 Frontend karşılığı: `MemberCard`.
 
-## 7. Responsive teslim
+### Page Hero
 
-Her sayfa için en az iki frame hazırlayın:
+Figma component adı: `Page Hero`
 
-- Desktop: `1440px`
-- Mobile: `390px`
+İçerik alanları:
 
-Componentlerde Auto Layout kullanın. Metinleri sabit yükseklikle kesmeyin ve
-kart içeriklerinin uzayabilmesine izin verin.
+- Sayfa Kicker / Badge (`.hero-kicker-tag`)
+- Sayfa Başlığı (`Display/Large` veya `Display/Medium`)
+- Açıklama Metni (`Body/Large`)
+- İkincil Aksiyonlar / Buton Grubu
+
+Frontend karşılığı: `.page-hero` / `PageHero`.
+
+### Stat Tile
+
+Figma component adı: `Stat Tile`
+
+İçerik alanları:
+
+- Sayısal Veri / Metrik (`Display/Large` veya `Display/Medium`)
+- Açıklama Etiketi (`Label/Small` veya `Body/Regular`)
+- Vurgu Rengi Çizgisi veya Arka Planı (Mavi/Kırmızı/Sarı/Yeşil soft)
+
+Frontend karşılığı: `.stat-tile` / `StatTile`.
+
+### Card / Info
+
+Figma component adı: `Card / Info`
+
+İçerik alanları:
+
+- İkon Alanı (`.icon-wrap`)
+- Başlık (`Display/Small`)
+- Detay Metni (`Body/Regular`)
+
+Frontend karşılığı: `.info-card` / `InfoCard`.
+
+### Card / Project Facts
+
+Figma component adı: `Card / Project Facts`
+
+İçerik alanları:
+
+- Proje Başlığı ve Kısa Açıklama
+- Kullanılan Teknolojiler / Etiketler (`badge-pill`)
+- Katkıda Bulunanlar / Ekip Bilgisi
+- GitHub ve Canlı Demo Linkleri
+
+Frontend karşılığı: `.project-facts-card` / `ProjectFactsCard`.
+
+### Category Filters
+
+Figma component adı: `Category Filters`
+
+İçerik alanları:
+
+- Kategori / Sekme Butonları (`Pill` radius)
+- Aktif ve Varsayılan Durumlar (`.filter-tab--active`)
+
+Frontend karşılığı: `.category-filters` / `.section-filters-bar`.
+
+## 7. Ekran Genişliklerine Göre Dizilim (Responsive Layouts)
+
+Bileşenlerin ekran genişliklerine göre yerleşim kuralları:
+
+| Bileşen | Desktop (1440px) | Tablet (768px) | Mobile (390px) |
+| --- | --- | --- | --- |
+| **Page Hero** | 1200px maksimum genişlik, merkezlenmiş içerik, yatay buton grubu (`gap: 16px`). | Akışkan genişlik, padding: 32px, butonlar yatay. | Tam genişlik, padding: 20px, butonlar tam genişlik ve alt alta (`column`). |
+| **Category Filters** | Sayfa ortasında merkezlenmiş, yatay sıralı (`justify-content: center`). | Merkezlenmiş, esnek satır kaydırma (`flex-wrap`). | Tek satırda yatay kaydırılabilir (`overflow-x: auto`, `white-space: nowrap`), mobilde taşmaz. |
+| **Card / Event** | 3 kolonlu grid (`grid-template-columns: repeat(3, 1fr)`). | 2 kolonlu grid. | 1 kolon (tek sütun dikey liste), kart genişliği %100. |
+| **Card / Team Member** | 4 kolonlu grid (`grid-template-columns: repeat(4, 1fr)`). | 2 veya 3 kolonlu grid. | 2 kolon kompakt grid veya tek sütun. |
+| **Stat Tile** | 4 kolonlu yatay sıralı grid. | 2 kolonlu grid (`repeat(2, 1fr)`). | 2 kolonlu kompakt veya alt alta tek kolon. |
+| **Card / Info** | 3 kolonlu grid (`repeat(3, 1fr)`). | 2 kolonlu grid. | 1 kolon dikey liste. |
+| **Card / Project Facts** | 2 veya 3 kolonlu bento grid yapısı. | 2 kolonlu grid. | Tek sütun dikey akış. |
+
+Tüm componentlerde Auto Layout kullanın. Metinleri sabit yükseklikle kesmeyin ve
+kart içeriklerinin dinamik olarak uzayabilmesine izin verin.
 
 ## 8. Teslim kontrol listesi
 
 - Figma linkinin görüntüleme izni açık.
 - Renkler Local Variables olarak kayıtlı.
 - Tipografiler Text Styles olarak kayıtlı.
-- Buton, navigation, event card ve team card component yapılmış.
+- Buton, navigation, event card, team card, page hero, stat tile, info card ve category filters component yapılmış.
 - Component durumları variant olarak tanımlanmış.
-- Home ve Events sayfalarının desktop tasarımları hazır.
-- Home ve Events sayfalarının mobile taslakları hazır.
+- Home, Events (ve Event Details), Team ve Projects sayfalarının desktop tasarımları hazır.
+- Home, Events, Team ve Projects sayfalarının mobile taslakları hazır.
+- Kategori filtreleri mobilde yatay kaydırılabilir yapıda test edilmiş.
+- Navbar bağlantıları bağımsız sayfalara (`?page=events`, `?page=team`, `?page=projects`) yönlenecek şekilde planlanmış.
 - Frontend ekibi `src/styles/tokens.css` dosyasını kullanıyor.
 - Figma isimleri ile CSS token isimleri eşleşiyor.
