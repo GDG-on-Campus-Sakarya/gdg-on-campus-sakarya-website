@@ -1,4 +1,4 @@
-using GDG.Application.Interfaces;
+﻿using GDG.Application.Interfaces;
 using GDG.Web.Components;
 using GDG.Web.Services;
 using GDG.Infrastructure.Contexts;
@@ -11,22 +11,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseStaticWebAssets();
 
 // Add services to the container.
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(
-        builder.Configuration.GetConnectionString("DefaultConnection")));
-
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException("ConnectionStrings:DefaultConnection bulunamad�.");
+    ?? throw new InvalidOperationException("ConnectionStrings:DefaultConnection bulunamadi.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// Core Admin Panel Services
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
+
+// Core Admin Panel Services (GDG.Infrastructure/Services - PostgreSQL / EF Core)
 builder.Services.AddScoped<ITechnologyService, TechnologyService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
-// Gerçek (veritabanına bağlı) servisler: GDG.Infrastructure/Services
 builder.Services.AddScoped<IMemberService, MemberService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IEventService, EventService>();
