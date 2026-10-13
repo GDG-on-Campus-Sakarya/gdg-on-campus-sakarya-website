@@ -226,6 +226,21 @@ namespace GDG.Infrastructure.Migrations
                     b.ToTable("Technologies");
                 });
 
+            modelBuilder.Entity("MemberAdditionalTeams", b =>
+                {
+                    b.Property<int>("MemberId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TeamId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("MemberId", "TeamId");
+
+                    b.HasIndex("TeamId");
+
+                    b.ToTable("MemberAdditionalTeams", (string)null);
+                });
+
             modelBuilder.Entity("MemberProject", b =>
                 {
                     b.Property<int>("MembersId")
@@ -457,10 +472,25 @@ namespace GDG.Infrastructure.Migrations
                     b.HasOne("GDG.Domain.Entities.Team", "Team")
                         .WithMany("Members")
                         .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("MemberAdditionalTeams", b =>
+                {
+                    b.HasOne("GDG.Domain.Entities.Member", null)
+                        .WithMany()
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GDG.Domain.Entities.Team", null)
+                        .WithMany()
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MemberProject", b =>
