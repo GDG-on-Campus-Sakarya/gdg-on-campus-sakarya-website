@@ -1,6 +1,6 @@
 @page "/team"
 @using GDG.Web.Models
-@inject IMemberService MemberService
+
 @inject ITeamService TeamService
 
 <PageTitle>Ekibimiz - GDG on Campus Sakarya</PageTitle>
@@ -15,55 +15,85 @@
 
     <div class="container-custom">
         <!-- TEAM FILTER TABS -->
-        <section class="team-filter-section">
-            <div class="tabs-group" role="tablist">
-                <button class="filter-tab @(selectedDepartment == "all" ? "active" : "")" @onclick='() => FilterDepartment("all")' role="tab" aria-selected="@(selectedDepartment == "all")">
-                    Tüm Ekip (@allMembers.Count)
-                </button>
-                <button class="filter-tab @(selectedDepartment == "Yönetim" ? "active" : "")" @onclick='() => FilterDepartment("Yönetim")' role="tab" aria-selected="@(selectedDepartment == "Yönetim")">
-                    Liderler
-                </button>
-                <button class="filter-tab @(selectedDepartment == "Medya" ? "active" : "")" @onclick='() => FilterDepartment("Medya")' role="tab" aria-selected="@(selectedDepartment == "Medya")">
-                    Sosyal Medya
-                </button>
-                <button class="filter-tab @(selectedDepartment == "Organizasyon" ? "active" : "")" @onclick='() => FilterDepartment("Organizasyon")' role="tab" aria-selected="@(selectedDepartment == "Organizasyon")">
-                    Organizasyon
-                </button>
-                <button class="filter-tab @(selectedDepartment == "Sponsorluk" ? "active" : "")" @onclick='() => FilterDepartment("Sponsorluk")' role="tab" aria-selected="@(selectedDepartment == "Sponsorluk")">
-                    Sponsorluk
-                </button>
-                <button class="filter-tab @(selectedDepartment == "Yazılım" ? "active" : "")" @onclick='() => FilterDepartment("Yazılım")' role="tab" aria-selected="@(selectedDepartment == "Yazılım")">
-                    Proje
-                </button>
- 
-          
-            </div>
-        </section>
+<section class="team-filter-section">
+    <div class="tabs-group" role="tablist">
+        <button class="filter-tab @(selectedDepartment == "all" ? "active" : "")"
+                @onclick='() => FilterDepartment("all")'
+                role="tab"
+                aria-selected="@(selectedDepartment == "all")">
+            Tüm Ekipler (@teams.Count)
+        </button>
 
-        <!-- MEMBERS GRID -->
-        <section class="members-section" aria-label="Ekip Üyeleri">
-            @if (isLoading)
-            {
-                <div class="text-center py-5 text-muted">
-                    <div class="spinner-border spinner-border-sm text-primary me-2"></div> Ekip üyeleri yükleniyor...
+        @foreach (var team in teams)
+        {
+            <button @key="team.Id"
+                    class="filter-tab @(selectedDepartment == team.Name ? "active" : "")"
+                    @onclick="() => FilterDepartment(team.Name)"
+                    role="tab"
+                    aria-selected="@(selectedDepartment == team.Name)">
+                @team.Name (@team.Members.Count)
+            </button>
+        }
+    </div>
+</section>
+
+        <!-- TEAMS AND MEMBERS -->
+<section class="members-section" aria-label="Ekipler ve ekip üyeleri">
+
+    @if (isLoading)
+    {
+        <div class="text-center py-5 text-muted">
+            <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+            Ekipler yükleniyor...
+        </div>
+    }
+    else if (!filteredTeams.Any())
+    {
+        <div class="empty-team-state">
+            <p>Henüz bir ekip oluşturulmamış.</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var team in filteredTeams)
+        {
+            var teamMembers = GetTeamMembers(team);
+
+            <section class="mb-5" @key="team.Id">
+                <div class="d-flex flex-wrap align-items-start justify-content-between gap-2 mb-3">
+                    <div>
+                        <h2 class="h3 fw-bold mb-1">@team.Name</h2>
+
+                        @if (!string.IsNullOrWhiteSpace(team.Description))
+                        {
+                            <p class="text-muted mb-0">@team.Description</p>
+                        }
+                    </div>
+
+                    <span class="filter-tab active">
+                        @teamMembers.Count Üye
+                    </span>
                 </div>
-            }
-            else if (filteredMembers.Any())
-            {
-                <div class="members-grid">
-                    @foreach (var member in filteredMembers)
-                    {
-                        <MemberCard @key="member.Id" Item="member" />
-                    }
-                </div>
-            }
-            else
-            {
-                <div class="empty-team-state">
-                    <p>Bu departmanda henüz listelenen üye bulunmamaktadır.</p>
-                </div>
-            }
-        </section>
+
+                @if (teamMembers.Any())
+                {
+                    <div class="members-grid">
+                        @foreach (var member in teamMembers)
+                        {
+                            <MemberCard @key="member.Id" Item="member" />
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-team-state">
+                        <p>Bu ekibe henüz üye eklenmemiş.</p>
+                    </div>
+                }
+            </section>
+        }
+    }
+</section>
 
         <!-- JOIN THE TEAM CTA -->
         <section class="team-join-cta">
@@ -93,43 +123,67 @@
 </div>
 
 @code {
-    private List<MemberViewModel> allMembers = new();
     private List<TeamDto> teams = new();
+
     private string selectedDepartment = "all";
+
     private bool isLoading = true;
 
-    private IEnumerable<MemberViewModel> filteredMembers =>
+    private IEnumerable<TeamDto> filteredTeams =>
         selectedDepartment == "all"
-            ? allMembers
-            : allMembers.Where(m => string.Equals(m.TeamName, selectedDepartment, StringComparison.OrdinalIgnoreCase));
+            ? teams
+            : teams.Where(t => string.Equals(
+                t.Name,
+                selectedDepartment,
+                StringComparison.OrdinalIgnoreCase));
 
     protected override async Task OnInitializedAsync()
     {
         isLoading = true;
-        teams = await TeamService.GetAllAsync();
-        var members = await MemberService.GetAllAsync();
 
-        var teamDict = teams.ToDictionary(t => t.Id, t => t.Name);
-
-        var colorPalette = new[] { "blue", "red", "yellow", "green" };
-
-        allMembers = members.Select((m, idx) => new MemberViewModel
+        try
         {
-            Id = m.Id,
-            FullName = m.FullName,
-            Role = m.Role,
-            TeamName = teamDict.TryGetValue(m.TeamId, out var tn) ? tn : "Topluluk Ekibi",
-            AvatarUrl = m.AvatarUrl,
-            GitHubUrl = m.GitHubUrl,
-            LinkedInUrl = m.LinkedInUrl,
-            CardColor = colorPalette[idx % colorPalette.Length]
-        }).ToList();
-
-        isLoading = false;
+            teams = await TeamService.GetAllAsync();
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 
-    private void FilterDepartment(string dept)
+    private void FilterDepartment(string department)
     {
-        selectedDepartment = dept;
+        selectedDepartment = department;
+    }
+
+    private static List<MemberViewModel> GetTeamMembers(TeamDto team)
+    {
+        var colorPalette = new[]
+        {
+            "blue",
+            "red",
+            "yellow",
+            "green"
+        };
+
+        return team.Members
+            .OrderBy(m => m.FullName)
+            .Select((member, index) => new MemberViewModel
+            {
+                Id = member.Id,
+                FullName = member.FullName,
+                Role = member.Role,
+
+                // Her ekipte aynı üyenin kartı o ekibin
+                // üyeliği üzerinden oluşturulur.
+                TeamName = team.Name,
+
+                AvatarUrl = member.AvatarUrl,
+                GitHubUrl = member.GitHubUrl,
+                LinkedInUrl = member.LinkedInUrl,
+
+                CardColor = colorPalette[index % colorPalette.Length]
+            })
+            .ToList();
     }
 }

@@ -115,6 +115,7 @@ builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<ISiteSettingsService, SiteSettingsService>();
 builder.Services.AddScoped<IContactService, ContactService>();
+builder.Services.AddHttpClient<SupabaseStorageService>();
 
 var app = builder.Build();
 

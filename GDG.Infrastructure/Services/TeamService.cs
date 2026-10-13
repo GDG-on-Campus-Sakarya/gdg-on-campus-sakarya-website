@@ -11,7 +11,8 @@ namespace GDG.Infrastructure.Services
 {
     public class TeamService : ITeamService
     {
-        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+        private readonly IDbContextFactory<ApplicationDbContext>
+            _contextFactory;
 
         public TeamService(
             IDbContextFactory<ApplicationDbContext> contextFactory)
@@ -21,11 +22,14 @@ namespace GDG.Infrastructure.Services
 
         public async Task<List<TeamDto>> GetAllAsync()
         {
-            await using var db = await _contextFactory.CreateDbContextAsync();
+            await using var db =
+                await _contextFactory.CreateDbContextAsync();
 
             var teams = await db.Teams
                 .AsNoTracking()
                 .Include(t => t.Members)
+                    .ThenInclude(m => m.Projects)
+                .Include(t => t.AdditionalMembers)
                     .ThenInclude(m => m.Projects)
                 .OrderBy(t => t.Name)
                 .ToListAsync();
@@ -35,11 +39,14 @@ namespace GDG.Infrastructure.Services
 
         public async Task<TeamDto?> GetByIdAsync(int id)
         {
-            await using var db = await _contextFactory.CreateDbContextAsync();
+            await using var db =
+                await _contextFactory.CreateDbContextAsync();
 
             var team = await db.Teams
                 .AsNoTracking()
                 .Include(t => t.Members)
+                    .ThenInclude(m => m.Projects)
+                .Include(t => t.AdditionalMembers)
                     .ThenInclude(m => m.Projects)
                 .FirstOrDefaultAsync(t => t.Id == id);
 
@@ -48,7 +55,8 @@ namespace GDG.Infrastructure.Services
 
         public async Task<TeamDto> CreateAsync(CreateTeamDto dto)
         {
-            await using var db = await _contextFactory.CreateDbContextAsync();
+            await using var db =
+                await _contextFactory.CreateDbContextAsync();
 
             var team = new Team
             {
@@ -57,17 +65,26 @@ namespace GDG.Infrastructure.Services
             };
 
             db.Teams.Add(team);
+
             await db.SaveChangesAsync();
 
-            if (dto.SelectedMemberIds.Count > 0)
+            var selectedIds = dto.SelectedMemberIds
+                .Distinct()
+                .ToList();
+
+            if (selectedIds.Count > 0)
             {
-                var members = await db.Members
-                    .Where(m => dto.SelectedMemberIds.Contains(m.Id))
+                var selectedMembers = await db.Members
+                    .Where(m => selectedIds.Contains(m.Id))
                     .ToListAsync();
 
-                foreach (var member in members)
+                foreach (var member in selectedMembers)
                 {
-                    member.TeamId = team.Id;
+                    // Üyenin ana ekibini değiştirmiyoruz.
+                    if (member.TeamId != team.Id)
+                    {
+                        team.AdditionalMembers.Add(member);
+                    }
                 }
 
                 await db.SaveChangesAsync();
@@ -78,78 +95,108 @@ namespace GDG.Infrastructure.Services
 
         public async Task<bool> UpdateAsync(UpdateTeamDto dto)
         {
-            await using var db = await _contextFactory.CreateDbContextAsync();
+            await using var db =
+                await _contextFactory.CreateDbContextAsync();
 
             var team = await db.Teams
+                .Include(t => t.AdditionalMembers)
                 .FirstOrDefaultAsync(t => t.Id == dto.Id);
 
             if (team == null)
                 return false;
 
-            var currentTeamMembers = await db.Members
-                .Where(m => m.TeamId == dto.Id)
-                .ToListAsync();
-
             var selectedIds = dto.SelectedMemberIds?
                 .Distinct()
                 .ToList() ?? new List<int>();
 
-            // TeamId zorunlu olduğundan, mevcut bir üyeyi bu ekibin
-            // listesinden çıkarmak için önce üyeler sayfasından atamak gerekir.
-            if (currentTeamMembers.Any(
-                member => !selectedIds.Contains(member.Id)))
-            {
-                return false;
-            }
-
             var selectedMembers = await db.Members
-                .Where(member => selectedIds.Contains(member.Id))
+                .Where(m => selectedIds.Contains(m.Id))
                 .ToListAsync();
 
+            // Gönderilen ID'ler gerçekten mevcut üyelere ait olmalı.
             if (selectedMembers.Count != selectedIds.Count)
                 return false;
 
             team.Name = dto.Name.Trim();
             team.Description = dto.Description.Trim();
 
+            // Formdan kaldırılmış ek üyelikleri temizle.
+            foreach (var member in team.AdditionalMembers.ToList())
+            {
+                if (!selectedIds.Contains(member.Id)
+                    || member.TeamId == team.Id)
+                {
+                    team.AdditionalMembers.Remove(member);
+                }
+            }
+
+            // Yeni seçilmiş üyeleri ekle.
             foreach (var member in selectedMembers)
             {
-                member.TeamId = dto.Id;
+                // Üye bu ekibin zaten ana üyesiyse
+                // ikinci kez ilişki oluşturma.
+                if (member.TeamId == team.Id)
+                    continue;
+
+                var alreadyAdded = team.AdditionalMembers
+                    .Any(m => m.Id == member.Id);
+
+                if (!alreadyAdded)
+                {
+                    team.AdditionalMembers.Add(member);
+                }
             }
 
             await db.SaveChangesAsync();
+
             return true;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            await using var db = await _contextFactory.CreateDbContextAsync();
+            await using var db =
+                await _contextFactory.CreateDbContextAsync();
 
             var team = await db.Teams
+                .Include(t => t.AdditionalMembers)
                 .FirstOrDefaultAsync(t => t.Id == id);
 
             if (team == null)
                 return false;
 
-            // Üyesi olan bir ekip silinemez.
-            if (await db.Members.AnyAsync(m => m.TeamId == id))
+            // Ana üyesi veya ek üyeliği olan ekip silinemez.
+            var hasPrimaryMembers = await db.Members
+                .AnyAsync(m => m.TeamId == id);
+
+            if (hasPrimaryMembers || team.AdditionalMembers.Any())
                 return false;
 
             db.Teams.Remove(team);
+
             await db.SaveChangesAsync();
 
             return true;
         }
 
-        private static TeamDto ToDto(Team t) => new TeamDto
+        private static TeamDto ToDto(Team team)
         {
-            Id = t.Id,
-            Name = t.Name,
-            Description = t.Description,
-            Members = t.Members
+            // Ana üyeler ve ek üyeler birleştirilir.
+            // Aynı kişi iki ilişkide de varsa bir kez sayılır.
+            var members = team.Members
+                .Concat(team.AdditionalMembers)
+                .GroupBy(m => m.Id)
+                .Select(group => group.First())
                 .OrderBy(m => m.FullName)
                 .Select(MemberService.ToDto)
-                .ToList()
-        };
+                .ToList();
+
+            return new TeamDto
+            {
+                Id = team.Id,
+                Name = team.Name,
+                Description = team.Description,
+                Members = members
+            };
+        }
     }
 }
