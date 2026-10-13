@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Antiforgery;
 using System.Threading.RateLimiting;
 using GDG.Application.Validation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -117,6 +118,23 @@ builder.Services.AddScoped<ISiteSettingsService, SiteSettingsService>();
 builder.Services.AddScoped<IContactService, ContactService>();
 builder.Services.AddHttpClient<SupabaseStorageService>();
 
+var forwardedHeadersEnabled =
+    builder.Configuration.GetValue<bool>("ForwardedHeaders:Enabled");
+
+if (forwardedHeadersEnabled)
+{
+    builder.Services.Configure<ForwardedHeadersOptions>(options =>
+    {
+        options.ForwardedHeaders =
+            ForwardedHeaders.XForwardedFor |
+            ForwardedHeaders.XForwardedProto;
+
+        options.KnownNetworks.Clear();
+        options.KnownProxies.Clear();
+        options.ForwardLimit = 1;
+    });
+}
+
 var app = builder.Build();
 
 // Otomatik Güvenli Admin Bootstrap Kontrolü
@@ -130,7 +148,10 @@ catch (Exception ex)
     app.Logger.LogCritical(ex, "Admin bootstrap yapılandırılmış ancak tamamlanamadı. Uygulama güvenli bir yönetici hesabı oluşturulmadan başlatılmayacak.");
     throw;
 }
-
+if (forwardedHeadersEnabled)
+{
+    app.UseForwardedHeaders();
+}
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
