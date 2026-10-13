@@ -1,0 +1,85 @@
+@page "/admin/login"
+@layout GDG.Web.Components.Layout.MainLayout
+@attribute [AllowAnonymous]
+
+<PageTitle>Yönetici Girişi - GDG on Campus Sakarya</PageTitle>
+
+<div class="container py-5 my-5" style="max-width: 450px;">
+    <div class="g-card p-4 p-md-5 bg-white shadow-sm border rounded-4">
+        <!-- Logo and Brand -->
+        <div class="text-center mb-4">
+            <div class="d-inline-flex p-3 rounded-circle mb-3" style="background-color: var(--google-blue-surface); color: var(--google-blue);">
+                <span class="material-symbols-outlined" style="font-size: 32px;">admin_panel_settings</span>
+            </div>
+            <h3 class="fw-bold mb-1" style="letter-spacing: -0.5px;">Yönetici Girişi</h3>
+            <p class="text-muted small mb-0">GDG on Campus Sakarya yönetim platformuna erişmek için giriş yapın.</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger rounded-3 d-flex align-items-center gap-2 py-2 px-3 small mb-3" role="alert">
+                <span class="material-symbols-outlined text-danger" style="font-size: 18px;">error</span>
+                <div>@errorMessage</div>
+            </div>
+        }
+
+        <!-- Standard HTTP Post Form to bypass Interactive Server Cookie restriction -->
+        <form method="post" action="/api/auth/login">
+            <AntiforgeryToken />
+            <input type="hidden" name="returnUrl" value="@ReturnUrl" />
+
+            <div class="mb-3">
+                <label class="form-label small fw-semibold text-muted">E-Posta Adresi</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope text-muted"></i></span>
+                    <input type="email" name="email" class="form-control g-input" placeholder="admin@gdgsakarya.com" required autofocus />
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label small fw-semibold text-muted">Parola</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock text-muted"></i></span>
+                    <input type="password" name="password" class="form-control g-input" placeholder="••••••••" required />
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-google-primary w-100 py-2 justify-content-center fw-medium">
+                <span class="material-symbols-outlined" style="font-size: 18px;">login</span>
+                <span>Giriş Yap</span>
+            </button>
+        </form>
+
+        <div class="text-center mt-4 pt-3 border-top">
+            <a href="/" class="text-muted small text-decoration-none d-inline-flex align-items-center gap-1">
+                <span class="material-symbols-outlined" style="font-size: 16px;">arrow_back</span>
+                <span>Ana Sayfaya Dön</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    public string? ReturnUrl { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string? Error { get; set; }
+
+    private string? errorMessage;
+
+    protected override void OnInitialized()
+    {
+        if (!string.IsNullOrEmpty(Error))
+        {
+            errorMessage = Error switch
+            {
+                "invalid_credentials" => "E-posta veya parola hatalı.",
+                "unauthorized" => "Bu panele erişmek için yönetici yetkisine (Admin) sahip olmanız gerekir.",
+                "empty" => "Lütfen e-posta ve parola alanlarını doldurunuz.",
+                "locked_out" => "Hesabınız çok fazla başarısız giriş denemesi nedeniyle geçici olarak kilitlendi. Lütfen 15 dakika sonra tekrar deneyiniz.",
+                _ => "Giriş işlemi sırasında bir hata oluştu."
+            };
+        }
+    }
+}

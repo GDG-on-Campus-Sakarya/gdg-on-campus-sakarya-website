@@ -1,6 +1,26 @@
 <Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
+            <NotAuthorized>
+                @if (context.User.Identity?.IsAuthenticated == true)
+                {
+                    <LayoutView Layout="typeof(Layout.MainLayout)">
+                        <div class="container-custom text-center py-5 my-5">
+                            <div style="font-size: 72px; font-weight: 800; color: var(--red);">403</div>
+                            <h1 style="font-size: 28px; font-weight: 700; margin-bottom: 12px;">Yetkisiz Erişim</h1>
+                            <p style="color: var(--muted); max-width: 480px; margin: 0 auto 24px auto;">
+                                Bu alana erişmek için yönetici yetkisine (Admin) sahip olmanız gerekmektedir.
+                            </p>
+                            <a href="/" class="btn-action-primary">Ana Sayfaya Dön</a>
+                        </div>
+                    </LayoutView>
+                }
+                else
+                {
+                    <RedirectToLogin />
+                }
+            </NotAuthorized>
+        </AuthorizeRouteView>
         <FocusOnNavigate RouteData="routeData" Selector="h1" />
     </Found>
     <NotFound>

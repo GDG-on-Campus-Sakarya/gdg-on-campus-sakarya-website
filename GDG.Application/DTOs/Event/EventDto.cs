@@ -12,7 +12,8 @@ namespace GDG.Application.DTOs.Event
         public string Location { get; set; } = string.Empty;
         public string? ImageUrl { get; set; }
         public string? RegistrationUrl { get; set; }
-        public bool IsPast => Date < DateTime.UtcNow;
+        // Date is in Turkey local time (+03:00); compare with current Turkey local time
+        public bool IsPast => Date < DateTime.UtcNow.AddHours(3);
     }
 
     public class CreateEventDto

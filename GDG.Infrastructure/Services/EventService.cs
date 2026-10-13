@@ -9,35 +9,33 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GDG.Infrastructure.Services
 {
-    /// <summary>
-    /// IEventService'in veritabanına bağlı gerçek uygulaması.
-    /// GDG.Web/Services/EventService.cs'teki mock'un yerini alır: veriler artık
-    /// uygulama yeniden başlayınca kaybolmaz.
-    /// </summary>
     public class EventService : IEventService
     {
-        private readonly ApplicationDbContext _db;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
-        // Dependency Injection: DbContext'i ASP.NET verir (Program.cs'teki AddDbContext sayesinde).
-        public EventService(ApplicationDbContext db)
+        public EventService(
+            IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _db = db;
+            _contextFactory = contextFactory;
         }
 
         public async Task<List<EventDto>> GetAllAsync()
         {
-            // SQL: SELECT * FROM "Events" ORDER BY "Date" DESC
-            var events = await _db.Events
-                .AsNoTracking()                      // sadece okuyoruz, EF takip etmesin
+            await using var db = await _contextFactory.CreateDbContextAsync();
+
+            var events = await db.Events
+                .AsNoTracking()
                 .OrderByDescending(e => e.Date)
-                .ToListAsync();                      // sorgu BURADA çalışır
+                .ToListAsync();
 
             return events.Select(ToDto).ToList();
         }
 
         public async Task<EventDto?> GetByIdAsync(int id)
         {
-            var entity = await _db.Events
+            await using var db = await _contextFactory.CreateDbContextAsync();
+
+            var entity = await db.Events
                 .AsNoTracking()
                 .FirstOrDefaultAsync(e => e.Id == id);
 
@@ -46,27 +44,33 @@ namespace GDG.Infrastructure.Services
 
         public async Task<EventDto> CreateAsync(CreateEventDto dto)
         {
+            await using var db = await _contextFactory.CreateDbContextAsync();
+
             var entity = new Event
             {
                 Title = dto.Title.Trim(),
                 Description = dto.Description.Trim(),
-                Date = TurkeyTime.ToUtc(dto.Date),   // ← UTC'ye çevirmezsek Npgsql hata verir
+                Date = TurkeyTime.ToUtc(dto.Date),
                 Location = dto.Location.Trim(),
                 ImageUrl = NullIfEmpty(dto.ImageUrl),
                 RegistrationUrl = NullIfEmpty(dto.RegistrationUrl)
             };
 
-            _db.Events.Add(entity);        // EF not alır, henüz SQL yok
-            await _db.SaveChangesAsync();  // INSERT burada çalışır, entity.Id dolar
+            db.Events.Add(entity);
+            await db.SaveChangesAsync();
 
             return ToDto(entity);
         }
 
         public async Task<bool> UpdateAsync(UpdateEventDto dto)
         {
-            // AsNoTracking YOK: değiştireceğiz, EF takip etmeli.
-            var entity = await _db.Events.FirstOrDefaultAsync(e => e.Id == dto.Id);
-            if (entity == null) return false;
+            await using var db = await _contextFactory.CreateDbContextAsync();
+
+            var entity = await db.Events
+                .FirstOrDefaultAsync(e => e.Id == dto.Id);
+
+            if (entity == null)
+                return false;
 
             entity.Title = dto.Title.Trim();
             entity.Description = dto.Description.Trim();
@@ -75,22 +79,26 @@ namespace GDG.Infrastructure.Services
             entity.ImageUrl = NullIfEmpty(dto.ImageUrl);
             entity.RegistrationUrl = NullIfEmpty(dto.RegistrationUrl);
 
-            // _db.Update(entity) gerekmez: EF hangi alanların değiştiğini kendisi fark eder (change tracking).
-            await _db.SaveChangesAsync();
+            await db.SaveChangesAsync();
             return true;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var entity = await _db.Events.FirstOrDefaultAsync(e => e.Id == id);
-            if (entity == null) return false;
+            await using var db = await _contextFactory.CreateDbContextAsync();
 
-            _db.Events.Remove(entity);
-            await _db.SaveChangesAsync();  // DELETE
+            var entity = await db.Events
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (entity == null)
+                return false;
+
+            db.Events.Remove(entity);
+            await db.SaveChangesAsync();
+
             return true;
         }
 
-        // Entity (UTC) → DTO (Türkiye saati). Dönüşüm tek bir yerde.
         private static EventDto ToDto(Event e) => new EventDto
         {
             Id = e.Id,
@@ -102,7 +110,6 @@ namespace GDG.Infrastructure.Services
             RegistrationUrl = e.RegistrationUrl
         };
 
-        // Boş kutu "" olarak gelir; veritabanında "" ile null karışmasın diye hep null saklıyoruz.
         private static string? NullIfEmpty(string? value) =>
             string.IsNullOrWhiteSpace(value) ? null : value.Trim();
     }

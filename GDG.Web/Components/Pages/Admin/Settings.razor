@@ -1,6 +1,8 @@
 @page "/admin/settings"
 @rendermode InteractiveServer
 
+@inject ISiteSettingsService SettingsService
+
 <PageTitle>Panel Ayarları - Community Admin</PageTitle>
 
 <div class="container-fluid py-4 px-lg-5" style="max-width: 960px;">
@@ -10,16 +12,24 @@
             <h2 class="fw-bold mb-1"><span class="material-symbols-outlined text-primary me-2">settings</span>Panel Ayarları</h2>
             <p class="text-muted small mb-0">Topluluk bilgileri, platform yapılandırması ve genel tercihleri yönetin.</p>
         </div>
-        <button class="btn btn-google-primary" @onclick="SaveSettings">
-            <span class="material-symbols-outlined" style="font-size: 18px;">save</span> Değişiklikleri Kaydet
+        <button class="btn btn-google-primary" @onclick="SaveSettings" disabled="@isSaving">
+            @if (isSaving)
+            {
+                <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+            }
+            else
+            {
+                <span class="material-symbols-outlined" style="font-size: 18px;">save</span>
+            }
+            <span>Değişiklikleri Kaydet</span>
         </button>
     </div>
 
     <!-- Alert / Status -->
     @if (!string.IsNullOrEmpty(statusMessage))
     {
-        <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm d-flex align-items-center gap-2 mb-4" role="alert">
-            <span class="material-symbols-outlined text-success" style="font-size: 20px;">check_circle</span>
+        <div class="alert @(statusIsError ? "alert-danger" : "alert-success") alert-dismissible fade show rounded-3 shadow-sm d-flex align-items-center gap-2 mb-4" role="alert">
+            <span class="material-symbols-outlined @(statusIsError ? "text-danger" : "text-success")" style="font-size: 20px;">@(statusIsError ? "error" : "check_circle")</span>
             <div>@statusMessage</div>
             <button type="button" class="btn-close ms-auto" @onclick="() => statusMessage = null"></button>
         </div>
@@ -35,22 +45,22 @@
         <div class="row g-3">
             <div class="col-md-6">
                 <label class="form-label small fw-semibold">Topluluk Adı</label>
-                <input type="text" class="form-control g-input w-100" @bind="communityName" />
+                <input type="text" class="form-control g-input w-100" @bind="settings.CommunityName" />
             </div>
 
             <div class="col-md-6">
                 <label class="form-label small fw-semibold">Bağlı Üniversite</label>
-                <input type="text" class="form-control g-input w-100" @bind="universityName" />
+                <input type="text" class="form-control g-input w-100" @bind="settings.UniversityName" />
             </div>
 
             <div class="col-md-6">
                 <label class="form-label small fw-semibold">Kampüs / Konum</label>
-                <input type="text" class="form-control g-input w-100" @bind="campusLocation" />
+                <input type="text" class="form-control g-input w-100" @bind="settings.CampusLocation" />
             </div>
 
             <div class="col-md-6">
                 <label class="form-label small fw-semibold">İletişim E-Postası</label>
-                <input type="email" class="form-control g-input w-100" @bind="contactEmail" />
+                <input type="email" class="form-control g-input w-100" @bind="settings.ContactEmail" />
             </div>
         </div>
     </div>
@@ -67,7 +77,7 @@
                 <label class="form-label small fw-semibold">GitHub Organization URL</label>
                 <div class="input-group">
                     <span class="input-group-text bg-light border-end-0"><i class="bi bi-github"></i></span>
-                    <input type="text" class="form-control g-input" @bind="githubUrl" />
+                    <input type="text" class="form-control g-input" @bind="settings.GitHubUrl" />
                 </div>
             </div>
 
@@ -75,7 +85,7 @@
                 <label class="form-label small fw-semibold">Google Developer Platform (gdg.community.dev)</label>
                 <div class="input-group">
                     <span class="input-group-text bg-light border-end-0"><i class="bi bi-google"></i></span>
-                    <input type="text" class="form-control g-input" @bind="communityDevUrl" />
+                    <input type="text" class="form-control g-input" @bind="settings.CommunityDevUrl" />
                 </div>
             </div>
 
@@ -83,7 +93,7 @@
                 <label class="form-label small fw-semibold">LinkedIn URL</label>
                 <div class="input-group">
                     <span class="input-group-text bg-light border-end-0"><i class="bi bi-linkedin"></i></span>
-                    <input type="text" class="form-control g-input" @bind="linkedinUrl" />
+                    <input type="text" class="form-control g-input" @bind="settings.LinkedInUrl" />
                 </div>
             </div>
 
@@ -91,7 +101,7 @@
                 <label class="form-label small fw-semibold">Instagram URL</label>
                 <div class="input-group">
                     <span class="input-group-text bg-light border-end-0"><i class="bi bi-instagram"></i></span>
-                    <input type="text" class="form-control g-input" @bind="instagramUrl" />
+                    <input type="text" class="form-control g-input" @bind="settings.InstagramUrl" />
                 </div>
             </div>
         </div>
@@ -134,20 +144,38 @@
 </div>
 
 @code {
-    private string communityName = "GDG on Campus Sakarya";
-    private string universityName = "Sakarya Üniversitesi";
-    private string campusLocation = "Esentepe Kampüsü, Serdivan / Sakarya";
-    private string contactEmail = "info@gdgsakarya.com";
-
-    private string githubUrl = "https://github.com/GDG-on-Campus-Sakarya";
-    private string communityDevUrl = "https://gdg.community.dev/gdg-on-campus-sakarya-university-sakarya-turkey/";
-    private string linkedinUrl = "https://linkedin.com/company/gdgsakarya";
-    private string instagramUrl = "https://instagram.com/gdgsakarya";
-
+    private SiteSettingsDto settings = new();
+    private bool isSaving = false;
     private string? statusMessage;
+    private bool statusIsError;
 
-    private void SaveSettings()
+    protected override async Task OnInitializedAsync()
     {
-        statusMessage = "Ayarlar başarıyla kaydedildi.";
+        settings = await SettingsService.GetAllSettingsAsync();
+    }
+
+    private async Task SaveSettings()
+    {
+        isSaving = true;
+        try
+        {
+            await SettingsService.SaveAllSettingsAsync(settings);
+            statusMessage = "Ayarlar başarıyla veritabanına kaydedildi.";
+            statusIsError = false;
+        }
+        catch (ArgumentException ex)
+        {
+            statusMessage = ex.Message;
+            statusIsError = true;
+        }
+        catch (Exception)
+        {
+            statusMessage = "Ayarlar kaydedilirken bir hata meydana geldi.";
+            statusIsError = true;
+        }
+        finally
+        {
+            isSaving = false;
+        }
     }
 }

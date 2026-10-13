@@ -1,41 +1,43 @@
-# figma-make-app
+# AGENTS.md — GDG on Campus Sakarya
 
-React + Vite + Tailwind CSS project running inside Figma Make.
+Bu dosya, projede çalışacak yapay zeka asistanları ve geliştiriciler için temel mimari rehberdir.
 
-## Development Server
+## ⚠️ ÖNEMLİ MİMARİ BİLGİ
 
-A Vite development server is **already running** on `$PORT` (default 8443). You don't need to start it manually.
+Bu projenin **ASIL VE ÇALIŞAN UYGULAMASI** bir **.NET 8 Blazor Web App** (Interactive Server) uygulamasıdır (`GDGOnCampusSakarya.sln`).
 
-- Preview URL: The user can access the running app through the preview panel
-- Hot reload: Changes to source files are reflected immediately
+Kök dizinde yer alan `src/`, `package.json`, `vite.config.ts`, `index.html` dosyaları ve Figma Make yapılandırması **YALNIZCA GÖRSEL TASARIM REFERANSI VE PROTOTİPTİR**.
 
-## Project Structure
+- ❌ Projeyi React veya Vite uygulamasına dönüştürmeyin.
+- ❌ Blazor bileşenlerini silmeyin veya Node.js çalışma zamanını ana uygulama olarak çalıştırmayın.
+- ❌ Kök dizindeki React dosyalarında backend mantığı aramayın.
+- ✅ Tüm iş mantığı, veritabanı erişimi, kimlik doğrulama ve sayfalar `GDG.*` .NET projelerinde yer alır.
 
-This is the canonical project structure. Start with task-relevant files below. Only follow imports or inspect other files when required, when a documented path is missing, or when the repository contradicts this guide.
+---
 
-- `src/main.tsx` - React entrypoint; imports `src/index.css` and mounts `src/App.tsx` into the `#root` element
-- `src/App.tsx` - Primary application component and the usual starting point for UI work
-- `src/index.css` - Global CSS entrypoint and Tailwind CSS v4 import
-- `index.html` - Vite HTML shell containing the `#root` element and loading `src/main.tsx`
-- `package.json` - Project dependencies and the Vite build, development, preview, and formatting scripts
-- `vite.config.ts` - Vite configuration with React, Tailwind CSS v4, and Figma Make plugins plus the `@` alias for `src`
-- `.mise.toml` - Toolchain versions for Node.js and pnpm
+## Proje Yapısı (.NET Clean Architecture)
 
-## Dependencies
+- `GDGOnCampusSakarya.sln` - Ana çözüm dosyası
+- `GDG.Domain` - Temel entity'ler (`Event`, `Member`, `Project`, `Team`, `Technology`, `SiteSetting`, `ContactMessage`)
+- `GDG.Application` - Servis arayüzleri (`IEventService`, `IMemberService`, `IProjectService`, `ITeamService`, `ITechnologyService`, `ISiteSettingsService`, `IContactService`) ve DTO sınıfları
+- `GDG.Infrastructure` - Entity Framework Core `ApplicationDbContext` (IdentityDbContext), PostgreSQL / Npgsql eşlemeleri, migrations ve servis implementasyonları
+- `GDG.Web` - ASP.NET Core 8 Blazor Web App, public sayfalar (`/`, `/events`, `/projects`, `/team`, `/contact`), admin paneli (`/admin/*`) ve kimlik doğrulama altyapısı
+- `GDG.Tests` - Kritik iş kuralları ve DTO doğrulamaları için xUnit test projesi
 
-- Runtime: React 19 and React DOM 19
-- Styling: Tailwind CSS v4 with the `@tailwindcss/vite` plugin
-- Build tooling: Vite 8, TypeScript 5.7, and `@vitejs/plugin-react`
-- Formatting: oxfmt
+---
 
-## Styling
+## Veritabanı ve Supabase
 
-This project uses **Tailwind CSS v4** through the `@tailwindcss/vite` plugin configured in `vite.config.ts`. `src/index.css` imports Tailwind with `@import 'tailwindcss';`. Use Tailwind utility classes directly in JSX and put global CSS or Tailwind v4 theme customization in `src/index.css`. This scaffold does not need a Tailwind config file or PostCSS config.
+- Veritabanı: **Supabase PostgreSQL**
+- Bağlantı dizesi kaynak kodda veya `appsettings.json` içinde tutulmaz.
+- Geliştirme ortamında: `dotnet user-secrets set "ConnectionStrings:DefaultConnection" "<SUPABASE_CONNECTION_STRING>" --project GDG.Web/GDG.Web.csproj`
+- Canlı ortamda: `ConnectionStrings__DefaultConnection` ortam değişkeni.
 
-`src/main.tsx` imports `src/index.css`, so global font wiring belongs in `src/index.css`. Keep CSS `@import` statements first, then add any `@font-face` rules and font-family defaults there.
+---
 
-## Code quality
+## Temel Kurallar
 
-- Use double quotes for strings containing apostrophes (`"We're here to help"`), or escape them in single-quoted strings. An unescaped apostrophe in a single-quoted string breaks the build.
-- Ensure JSX tags are closed and braces are balanced.
-- Export components as default exports.
+1. Mevcut Google Workspace / GDG tasarım dilini, renklerini ve bileşen yapılarını koruyun.
+2. Admin rotaları (`/admin/*`) ASP.NET Core Identity ve cookie tabanlı yetkilendirme ile korunur (Yalnızca `Admin` rolü).
+3. İlk admin hesabı `AdminBootstrap:Email` ve `AdminBootstrap:Password` yapılandırması ile güvenli biçimde ayağa kaldırılır.
+4. Kod değişikliklerinden sonra daima `dotnet build GDGOnCampusSakarya.sln` ve `dotnet test` ile derleme ve testleri doğrulayın.

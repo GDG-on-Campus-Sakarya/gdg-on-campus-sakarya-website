@@ -20,7 +20,10 @@
 
 <body>
     <a href="#main-content" class="skip-link">İçeriğe Geç</a>
-    <Routes @rendermode="InteractiveServer" />
+    <CascadingAuthenticationState>
+        <Routes @rendermode="InteractiveServer" />
+    </CascadingAuthenticationState>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/_framework/blazor.web.js"></script>
 </body>
 

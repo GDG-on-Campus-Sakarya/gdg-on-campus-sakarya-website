@@ -1,6 +1,7 @@
 @page "/team"
 @using GDG.Web.Models
-@using GDG.Web.Services
+@inject IMemberService MemberService
+@inject ITeamService TeamService
 
 <PageTitle>Ekibimiz - GDG on Campus Sakarya</PageTitle>
 
@@ -41,7 +42,13 @@
 
         <!-- MEMBERS GRID -->
         <section class="members-section" aria-label="Ekip Üyeleri">
-            @if (filteredMembers.Any())
+            @if (isLoading)
+            {
+                <div class="text-center py-5 text-muted">
+                    <div class="spinner-border spinner-border-sm text-primary me-2"></div> Ekip üyeleri yükleniyor...
+                </div>
+            }
+            else if (filteredMembers.Any())
             {
                 <div class="members-grid">
                     @foreach (var member in filteredMembers)
@@ -87,62 +94,38 @@
 
 @code {
     private List<MemberViewModel> allMembers = new();
+    private List<TeamDto> teams = new();
     private string selectedDepartment = "all";
+    private bool isLoading = true;
 
     private IEnumerable<MemberViewModel> filteredMembers =>
         selectedDepartment == "all"
             ? allMembers
             : allMembers.Where(m => string.Equals(m.TeamName, selectedDepartment, StringComparison.OrdinalIgnoreCase));
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        var baseList = MockDataService.GetMembers();
-        allMembers = new List<MemberViewModel>(baseList);
+        isLoading = true;
+        teams = await TeamService.GetAllAsync();
+        var members = await MemberService.GetAllAsync();
 
-        // Enrich team list with realistic core team members if only 4 exist
-        if (allMembers.Count <= 4)
+        var teamDict = teams.ToDictionary(t => t.Id, t => t.Name);
+
+        var colorPalette = new[] { "blue", "red", "yellow", "green" };
+
+        allMembers = members.Select((m, idx) => new MemberViewModel
         {
-            allMembers.Add(new MemberViewModel
-            {
-                Id = 5,
-                FullName = "Batuhan",
-                Role = "Mobile Lead",
-                TeamName = "Yazılım",
-                CardColor = "blue",
-                GitHubUrl = "https://github.com",
-                LinkedInUrl = "https://linkedin.com"
-            });
-            allMembers.Add(new MemberViewModel
-            {
-                Id = 6,
-                FullName = "Zeynep",
-                Role = "UI/UX Designer",
-                TeamName = "Medya",
-                CardColor = "yellow",
-                GitHubUrl = "https://github.com",
-                LinkedInUrl = "https://linkedin.com"
-            });
-            allMembers.Add(new MemberViewModel
-            {
-                Id = 7,
-                FullName = "Emre",
-                Role = "Event Coordinator",
-                TeamName = "Organizasyon",
-                CardColor = "orange",
-                GitHubUrl = "https://github.com",
-                LinkedInUrl = "https://linkedin.com"
-            });
-            allMembers.Add(new MemberViewModel
-            {
-                Id = 8,
-                FullName = "Selin",
-                Role = "Community Lead",
-                TeamName = "Yönetim",
-                CardColor = "green",
-                GitHubUrl = "https://github.com",
-                LinkedInUrl = "https://linkedin.com"
-            });
-        }
+            Id = m.Id,
+            FullName = m.FullName,
+            Role = m.Role,
+            TeamName = teamDict.TryGetValue(m.TeamId, out var tn) ? tn : "Topluluk Ekibi",
+            AvatarUrl = m.AvatarUrl,
+            GitHubUrl = m.GitHubUrl,
+            LinkedInUrl = m.LinkedInUrl,
+            CardColor = colorPalette[idx % colorPalette.Length]
+        }).ToList();
+
+        isLoading = false;
     }
 
     private void FilterDepartment(string dept)

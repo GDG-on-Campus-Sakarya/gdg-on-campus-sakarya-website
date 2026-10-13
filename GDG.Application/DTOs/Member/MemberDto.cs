@@ -9,6 +9,7 @@ namespace GDG.Application.DTOs.Member
         public string FullName { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
         public int TeamId { get; set; }
+        public string? AvatarUrl { get; set; }
         public string? Email { get; set; }
         public string? GitHubUrl { get; set; }
         public string? LinkedInUrl { get; set; }
@@ -25,7 +26,10 @@ namespace GDG.Application.DTOs.Member
         [Required(ErrorMessage = "Üyenin rolü veya unvanı zorunludur.")]
         public string Role { get; set; } = string.Empty;
 
-        public int TeamId { get; set; } = 1;
+        [Range(1, int.MaxValue, ErrorMessage = "Lütfen geçerli bir çalışma grubu/ekip seçiniz.")]
+        public int TeamId { get; set; }
+
+        public string? AvatarUrl { get; set; }
 
         [EmailAddress(ErrorMessage = "Geçerli bir e-posta adresi giriniz.")]
         public string? Email { get; set; }
@@ -47,7 +51,10 @@ namespace GDG.Application.DTOs.Member
         [Required(ErrorMessage = "Üyenin rolü veya unvanı zorunludur.")]
         public string Role { get; set; } = string.Empty;
 
+        [Range(1, int.MaxValue, ErrorMessage = "Lütfen geçerli bir çalışma grubu/ekip seçiniz.")]
         public int TeamId { get; set; }
+
+        public string? AvatarUrl { get; set; }
 
         [EmailAddress(ErrorMessage = "Geçerli bir e-posta adresi giriniz.")]
         public string? Email { get; set; }

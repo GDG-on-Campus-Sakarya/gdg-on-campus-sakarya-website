@@ -22,8 +22,8 @@
     <!-- Alert / Toast -->
     @if (!string.IsNullOrEmpty(statusMessage))
     {
-        <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm d-flex align-items-center gap-2 mb-4" role="alert">
-            <span class="material-symbols-outlined text-success" style="font-size: 20px;">check_circle</span>
+        <div class="alert @(statusIsError ? "alert-danger" : "alert-success") alert-dismissible fade show rounded-3 shadow-sm d-flex align-items-center gap-2 mb-4" role="alert">
+            <span class="material-symbols-outlined @(statusIsError ? "text-danger" : "text-success")" style="font-size: 20px;">@(statusIsError ? "error" : "check_circle")</span>
             <div>@statusMessage</div>
             <button type="button" class="btn-close ms-auto" @onclick="() => statusMessage = null"></button>
         </div>
@@ -279,6 +279,7 @@
     private List<MemberDto>? allMembers;
     private bool isLoading = true;
     private string? statusMessage;
+    private bool statusIsError;
     private string searchTerm = string.Empty;
 
     private bool showModal = false;
@@ -351,14 +352,25 @@
     {
         await TeamService.CreateAsync(createModel);
         statusMessage = $"'{createModel.Name}' ekibi başarıyla oluşturuldu.";
+        statusIsError = false;
         showModal = false;
         await LoadDataAsync();
     }
 
     private async Task HandleUpdateTeam()
     {
-        await TeamService.UpdateAsync(editModel);
-        statusMessage = $"'{editModel.Name}' ekibi güncellendi.";
+        var updated = await TeamService.UpdateAsync(editModel);
+        if (updated)
+        {
+            statusMessage = $"'{editModel.Name}' ekibi güncellendi.";
+            statusIsError = false;
+        }
+        else
+        {
+            statusMessage = "Ekip güncellenemedi. Üye çıkarmak istiyorsanız önce Üyeler ekranından bu üyeyi başka bir ekibe atayın; ayrıca seçilen tüm üyelerin mevcut olduğundan emin olun.";
+            statusIsError = true;
+        }
+
         showModal = false;
         await LoadDataAsync();
     }
@@ -366,8 +378,17 @@
     private async Task DeleteTeam(int id)
     {
         var t = teams?.FirstOrDefault(x => x.Id == id);
-        await TeamService.DeleteAsync(id);
-        statusMessage = $"'{t?.Name ?? "Ekip"}' silindi.";
-        await LoadDataAsync();
+        var success = await TeamService.DeleteAsync(id);
+        if (success)
+        {
+            statusMessage = $"'{t?.Name ?? "Ekip"}' silindi.";
+            statusIsError = false;
+            await LoadDataAsync();
+        }
+        else
+        {
+            statusMessage = $"'{t?.Name ?? "Ekip"}' silinemedi. Ekibe atanmış üyeler bulunmaktadır. Önce üyeleri başka bir çalışma grubuna taşıyın.";
+            statusIsError = true;
+        }
     }
 }

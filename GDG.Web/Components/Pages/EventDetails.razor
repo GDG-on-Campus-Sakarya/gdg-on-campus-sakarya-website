@@ -1,10 +1,10 @@
-﻿
+
 @page "/events/{Id:int}"
 @using GDG.Web.Models
-@using GDG.Web.Services
+@using System.Globalization
+@inject IEventService EventService
 
 <PageTitle>@(eventItem?.Title ?? "Etkinlik Detayları") - GDG on Campus Sakarya</PageTitle>
-
 
 <div class="event-details-page">
     <a href="/events" class="btn-action-primary">
@@ -14,7 +14,13 @@
         <span>Etkinliklere geri dön</span>
     </a>
     <div style="height: 32px;"></div>
-    @if (eventItem == null)
+    @if (isLoading)
+    {
+        <div class="text-center py-5 text-muted">
+            <div class="spinner-border spinner-border-sm text-primary me-2"></div> Etkinlik bilgileri yükleniyor...
+        </div>
+    }
+    else if (eventItem == null)
     {
         <div class="event-details-content">
             <h2>Etkinlik bulunamadı</h2>
@@ -39,14 +45,14 @@
             <p>
                 <strong>Tarih:</strong>
                 @(string.IsNullOrWhiteSpace(eventItem.FormattedDate)
-                    ? eventItem.Date.ToString("dd MMMM yyyy")
+                    ? eventItem.Date.ToString("dd MMMM yyyy", new CultureInfo("tr-TR"))
                     : eventItem.FormattedDate)
             </p>
 
             <p>
                 <strong>Saat:</strong>
                 @(string.IsNullOrWhiteSpace(eventItem.Time)
-                    ? "14:00"
+                    ? eventItem.Date.ToString("HH:mm")
                     : eventItem.Time)
             </p>
 
@@ -57,9 +63,7 @@
                     : eventItem.Location)
             </p>
         </section>
-    
     }
- 
 </div>
 
 @code {
@@ -67,10 +71,32 @@
     public int Id { get; set; }
 
     private EventViewModel? eventItem;
+    private bool isLoading = true;
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
-        eventItem = MockDataService.GetEvents()
-            .FirstOrDefault(e => e.Id == Id);
+        isLoading = true;
+        var dto = await EventService.GetByIdAsync(Id);
+        if (dto != null)
+        {
+            eventItem = new EventViewModel
+            {
+                Id = dto.Id,
+                Title = dto.Title,
+                Description = dto.Description,
+                Date = dto.Date,
+                FormattedDate = dto.Date.ToString("dd MMMM yyyy", new CultureInfo("tr-TR")).ToUpper(),
+                Time = dto.Date.ToString("HH:mm"),
+                Location = dto.Location,
+                CategoryTag = dto.IsPast ? "TAMAMLANDI" : "ETKİNLİK",
+                CategoryColor = dto.IsPast ? "green" : "blue",
+                ImageUrl = dto.ImageUrl
+            };
+        }
+        else
+        {
+            eventItem = null;
+        }
+        isLoading = false;
     }
 }

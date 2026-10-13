@@ -19,16 +19,19 @@
                 <span class="fw-semibold text-dark small" style="letter-spacing: -0.1px;">Yönetim Platformu</span>
             </div>
 
-            <!-- Center: Google Workspace Global Search Bar -->
+            <!-- Center: Search - Messages sayfasına yönlendirir -->
             <div class="google-search-container flex-grow-1 mx-4 d-none d-sm-block" style="max-width: 520px;">
                 <div class="position-relative">
                     <span class="material-symbols-outlined position-absolute top-50 start-0 translate-middle-y ms-3 text-muted" style="font-size: 20px;">
                         search
                     </span>
-                    <input type="text" 
-                           class="form-control rounded-pill border-0 ps-5 pe-4 py-2" 
-                           placeholder="Projeler, üyeler, teknolojiler veya etkinliklerde ara..." 
-                           style="background-color: #F1F3F4; font-size: 0.875rem; transition: background-color 0.2s, box-shadow 0.2s;" />
+                    <input type="text"
+                           class="form-control rounded-pill border-0 ps-5 pe-4 py-2"
+                           placeholder="Mesaj, proje veya üye aramak için Messages sayfasını kullanın..."
+                           style="background-color: #F1F3F4; font-size: 0.875rem; cursor: default;"
+                           readonly
+                           @onclick="GoToMessages"
+                           title="Mesaj aramak için tıklayın" />
                 </div>
             </div>
 
@@ -49,33 +52,42 @@
                     </ul>
                 </div>
 
-                <!-- Notifications -->
-                <button class="btn-google-icon" title="Bildirimler">
+                <!-- Notifications - Gelen mesajlar sayfasına yönlendirir -->
+                <a href="/admin/messages" class="btn-google-icon text-decoration-none" title="Gelen İletişim Mesajları">
                     <span class="material-symbols-outlined" style="font-size: 20px;">notifications</span>
-                </button>
-
-                <!-- Help -->
-                <button class="btn-google-icon d-none d-md-flex" title="Yardım & Dokümantasyon">
-                    <span class="material-symbols-outlined" style="font-size: 20px;">help</span>
-                </button>
+                </a>
 
                 <!-- Admin Avatar Profile -->
-                <div class="dropdown ms-1">
-                    <button class="btn p-0 border-0 rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm" 
-                             style="width: 36px; height: 36px; background: linear-gradient(135deg, #4285F4, #34A853); font-size: 0.85rem;">
-                            EY
+                <AuthorizeView>
+                    <Authorized>
+                        <div class="dropdown ms-1">
+                            <button class="btn p-0 border-0 rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm" 
+                                     style="width: 36px; height: 36px; background: linear-gradient(135deg, #4285F4, #34A853); font-size: 0.85rem;">
+                                    @GetUserInitials(context.User.Identity?.Name)
+                                </div>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border rounded-4 py-2 mt-2" style="border-color: #E0E2E6; min-width: 210px;">
+                                <li class="px-3 py-2 border-bottom">
+                                    <div class="fw-bold small text-dark">@(context.User.Identity?.Name ?? "Yönetici")</div>
+                                    <div class="text-muted small" style="font-size: 0.75rem;">Lead Administrator</div>
+                                </li>
+                                <li><a class="dropdown-item py-2 small mt-1 d-flex align-items-center gap-2" href="/admin/settings"><span class="material-symbols-outlined" style="font-size: 18px;">settings</span> Panel Ayarları</a></li>
+                                <li>
+                                    <form method="post" action="/api/auth/logout" class="m-0 p-0">
+                                        <AntiforgeryToken />
+                                        <button type="submit" class="dropdown-item py-2 small d-flex align-items-center gap-2 text-danger border-0 bg-transparent w-100">
+                                            <span class="material-symbols-outlined" style="font-size: 18px;">logout</span> Çıkış Yap
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
                         </div>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border rounded-4 py-2 mt-2" style="border-color: #E0E2E6; min-width: 210px;">
-                        <li class="px-3 py-2 border-bottom">
-                            <div class="fw-bold small text-dark">Enes Yel</div>
-                            <div class="text-muted small" style="font-size: 0.75rem;">enesyel@gdgsakarya.com</div>
-                        </li>
-                        <li><a class="dropdown-item py-2 small mt-1 d-flex align-items-center gap-2" href="/admin/settings"><span class="material-symbols-outlined" style="font-size: 18px;">settings</span> Panel Ayarları</a></li>
-                        <li><a class="dropdown-item py-2 small d-flex align-items-center gap-2 text-danger" href="/admin/dashboard"><span class="material-symbols-outlined" style="font-size: 18px;">logout</span> Çıkış Yap</a></li>
-                    </ul>
-                </div>
+                    </Authorized>
+                    <NotAuthorized>
+                        <a href="/admin/login" class="btn btn-google-primary btn-sm">Giriş Yap</a>
+                    </NotAuthorized>
+                </AuthorizeView>
             </div>
         </header>
 
@@ -85,3 +97,21 @@
         </main>
     </div>
 </div>
+
+@code {
+    private static string GetUserInitials(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return "AD";
+        var parts = name.Split(new[] { ' ', '@', '.' }, StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length >= 2)
+        {
+            return (parts[0][0].ToString() + parts[1][0].ToString()).ToUpper();
+        }
+        return name.Substring(0, Math.Min(2, name.Length)).ToUpper();
+    }
+
+    private void GoToMessages()
+    {
+        Navigation.NavigateTo("/admin/messages");
+    }
+}

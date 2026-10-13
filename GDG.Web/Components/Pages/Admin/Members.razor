@@ -2,6 +2,7 @@
 @rendermode InteractiveServer
 @inject IMemberService MemberService
 @inject IProjectService ProjectService
+@inject ITeamService TeamService
 
 <PageTitle>Üyeler - Community Admin</PageTitle>
 
@@ -227,8 +228,35 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label small fw-semibold">E-Posta</label>
-                                <InputText @bind-Value="editModel.Email" class="form-control g-input w-100" placeholder="ornek@gdgsakarya.com" />
+                                <label class="form-label small fw-semibold">Çalışma Grubu / Ekip *</label>
+                                @if (allTeams != null && allTeams.Any())
+                                {
+                                    <InputSelect @bind-Value="editModel.TeamId" class="form-select g-input w-100">
+                                        <option value="0">-- Ekip Seçiniz --</option>
+                                        @foreach (var team in allTeams)
+                                        {
+                                            <option value="@team.Id">@team.Name</option>
+                                        }
+                                    </InputSelect>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-warning py-2 px-3 small mb-0">
+                                        Kayıtlı ekip bulunamadı. Lütfen önce <a href="/admin/teams">Ekipler</a> sayfasından bir çalışma grubu oluşturun.
+                                    </div>
+                                }
+                                <ValidationMessage For="() => editModel.TeamId" class="text-danger small" />
+                            </div>
+
+                            <div class="row g-2 mb-3">
+                                <div class="col-6">
+                                    <label class="form-label small fw-semibold">E-Posta</label>
+                                    <InputText @bind-Value="editModel.Email" class="form-control g-input w-100" placeholder="ornek@gdgsakarya.com" />
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label small fw-semibold">Avatar Görsel URL</label>
+                                    <InputText @bind-Value="editModel.AvatarUrl" class="form-control g-input w-100" placeholder="https://..." />
+                                </div>
                             </div>
 
                             <div class="row g-2 mb-3">
@@ -292,8 +320,35 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label small fw-semibold">E-Posta</label>
-                                <InputText @bind-Value="createModel.Email" class="form-control g-input w-100" placeholder="ornek@gdgsakarya.com" />
+                                <label class="form-label small fw-semibold">Çalışma Grubu / Ekip *</label>
+                                @if (allTeams != null && allTeams.Any())
+                                {
+                                    <InputSelect @bind-Value="createModel.TeamId" class="form-select g-input w-100">
+                                        <option value="0">-- Ekip Seçiniz --</option>
+                                        @foreach (var team in allTeams)
+                                        {
+                                            <option value="@team.Id">@team.Name</option>
+                                        }
+                                    </InputSelect>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-warning py-2 px-3 small mb-0">
+                                        Kayıtlı ekip bulunamadı. Lütfen önce <a href="/admin/teams">Ekipler</a> sayfasından bir çalışma grubu oluşturun.
+                                    </div>
+                                }
+                                <ValidationMessage For="() => createModel.TeamId" class="text-danger small" />
+                            </div>
+
+                            <div class="row g-2 mb-3">
+                                <div class="col-6">
+                                    <label class="form-label small fw-semibold">E-Posta</label>
+                                    <InputText @bind-Value="createModel.Email" class="form-control g-input w-100" placeholder="ornek@gdgsakarya.com" />
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label small fw-semibold">Avatar Görsel URL</label>
+                                    <InputText @bind-Value="createModel.AvatarUrl" class="form-control g-input w-100" placeholder="https://..." />
+                                </div>
                             </div>
 
                             <div class="row g-2 mb-3">
@@ -347,6 +402,7 @@
 @code {
     private List<MemberDto>? members;
     private List<ProjectDto>? allProjects;
+    private List<TeamDto>? allTeams;
     private bool isLoading = true;
     private string? statusMessage;
     private string searchTerm = string.Empty;
@@ -365,6 +421,7 @@
     {
         isLoading = true;
         allProjects = await ProjectService.GetAllAsync();
+        allTeams = await TeamService.GetAllAsync();
         members = await MemberService.GetAllAsync();
         isLoading = false;
     }
@@ -386,7 +443,10 @@
 
     private void OpenCreateModal()
     {
-        createModel = new CreateMemberDto();
+        createModel = new CreateMemberDto
+        {
+            TeamId = allTeams?.FirstOrDefault()?.Id ?? 0
+        };
         isEditing = false;
         showModal = true;
     }
@@ -399,6 +459,7 @@
             FullName = member.FullName,
             Role = member.Role,
             TeamId = member.TeamId,
+            AvatarUrl = member.AvatarUrl,
             Email = member.Email,
             GitHubUrl = member.GitHubUrl,
             LinkedInUrl = member.LinkedInUrl,
@@ -423,25 +484,65 @@
 
     private async Task HandleCreateMember()
     {
-        await MemberService.CreateAsync(createModel);
-        statusMessage = $"'{createModel.FullName}' başarıyla eklendi.";
-        showModal = false;
-        await LoadDataAsync();
+        if (createModel.TeamId <= 0)
+        {
+            statusMessage = "Lütfen üye için geçerli bir çalışma grubu seçiniz.";
+            return;
+        }
+
+        try
+        {
+            await MemberService.CreateAsync(createModel);
+            statusMessage = $"'{createModel.FullName}' başarıyla eklendi.";
+            showModal = false;
+            await LoadDataAsync();
+        }
+        catch (Exception ex)
+        {
+            statusMessage = "Üye kaydedilirken bir hata oluştu: " + ex.Message;
+        }
     }
 
     private async Task HandleUpdateMember()
     {
-        await MemberService.UpdateAsync(editModel);
-        statusMessage = $"'{editModel.FullName}' başarıyla güncellendi.";
-        showModal = false;
-        await LoadDataAsync();
+        if (editModel.TeamId <= 0)
+        {
+            statusMessage = "Lütfen üye için geçerli bir çalışma grubu seçiniz.";
+            return;
+        }
+
+        try
+        {
+            var success = await MemberService.UpdateAsync(editModel);
+            if (success)
+            {
+                statusMessage = $"'{editModel.FullName}' başarıyla güncellendi.";
+                showModal = false;
+                await LoadDataAsync();
+            }
+            else
+            {
+                statusMessage = "Üye güncellenemedi.";
+            }
+        }
+        catch (Exception ex)
+        {
+            statusMessage = "Üye güncellenirken bir hata oluştu: " + ex.Message;
+        }
     }
 
     private async Task DeleteMember(int id)
     {
         var m = members?.FirstOrDefault(x => x.Id == id);
-        await MemberService.DeleteAsync(id);
-        statusMessage = $"'{m?.FullName ?? "Üye"}' silindi.";
-        await LoadDataAsync();
+        var success = await MemberService.DeleteAsync(id);
+        if (success)
+        {
+            statusMessage = $"'{m?.FullName ?? "Üye"}' silindi.";
+            await LoadDataAsync();
+        }
+        else
+        {
+            statusMessage = "Üye silinemedi.";
+        }
     }
 }

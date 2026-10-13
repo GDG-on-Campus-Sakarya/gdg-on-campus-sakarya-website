@@ -17,7 +17,14 @@
                 <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #4285F4; display: inline-block;"></span>
                 GDG on Campus Sakarya
             </div>
-            <h2 class="fw-bold mb-1" style="letter-spacing: -0.5px;">Merhaba, Enes 👋</h2>
+            <AuthorizeView>
+                <Authorized>
+                    <h2 class="fw-bold mb-1" style="letter-spacing: -0.5px;">Merhaba, @(context.User.Identity?.Name ?? "Yönetici") 👋</h2>
+                </Authorized>
+                <NotAuthorized>
+                    <h2 class="fw-bold mb-1" style="letter-spacing: -0.5px;">Merhaba 👋</h2>
+                </NotAuthorized>
+            </AuthorizeView>
             <p class="text-muted mb-0 small">İşte topluluğundaki projeler, ekipler ve etkinliklerin güncel durumu.</p>
         </div>
         <div class="d-flex gap-2">

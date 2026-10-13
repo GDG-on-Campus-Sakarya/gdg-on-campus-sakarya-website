@@ -10,27 +10,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GDG.Infrastructure.Services
 {
-    /// <summary>
-    /// IMemberService'in veritabanına bağlı gerçek uygulaması.
-    ///
-    /// Event'ten farkı: Member'ın ilişkileri var.
-    ///   - Her üye bir ekibe bağlı (TeamId zorunlu, foreign key).
-    ///   - Üye ile proje arasında çoka-çok ilişki var (MemberProject ara tablosu).
-    /// </summary>
     public class MemberService : IMemberService
     {
-        private readonly ApplicationDbContext _db;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
-        public MemberService(ApplicationDbContext db)
+        public MemberService(
+            IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _db = db;
+            _contextFactory = contextFactory;
         }
 
         public async Task<List<MemberDto>> GetAllAsync()
         {
-            var members = await _db.Members
+            await using var db = await _contextFactory.CreateDbContextAsync();
+
+            var members = await db.Members
                 .AsNoTracking()
-                .Include(m => m.Projects)   // projeleri de getir (JOIN). Yoksa m.Projects boş gelir.
+                .Include(m => m.Projects)
                 .OrderBy(m => m.FullName)
                 .ToListAsync();
 
@@ -39,7 +35,9 @@ namespace GDG.Infrastructure.Services
 
         public async Task<MemberDto?> GetByIdAsync(int id)
         {
-            var member = await _db.Members
+            await using var db = await _contextFactory.CreateDbContextAsync();
+
+            var member = await db.Members
                 .AsNoTracking()
                 .Include(m => m.Projects)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -49,79 +47,95 @@ namespace GDG.Infrastructure.Services
 
         public async Task<MemberDto> CreateAsync(CreateMemberDto dto)
         {
-            // TeamId zorunlu bir foreign key. Olmayan bir ekibe üye eklemeye çalışırsak veritabanı
-            // anlaşılmaz bir hata verir; biz önce kontrol edip anlaşılır bir mesaj veriyoruz.
-            await EnsureTeamExistsAsync(dto.TeamId);
+            await using var db = await _contextFactory.CreateDbContextAsync();
+
+            await EnsureTeamExistsAsync(db, dto.TeamId);
 
             var member = new Member
             {
                 FullName = dto.FullName.Trim(),
                 Role = dto.Role.Trim(),
                 TeamId = dto.TeamId,
+                AvatarUrl = NullIfEmpty(dto.AvatarUrl),
                 Email = NullIfEmpty(dto.Email),
                 GitHubUrl = NullIfEmpty(dto.GitHubUrl),
                 LinkedInUrl = NullIfEmpty(dto.LinkedInUrl),
-                Projects = await LoadProjectsAsync(dto.SelectedProjectIds)
+                Projects = await LoadProjectsAsync(
+                    db, dto.SelectedProjectIds)
             };
 
-            _db.Members.Add(member);
-            await _db.SaveChangesAsync();   // hem Members'a hem MemberProject ara tablosuna yazar
+            db.Members.Add(member);
+            await db.SaveChangesAsync();
 
             return ToDto(member);
         }
 
         public async Task<bool> UpdateAsync(UpdateMemberDto dto)
         {
-            // Projeleri de güncelleyeceğimiz için Include şart: EF mevcut bağlantıları bilmeli ki
-            // hangilerinin silinip hangilerinin ekleneceğini hesaplayabilsin.
-            var member = await _db.Members
+            await using var db = await _contextFactory.CreateDbContextAsync();
+
+            var member = await db.Members
                 .Include(m => m.Projects)
                 .FirstOrDefaultAsync(m => m.Id == dto.Id);
-            if (member == null) return false;
 
-            await EnsureTeamExistsAsync(dto.TeamId);
+            if (member == null)
+                return false;
+
+            await EnsureTeamExistsAsync(db, dto.TeamId);
 
             member.FullName = dto.FullName.Trim();
             member.Role = dto.Role.Trim();
             member.TeamId = dto.TeamId;
+            member.AvatarUrl = NullIfEmpty(dto.AvatarUrl);
             member.Email = NullIfEmpty(dto.Email);
             member.GitHubUrl = NullIfEmpty(dto.GitHubUrl);
             member.LinkedInUrl = NullIfEmpty(dto.LinkedInUrl);
 
-            // Proje listesini baştan kur. EF ara tablodaki farkı kendisi hesaplar:
-            // listeden çıkan projeler için DELETE, yeni eklenenler için INSERT üretir.
             member.Projects.Clear();
-            member.Projects.AddRange(await LoadProjectsAsync(dto.SelectedProjectIds));
+            member.Projects.AddRange(
+                await LoadProjectsAsync(db, dto.SelectedProjectIds));
 
-            await _db.SaveChangesAsync();
+            await db.SaveChangesAsync();
             return true;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var member = await _db.Members.FirstOrDefaultAsync(m => m.Id == id);
-            if (member == null) return false;
+            await using var db = await _contextFactory.CreateDbContextAsync();
 
-            _db.Members.Remove(member);   // ara tablodaki proje bağlantıları da otomatik silinir
-            await _db.SaveChangesAsync();
+            var member = await db.Members
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (member == null)
+                return false;
+
+            db.Members.Remove(member);
+            await db.SaveChangesAsync();
+
             return true;
         }
 
-        // ───────── yardımcılar ─────────
-
-        private async Task EnsureTeamExistsAsync(int teamId)
+        private async Task EnsureTeamExistsAsync(
+            ApplicationDbContext db,
+            int teamId)
         {
-            if (!await _db.Teams.AnyAsync(t => t.Id == teamId))
+            if (!await db.Teams.AnyAsync(t => t.Id == teamId))
+            {
                 throw new InvalidOperationException(
                     $"{teamId} numaralı ekip bulunamadı. Üye eklemeden önce ekibi oluşturun.");
+            }
         }
 
-        // Formda seçilen proje Id'lerine karşılık gelen projeleri veritabanından getirir.
-        // SQL: SELECT * FROM "Projects" WHERE "Id" IN (1, 3, 5)
-        private async Task<List<Project>> LoadProjectsAsync(List<int> projectIds)
+        private async Task<List<Project>> LoadProjectsAsync(
+            ApplicationDbContext db,
+            List<int> projectIds)
         {
-            if (projectIds.Count == 0) return new List<Project>();
-            return await _db.Projects.Where(p => projectIds.Contains(p.Id)).ToListAsync();
+            if (projectIds.Count == 0)
+                return new List<Project>();
+
+            return await db.Projects
+                .Where(p => projectIds.Contains(p.Id))
+                .ToListAsync();
         }
 
         internal static MemberDto ToDto(Member m) => new MemberDto
@@ -130,6 +144,7 @@ namespace GDG.Infrastructure.Services
             FullName = m.FullName,
             Role = m.Role,
             TeamId = m.TeamId,
+            AvatarUrl = m.AvatarUrl,
             Email = m.Email,
             GitHubUrl = m.GitHubUrl,
             LinkedInUrl = m.LinkedInUrl,

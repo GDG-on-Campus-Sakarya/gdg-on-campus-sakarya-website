@@ -134,10 +134,15 @@
                                 <td>
                                     <span class="text-muted small font-monospace">@(tech.IconClass ?? "bi-code-slash")</span>
                                 </td>
-                                <td class="text-end pe-4">
-                                    <button class="btn-google-icon" style="color: var(--google-red);" title="Sil" @onclick="() => DeleteTechnology(tech.Id)">
-                                        <span class="material-symbols-outlined" style="font-size: 18px;">delete</span>
-                                    </button>
+                                 <td class="text-end pe-4">
+                                    <div class="d-flex align-items-center justify-content-end gap-1">
+                                        <button class="btn-google-icon" title="Düzenle" @onclick="() => OpenEditModal(tech)">
+                                            <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
+                                        </button>
+                                        <button class="btn-google-icon" style="color: var(--google-red);" title="Sil" @onclick="() => DeleteTechnology(tech.Id)">
+                                            <span class="material-symbols-outlined" style="font-size: 18px;">delete</span>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         }
@@ -148,41 +153,73 @@
     </div>
 </div>
 
-<!-- Yeni Teknoloji Modalı -->
-@if (showCreateModal)
+<!-- Modal: Ekle / Düzenle -->
+@if (showModal)
 {
     <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(32, 33, 36, 0.6); backdrop-filter: blur(2px);">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-bottom py-3 px-4">
                     <h5 class="modal-title fw-bold d-flex align-items-center gap-2">
-                        <span class="material-symbols-outlined text-warning">code</span> Yeni Teknoloji Ekle
+                        <span class="material-symbols-outlined text-warning">code</span>
+                        @(isEditing ? "Teknolojiyi Düzenle" : "Yeni Teknoloji Ekle")
                     </h5>
-                    <button type="button" class="btn-close" @onclick="() => showCreateModal = false"></button>
+                    <button type="button" class="btn-close" @onclick="() => showModal = false"></button>
                 </div>
                 <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label small fw-semibold">Teknoloji Adı *</label>
-                        <input type="text" class="form-control g-input w-100" placeholder="Örn: PostgreSQL, Docker, TensorFlow" @bind="newTech.Name" />
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label small fw-semibold">Tema Rengi</label>
-                        <div class="d-flex align-items-center gap-2">
-                            <input type="color" class="form-control form-control-color" @bind="newTech.ColorHex" />
-                            <input type="text" class="form-control g-input font-monospace" @bind="newTech.ColorHex" placeholder="#4285F4" />
+                    @if (isEditing)
+                    {
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Teknoloji Adı *</label>
+                            <input type="text" class="form-control g-input w-100" placeholder="Örn: PostgreSQL, Docker, TensorFlow" @bind="editModel.Name" />
                         </div>
-                    </div>
 
-                    <div class="mb-3">
-                        <label class="form-label small fw-semibold">İkon Sınıfı (Bootstrap Icons / Devicon)</label>
-                        <input type="text" class="form-control g-input font-monospace w-100" placeholder="bi-cpu, bi-database, bi-cloud..." @bind="newTech.IconClass" />
-                        <div class="form-text small">Varsayılan: <code>bi-code-slash</code></div>
-                    </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Tema Rengi</label>
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="color" class="form-control form-control-color" @bind="editModel.ColorHex" />
+                                <input type="text" class="form-control g-input font-monospace" @bind="editModel.ColorHex" placeholder="#4285F4" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">İkon Sınıfı (Bootstrap Icons / Devicon)</label>
+                            <input type="text" class="form-control g-input font-monospace w-100" placeholder="bi-cpu, bi-database, bi-cloud..." @bind="editModel.IconClass" />
+                            <div class="form-text small">Varsayılan: <code>bi-code-slash</code></div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Teknoloji Adı *</label>
+                            <input type="text" class="form-control g-input w-100" placeholder="Örn: PostgreSQL, Docker, TensorFlow" @bind="createModel.Name" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Tema Rengi</label>
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="color" class="form-control form-control-color" @bind="createModel.ColorHex" />
+                                <input type="text" class="form-control g-input font-monospace" @bind="createModel.ColorHex" placeholder="#4285F4" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">İkon Sınıfı (Bootstrap Icons / Devicon)</label>
+                            <input type="text" class="form-control g-input font-monospace w-100" placeholder="bi-cpu, bi-database, bi-cloud..." @bind="createModel.IconClass" />
+                            <div class="form-text small">Varsayılan: <code>bi-code-slash</code></div>
+                        </div>
+                    }
                 </div>
                 <div class="modal-footer border-top py-2 px-4">
-                    <button type="button" class="btn btn-google-secondary" @onclick="() => showCreateModal = false">İptal</button>
-                    <button type="button" class="btn btn-google-primary" @onclick="SaveNewTechnology" disabled="@string.IsNullOrWhiteSpace(newTech.Name)">Kaydet</button>
+                    <button type="button" class="btn btn-google-secondary" @onclick="() => showModal = false">İptal</button>
+                    @if (isEditing)
+                    {
+                        <button type="button" class="btn btn-google-primary" @onclick="HandleUpdateTechnology" disabled="@string.IsNullOrWhiteSpace(editModel.Name)">Güncelle</button>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-google-primary" @onclick="HandleCreateTechnology" disabled="@string.IsNullOrWhiteSpace(createModel.Name)">Kaydet</button>
+                    }
                 </div>
             </div>
         </div>
@@ -198,8 +235,10 @@
     private string quickName = string.Empty;
     private string quickColor = "#4285F4";
 
-    private bool showCreateModal = false;
-    private CreateTechnologyDto newTech = new();
+    private bool showModal = false;
+    private bool isEditing = false;
+    private CreateTechnologyDto createModel = new();
+    private UpdateTechnologyDto editModel = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -227,22 +266,53 @@
 
     private void OpenCreateModal()
     {
-        newTech = new CreateTechnologyDto
+        createModel = new CreateTechnologyDto
         {
             ColorHex = "#4285F4",
             IconClass = "bi-code-slash"
         };
-        showCreateModal = true;
+        isEditing = false;
+        showModal = true;
     }
 
-    private async Task SaveNewTechnology()
+    private void OpenEditModal(TechnologyDto item)
     {
-        if (string.IsNullOrWhiteSpace(newTech.Name)) return;
+        editModel = new UpdateTechnologyDto
+        {
+            Id = item.Id,
+            Name = item.Name,
+            ColorHex = item.ColorHex ?? "#4285F4",
+            IconClass = item.IconClass ?? "bi-code-slash"
+        };
+        isEditing = true;
+        showModal = true;
+    }
 
-        await TechnologyService.CreateAsync(newTech);
-        statusMessage = $"'{newTech.Name}' teknolojisi başarıyla eklendi.";
-        showCreateModal = false;
+    private async Task HandleCreateTechnology()
+    {
+        if (string.IsNullOrWhiteSpace(createModel.Name)) return;
+
+        await TechnologyService.CreateAsync(createModel);
+        statusMessage = $"'{createModel.Name}' teknolojisi başarıyla eklendi.";
+        showModal = false;
         await LoadDataAsync();
+    }
+
+    private async Task HandleUpdateTechnology()
+    {
+        if (string.IsNullOrWhiteSpace(editModel.Name)) return;
+
+        var success = await TechnologyService.UpdateAsync(editModel);
+        if (success)
+        {
+            statusMessage = $"'{editModel.Name}' teknolojisi güncellendi.";
+            showModal = false;
+            await LoadDataAsync();
+        }
+        else
+        {
+            statusMessage = "Teknoloji güncellenemedi.";
+        }
     }
 
     private async Task HandleQuickAdd()
@@ -264,8 +334,15 @@
     private async Task DeleteTechnology(int id)
     {
         var item = technologies?.FirstOrDefault(t => t.Id == id);
-        await TechnologyService.DeleteAsync(id);
-        statusMessage = $"'{item?.Name ?? "Teknoloji"}' silindi.";
-        await LoadDataAsync();
+        var success = await TechnologyService.DeleteAsync(id);
+        if (success)
+        {
+            statusMessage = $"'{item?.Name ?? "Teknoloji"}' silindi.";
+            await LoadDataAsync();
+        }
+        else
+        {
+            statusMessage = "Teknoloji silinemedi.";
+        }
     }
 }

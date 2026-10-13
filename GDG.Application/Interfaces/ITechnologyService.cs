@@ -12,6 +12,7 @@ namespace GDG.Application.Interfaces
         Task<List<TechnologyDto>> GetAllAsync();
         Task<TechnologyDto?> GetByIdAsync(int id);
         Task<TechnologyDto> CreateAsync(CreateTechnologyDto dto);
+        Task<bool> UpdateAsync(UpdateTechnologyDto dto);
         Task<bool> DeleteAsync(int id);
     }
 }

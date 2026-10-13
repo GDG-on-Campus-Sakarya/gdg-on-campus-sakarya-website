@@ -1,6 +1,10 @@
 @page "/"
 @using GDG.Web.Models
-@using GDG.Web.Services
+@using System.Globalization
+@inject IEventService EventService
+@inject IProjectService ProjectService
+@inject IMemberService MemberService
+@inject ITeamService TeamService
 
 <PageTitle>GDG on Campus Sakarya - Ana Sayfa</PageTitle>
 
@@ -51,11 +55,11 @@
                 <div class="countdown-card">
                     <div class="countdown-badge">
                         <span class="pulse-dot" aria-hidden="true"></span>
-                        <span>@(string.IsNullOrWhiteSpace(upcomingEvent.CategoryTag) ? "YAKLAŞAN ETKİNLİK" : upcomingEvent.CategoryTag)</span>
+                        <span>@(string.IsNullOrWhiteSpace(upcomingEvent?.CategoryTag) ? "YAKLAŞAN ETKİNLİK" : upcomingEvent.CategoryTag)</span>
                     </div>
 
-                    <h2 class="countdown-title">@upcomingEvent.Title</h2>
-                    <p class="countdown-sub">İlk etkinliğimize kalan süre</p>
+                    <h2 class="countdown-title">@(upcomingEvent?.Title ?? "Etkinlik Planlanıyor")</h2>
+                    <p class="countdown-sub">@(upcomingEvent != null ? "İlk etkinliğimize kalan süre" : "Yaklaşan etkinlikler için bizi takip edin.")</p>
 
                     <!-- Countdown Numbers Grid -->
                     <div class="countdown-boxes-grid">
@@ -93,28 +97,25 @@
                             <span class="growth-badge">+18% bu dönem</span>
                         </div>
                         <div class="stat-card-content">
-                            <span class="stat-number">50+</span>
+                            <span class="stat-number">@(totalMembers > 0 ? $"{totalMembers}+" : "0")</span>
                             <span class="stat-label">Aktif Üye</span>
                         </div>
                         <p class="stat-desc">Birlikte öğrenen, paylaşan ve üreten bir topluluk.</p>
                     </div>
 
-                    <!-- Discord Community Card -->
+                    <!-- Official community page card (the Discord invite has not been verified) -->
                     <div class="stat-card yellow-stat-card">
                         <div class="discord-card-row">
                             <div class="discord-info">
                                 <div class="discord-icon-wrap" aria-hidden="true">
-                                    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-                                        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .373-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.893.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
-                                    </svg>
+                                    <span class="material-symbols-outlined" aria-hidden="true">groups</span>
                                 </div>
                                 <div class="discord-texts">
-                                    <h3 class="discord-title">Sohbete katıl, bağlantıda kal.</h3>
-                                    <p class="discord-sub">Discord sunucumuzda yerini al.</p>
+                                    <h3 class="discord-title">Topluluğa katıl, bağlantıda kal.</h3>
+                                    <p class="discord-sub">Resmi topluluk sayfamızdan bize katıl.</p>
                                 </div>
                             </div>
-                            @* TODO(link): ekip lideri bekleniyor - Discord sunucu daveti teyit edildiğinde SiteLinks.DiscordUrl güncellenecek *@
-                            <a href="@SiteLinks.DiscordUrl" target="_blank" rel="noopener noreferrer" class="circle-action-btn" aria-label="Discord Sunucusuna Katıl">
+                            <a href="@SiteLinks.JoinUrl" target="_blank" rel="noopener noreferrer" class="circle-action-btn" aria-label="Resmi Topluluk Sayfasına Git">
                                 <svg viewBox="0 0 20 20" width="18" height="18" fill="currentColor" aria-hidden="true">
                                     <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
                                 </svg>
@@ -240,29 +241,84 @@
 </div>
 
 @code {
-    private EventViewModel upcomingEvent = new();
+    private EventViewModel? upcomingEvent;
     private List<EventViewModel> events = new();
     private List<MemberViewModel> members = new();
     private List<ProjectViewModel> projects = new();
+    private int totalMembers = 0;
 
     private int days;
     private int hours;
     private int minutes;
     private int seconds;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        upcomingEvent = MockDataService.GetUpcomingEvent();
-        events = MockDataService.GetEvents();
-        members = MockDataService.GetMembers();
-        projects = MockDataService.GetProjects();
+        var allEvents = await EventService.GetAllAsync();
+        var upcomingEvents = allEvents.Where(e => !e.IsPast).OrderBy(e => e.Date).ToList();
+        var firstUpcoming = upcomingEvents.FirstOrDefault();
+
+        if (firstUpcoming != null)
+        {
+            upcomingEvent = new EventViewModel
+            {
+                Id = firstUpcoming.Id,
+                Title = firstUpcoming.Title,
+                Description = firstUpcoming.Description,
+                Date = firstUpcoming.Date,
+                FormattedDate = firstUpcoming.Date.ToString("dd MMMM yyyy", new CultureInfo("tr-TR")).ToUpper(),
+                Time = firstUpcoming.Date.ToString("HH:mm"),
+                Location = firstUpcoming.Location,
+                CategoryTag = "YAKLAŞAN ETKİNLİK",
+                CategoryColor = "blue",
+                ImageUrl = firstUpcoming.ImageUrl
+            };
+        }
+
+        events = upcomingEvents.Take(3).Select((e, idx) => new EventViewModel
+        {
+            Id = e.Id,
+            Title = e.Title,
+            Description = e.Description,
+            Date = e.Date,
+            FormattedDate = e.Date.ToString("dd MMMM yyyy", new CultureInfo("tr-TR")).ToUpper(),
+            Time = e.Date.ToString("HH:mm"),
+            Location = e.Location,
+            CategoryTag = "ETKİNLİK",
+            CategoryColor = idx % 3 == 0 ? "blue" : (idx % 3 == 1 ? "red" : "yellow"),
+            ImageUrl = e.ImageUrl
+        }).ToList();
+
+        var dbProjects = await ProjectService.GetAllAsync(featuredOnly: true);
+        if (dbProjects.Count == 0)
+        {
+            dbProjects = await ProjectService.GetAllAsync();
+        }
+
+        projects = dbProjects.Take(4).Select((p, idx) => new ProjectViewModel
+        {
+            Id = p.Id,
+            Name = p.Name,
+            Description = p.Description,
+            Category = p.IsFeatured ? "ÖNE ÇIKAN PROJE" : "KULÜP PROJESİ",
+            ProjectNumber = (idx + 1).ToString("D2"),
+            ThemeColor = idx % 4 == 0 ? "blue" : (idx % 4 == 1 ? "green" : (idx % 4 == 2 ? "yellow" : "red")),
+            GitHubUrl = p.GitHubUrl,
+            LiveUrl = p.LiveDemoUrl,
+            Technologies = p.Technologies.Select(t => t.Name).ToList()
+        }).ToList();
+
+        var dbMembers = await MemberService.GetAllAsync();
+        totalMembers = dbMembers.Count;
 
         CalculateRemainingTime();
     }
 
     private void CalculateRemainingTime()
     {
-        var diff = upcomingEvent.Date - DateTime.Now;
+        if (upcomingEvent == null) return;
+        var nowTurkey = DateTime.UtcNow.AddHours(3);
+        var diff = upcomingEvent.Date - nowTurkey;
         if (diff.TotalSeconds > 0)
         {
             days = diff.Days;

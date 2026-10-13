@@ -9,21 +9,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GDG.Infrastructure.Services
 {
-    /// <summary>
-    /// ITechnologyService'in veritabanına (PostgreSQL / EF Core) bağlı uygulaması.
-    /// </summary>
     public class TechnologyService : ITechnologyService
     {
-        private readonly ApplicationDbContext _db;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
-        public TechnologyService(ApplicationDbContext db)
+        public TechnologyService(
+            IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _db = db;
+            _contextFactory = contextFactory;
         }
 
         public async Task<List<TechnologyDto>> GetAllAsync()
         {
-            var technologies = await _db.Technologies
+            await using var db = await _contextFactory.CreateDbContextAsync();
+
+            var technologies = await db.Technologies
                 .AsNoTracking()
                 .OrderBy(t => t.Name)
                 .ToListAsync();
@@ -33,35 +33,71 @@ namespace GDG.Infrastructure.Services
 
         public async Task<TechnologyDto?> GetByIdAsync(int id)
         {
-            var tech = await _db.Technologies
+            await using var db = await _contextFactory.CreateDbContextAsync();
+
+            var technology = await db.Technologies
                 .AsNoTracking()
                 .FirstOrDefaultAsync(t => t.Id == id);
 
-            return tech == null ? null : ToDto(tech);
+            return technology == null ? null : ToDto(technology);
         }
 
         public async Task<TechnologyDto> CreateAsync(CreateTechnologyDto dto)
         {
-            var tech = new Technology
+            await using var db = await _contextFactory.CreateDbContextAsync();
+
+            var technology = new Technology
             {
                 Name = dto.Name.Trim(),
-                IconClass = string.IsNullOrWhiteSpace(dto.IconClass) ? "bi-code-slash" : dto.IconClass.Trim(),
-                ColorHex = string.IsNullOrWhiteSpace(dto.ColorHex) ? "#4285F4" : dto.ColorHex.Trim()
+                IconClass = string.IsNullOrWhiteSpace(dto.IconClass)
+                    ? "bi-code-slash"
+                    : dto.IconClass.Trim(),
+                ColorHex = string.IsNullOrWhiteSpace(dto.ColorHex)
+                    ? "#4285F4"
+                    : dto.ColorHex.Trim()
             };
 
-            _db.Technologies.Add(tech);
-            await _db.SaveChangesAsync();
+            db.Technologies.Add(technology);
+            await db.SaveChangesAsync();
 
-            return ToDto(tech);
+            return ToDto(technology);
+        }
+
+        public async Task<bool> UpdateAsync(UpdateTechnologyDto dto)
+        {
+            await using var db = await _contextFactory.CreateDbContextAsync();
+
+            var technology = await db.Technologies
+                .FirstOrDefaultAsync(t => t.Id == dto.Id);
+
+            if (technology == null)
+                return false;
+
+            technology.Name = dto.Name.Trim();
+            technology.IconClass = string.IsNullOrWhiteSpace(dto.IconClass)
+                ? "bi-code-slash"
+                : dto.IconClass.Trim();
+            technology.ColorHex = string.IsNullOrWhiteSpace(dto.ColorHex)
+                ? "#4285F4"
+                : dto.ColorHex.Trim();
+
+            await db.SaveChangesAsync();
+            return true;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var tech = await _db.Technologies.FirstOrDefaultAsync(t => t.Id == id);
-            if (tech == null) return false;
+            await using var db = await _contextFactory.CreateDbContextAsync();
 
-            _db.Technologies.Remove(tech);
-            await _db.SaveChangesAsync();
+            var technology = await db.Technologies
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (technology == null)
+                return false;
+
+            db.Technologies.Remove(technology);
+            await db.SaveChangesAsync();
+
             return true;
         }
 

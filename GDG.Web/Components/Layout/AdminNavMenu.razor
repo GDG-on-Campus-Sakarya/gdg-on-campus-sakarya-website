@@ -72,6 +72,13 @@
             <div class="nav-section-title mt-3 mb-1 px-3">Sistem</div>
 
             <div class="nav-item">
+                <NavLink class="nav-pill-link" href="/admin/messages" Match="NavLinkMatch.Prefix">
+                    <span class="material-symbols-outlined nav-icon">mail</span>
+                    <span class="nav-text">Gelen Mesajlar</span>
+                </NavLink>
+            </div>
+
+            <div class="nav-item">
                 <NavLink class="nav-pill-link" href="/admin/settings" Match="NavLinkMatch.Prefix">
                     <span class="material-symbols-outlined nav-icon">settings</span>
                     <span class="nav-text">Ayarlar</span>
@@ -82,19 +89,26 @@
 
     <!-- User / Admin Quick Card at Bottom -->
     <div class="p-3 border-top mt-auto" style="border-color: #ECEFF1 !important; background-color: #FAFBFD;">
-        <div class="d-flex align-items-center gap-3">
-            <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm" 
-                 style="width: 36px; height: 36px; background-color: #4285F4; font-size: 0.85rem;">
-                EY
-            </div>
-            <div class="overflow-hidden flex-grow-1">
-                <div class="fw-semibold text-dark text-truncate" style="font-size: 0.85rem;">Enes Yel</div>
-                <div class="text-muted text-truncate" style="font-size: 0.725rem;">Lead Administrator</div>
-            </div>
-            <a href="/admin/settings" class="btn-google-icon" title="Profil & Ayarlar">
-                <span class="material-symbols-outlined" style="font-size: 18px;">tune</span>
-            </a>
-        </div>
+        <AuthorizeView>
+            <Authorized>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm" 
+                         style="width: 36px; height: 36px; background-color: #4285F4; font-size: 0.85rem;">
+                        @(context.User.Identity?.Name?.Substring(0, Math.Min(2, context.User.Identity.Name.Length)).ToUpper() ?? "AD")
+                    </div>
+                    <div class="overflow-hidden flex-grow-1">
+                        <div class="fw-semibold text-dark text-truncate" style="font-size: 0.85rem;">@(context.User.Identity?.Name ?? "Yönetici")</div>
+                        <div class="text-muted text-truncate" style="font-size: 0.725rem;">Lead Administrator</div>
+                    </div>
+                    <a href="/admin/settings" class="btn-google-icon" title="Profil & Ayarlar">
+                        <span class="material-symbols-outlined" style="font-size: 18px;">tune</span>
+                    </a>
+                </div>
+            </Authorized>
+            <NotAuthorized>
+                <a href="/admin/login" class="btn btn-google-primary btn-sm w-100 justify-content-center">Giriş Yap</a>
+            </NotAuthorized>
+        </AuthorizeView>
     </div>
 </div>
 

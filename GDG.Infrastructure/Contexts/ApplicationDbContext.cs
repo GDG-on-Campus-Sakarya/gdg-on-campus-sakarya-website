@@ -1,4 +1,4 @@
-﻿using GDG.Domain.Entities;
+using GDG.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
@@ -15,5 +15,7 @@ namespace GDG.Infrastructure.Contexts
         public DbSet<Event> Events { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<Technology> Technologies { get; set; }
+        public DbSet<SiteSetting> SiteSettings { get; set; }
+        public DbSet<ContactMessage> ContactMessages { get; set; }
     }
 }
