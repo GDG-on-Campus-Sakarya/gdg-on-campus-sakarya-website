@@ -177,12 +177,14 @@
         };
 
         return team.Members
-            .OrderBy(m => m.FullName)
+            .OrderByDescending(member => team.LeaderMemberId.HasValue && member.Id == team.LeaderMemberId.Value)
+            .ThenBy(member => member.FullName, StringComparer.CurrentCultureIgnoreCase)
             .Select((member, index) => new MemberViewModel
             {
                 Id = member.Id,
                 FullName = member.FullName,
                 Role = member.Role,
+                IsTeamLeader = team.LeaderMemberId.HasValue && member.Id == team.LeaderMemberId.Value,
 
                 // Her ekipte aynı üyenin kartı o ekibin
                 // üyeliği üzerinden oluşturulur.

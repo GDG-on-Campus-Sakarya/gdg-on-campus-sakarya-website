@@ -138,6 +138,10 @@
                                                     </span>
                                                     <span>@member.FullName</span>
                                                     <span class="text-muted small">(@member.Role)</span>
+                                                    @if (team.LeaderMemberId == member.Id)
+                                                    {
+                                                        <span class="badge rounded-pill text-bg-primary">Lider</span>
+                                                    }
                                                 </span>
                                             }
                                         </div>
@@ -187,6 +191,21 @@
                                 <InputTextArea @bind-Value="editModel.Description" rows="3" class="form-control g-input w-100" placeholder="Ekibin hedefleri ve sorumlulukları..." />
                             </div>
 
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Ekip Lideri</label>
+                                <InputSelect @bind-Value="editModel.LeaderMemberId" class="form-select g-input w-100">
+                                    <option value="">Lider seçilmedi</option>
+                                    @if (allMembers != null)
+                                    {
+                                        @foreach (var member in allMembers)
+                                        {
+                                            <option value="@member.Id">@member.FullName — @member.Role</option>
+                                        }
+                                    }
+                                </InputSelect>
+                                <div class="form-text">Seçtiğin lider bu ekibin üyesi olarak da ilişkilendirilir.</div>
+                            </div>
+
                             <!-- Ekibe Üye Ekleme / Seçme -->
                             <div class="mb-4">
                                 <label class="form-label small fw-semibold d-block">Ekip Üyeleri (Seç / Ata)</label>
@@ -234,6 +253,21 @@
                             <div class="mb-3">
                                 <label class="form-label small fw-semibold">Açıklama</label>
                                 <InputTextArea @bind-Value="createModel.Description" rows="3" class="form-control g-input w-100" placeholder="Ekibin hedefleri ve sorumlulukları..." />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Ekip Lideri</label>
+                                <InputSelect @bind-Value="createModel.LeaderMemberId" class="form-select g-input w-100">
+                                    <option value="">Lider seçilmedi</option>
+                                    @if (allMembers != null)
+                                    {
+                                        @foreach (var member in allMembers)
+                                        {
+                                            <option value="@member.Id">@member.FullName — @member.Role</option>
+                                        }
+                                    }
+                                </InputSelect>
+                                <div class="form-text">Lideri kaydettiğinde bu kişiyi ekibe de dahil ederiz.</div>
                             </div>
 
                             <!-- Ekibe Üye Ekleme / Seçme -->
@@ -329,6 +363,7 @@
             Id = team.Id,
             Name = team.Name,
             Description = team.Description,
+            LeaderMemberId = team.LeaderMemberId,
             SelectedMemberIds = team.Members.Select(m => m.Id).ToList()
         };
         isEditing = true;

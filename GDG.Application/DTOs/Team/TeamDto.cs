@@ -9,6 +9,7 @@ namespace GDG.Application.DTOs.Team
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public int? LeaderMemberId { get; set; }
         public List<MemberDto> Members { get; set; } = new();
     }
 
@@ -19,6 +20,8 @@ namespace GDG.Application.DTOs.Team
         public string Name { get; set; } = string.Empty;
 
         public string Description { get; set; } = string.Empty;
+
+        public int? LeaderMemberId { get; set; }
 
         public List<int> SelectedMemberIds { get; set; } = new();
     }
@@ -32,6 +35,8 @@ namespace GDG.Application.DTOs.Team
         public string Name { get; set; } = string.Empty;
 
         public string Description { get; set; } = string.Empty;
+
+        public int? LeaderMemberId { get; set; }
 
         public List<int> SelectedMemberIds { get; set; } = new();
     }

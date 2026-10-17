@@ -67,6 +67,42 @@
     color: var(--muted);
 }
 
+/* Member name and team-leader badge */
+.member-name-line {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+    min-width: 0;
+}
+
+.member-name-line .member-name {
+    margin: 0;
+    min-width: 0;
+}
+
+.member-leader-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    flex: 0 0 auto;
+    padding: 3px 7px;
+    border: 1px solid #c7dcff;
+    border-radius: 999px;
+    background: #eaf2ff;
+    color: #174ea6;
+    font-size: 0.65rem;
+    font-weight: 750;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+.member-leader-badge .material-symbols-outlined {
+    font-size: 13px;
+    line-height: 1;
+}
+
 /* Info Row */
 .member-info-row {
     padding: var(--space-5) var(--space-6);
@@ -80,6 +116,7 @@
 
 .name-role-group {
     display: flex;
+    flex: 1 1 auto;
     flex-direction: column;
     gap: 2px;
     min-width: 0;

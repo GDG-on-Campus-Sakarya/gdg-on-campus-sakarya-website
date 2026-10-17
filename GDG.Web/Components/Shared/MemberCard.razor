@@ -45,9 +45,19 @@
         <!-- Info & Socials Section -->
         <div class="member-info-row">
             <div class="name-role-group">
-                <h3 class="member-name" title="@Item.FullName">
-                    @Item.FullName
-                </h3>
+                <div class="member-name-line">
+                    <h3 class="member-name" title="@Item.FullName">
+                        @Item.FullName
+                    </h3>
+
+                    @if (Item.IsTeamLeader)
+                    {
+                        <span class="member-leader-badge" title="Bu ekibin lideri">
+                            <span class="material-symbols-outlined" aria-hidden="true">workspace_premium</span>
+                            <span>Lider</span>
+                        </span>
+                    }
+                </div>
                 <p class="member-role">
                     @(string.IsNullOrWhiteSpace(Item.Role) ? "Ekip Üyesi" : Item.Role)
                 </p>

@@ -10,6 +10,9 @@ namespace GDG.Domain.Entities
 
         public string Description { get; set; } = string.Empty;
 
+        // Bu ekibin lideri olan üye (isteğe bağlı).
+        public int? LeaderMemberId { get; set; }
+
         // Bu ekibin ana ekibi olduğu üyeler.
         public List<Member> Members { get; set; } = new();
 

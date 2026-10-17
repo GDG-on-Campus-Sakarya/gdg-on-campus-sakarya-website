@@ -403,12 +403,15 @@
 
         // Ana sayfada gösterilecek üye kartlarını oluştur.
         members = dbMembers
+            .OrderByDescending(member => dbTeams.Any(team => team.LeaderMemberId == member.Id))
+            .ThenBy(member => member.FullName, StringComparer.CurrentCultureIgnoreCase)
             .Take(4)
             .Select((member, index) => new MemberViewModel
             {
                 Id = member.Id,
                 FullName = member.FullName,
                 Role = member.Role,
+                IsTeamLeader = dbTeams.Any(team => team.LeaderMemberId == member.Id),
                 TeamName = teamNamesById.TryGetValue(
                     member.TeamId,
                     out var teamName)

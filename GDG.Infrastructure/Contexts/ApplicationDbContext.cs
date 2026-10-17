@@ -31,6 +31,14 @@ namespace GDG.Infrastructure.Contexts
         {
             base.OnModelCreating(modelBuilder);
 
+            // Her ekibin isteğe bağlı bir lideri olabilir.
+            // Lider silinirse ekip kaydı korunur ve lider alanı boşalır.
+            modelBuilder.Entity<Team>()
+                .HasOne<Member>()
+                .WithMany()
+                .HasForeignKey(team => team.LeaderMemberId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             // Üyenin ana ekibi: Member.TeamId -> Team.Id
 modelBuilder.Entity<Member>()
     .HasOne(member => member.Team)

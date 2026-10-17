@@ -12,5 +12,6 @@ public class MemberViewModel
     public string? AvatarUrl { get; set; }
     public string? GitHubUrl { get; set; }
     public string? LinkedInUrl { get; set; }
+    public bool IsTeamLeader { get; set; }
     public string CardColor { get; set; } = "blue"; // "blue", "orange", "yellow", "green"
 }

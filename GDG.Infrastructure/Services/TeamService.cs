@@ -58,10 +58,17 @@ namespace GDG.Infrastructure.Services
             await using var db =
                 await _contextFactory.CreateDbContextAsync();
 
+            if (dto.LeaderMemberId.HasValue &&
+                !await db.Members.AnyAsync(m => m.Id == dto.LeaderMemberId.Value))
+            {
+                throw new InvalidOperationException("Seçilen ekip lideri bulunamadı.");
+            }
+
             var team = new Team
             {
                 Name = dto.Name.Trim(),
-                Description = dto.Description.Trim()
+                Description = dto.Description.Trim(),
+                LeaderMemberId = dto.LeaderMemberId
             };
 
             db.Teams.Add(team);
@@ -72,16 +79,28 @@ namespace GDG.Infrastructure.Services
                 .Distinct()
                 .ToList();
 
+            // Lider ayrıca işaretlenmemiş olsa bile o ekibin üyesi olmalıdır.
+            if (dto.LeaderMemberId.HasValue && !selectedIds.Contains(dto.LeaderMemberId.Value))
+            {
+                selectedIds.Add(dto.LeaderMemberId.Value);
+            }
+
             if (selectedIds.Count > 0)
             {
                 var selectedMembers = await db.Members
                     .Where(m => selectedIds.Contains(m.Id))
                     .ToListAsync();
 
+                if (selectedMembers.Count != selectedIds.Count)
+                {
+                    throw new InvalidOperationException("Seçilen ekip üyelerinden biri bulunamadı.");
+                }
+
                 foreach (var member in selectedMembers)
                 {
                     // Üyenin ana ekibini değiştirmiyoruz.
-                    if (member.TeamId != team.Id)
+                    if (member.TeamId != team.Id &&
+                        !team.AdditionalMembers.Any(existing => existing.Id == member.Id))
                     {
                         team.AdditionalMembers.Add(member);
                     }
@@ -117,8 +136,20 @@ namespace GDG.Infrastructure.Services
             if (selectedMembers.Count != selectedIds.Count)
                 return false;
 
+            if (dto.LeaderMemberId.HasValue &&
+                !await db.Members.AnyAsync(m => m.Id == dto.LeaderMemberId.Value))
+            {
+                return false;
+            }
+
             team.Name = dto.Name.Trim();
             team.Description = dto.Description.Trim();
+            team.LeaderMemberId = dto.LeaderMemberId;
+
+            // Lider seçildiyse, bu kişinin ilgili ekibin de üyesi olmasını sağla.
+            var leaderMember = dto.LeaderMemberId.HasValue
+                ? await db.Members.FirstOrDefaultAsync(m => m.Id == dto.LeaderMemberId.Value)
+                : null;
 
             // Formdan kaldırılmış ek üyelikleri temizle.
             foreach (var member in team.AdditionalMembers.ToList())
@@ -145,6 +176,12 @@ namespace GDG.Infrastructure.Services
                 {
                     team.AdditionalMembers.Add(member);
                 }
+            }
+
+            if (leaderMember != null && leaderMember.TeamId != team.Id &&
+                !team.AdditionalMembers.Any(m => m.Id == leaderMember.Id))
+            {
+                team.AdditionalMembers.Add(leaderMember);
             }
 
             await db.SaveChangesAsync();
@@ -186,7 +223,8 @@ namespace GDG.Infrastructure.Services
                 .Concat(team.AdditionalMembers)
                 .GroupBy(m => m.Id)
                 .Select(group => group.First())
-                .OrderBy(m => m.FullName)
+                .OrderByDescending(m => team.LeaderMemberId.HasValue && m.Id == team.LeaderMemberId.Value)
+                .ThenBy(m => m.FullName, StringComparer.CurrentCultureIgnoreCase)
                 .Select(MemberService.ToDto)
                 .ToList();
 
@@ -195,6 +233,7 @@ namespace GDG.Infrastructure.Services
                 Id = team.Id,
                 Name = team.Name,
                 Description = team.Description,
+                LeaderMemberId = team.LeaderMemberId,
                 Members = members
             };
         }
