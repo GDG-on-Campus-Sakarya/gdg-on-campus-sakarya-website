@@ -405,7 +405,7 @@
         members = dbMembers
             .OrderByDescending(member => dbTeams.Any(team => team.LeaderMemberId == member.Id))
             .ThenBy(member => member.FullName, StringComparer.CurrentCultureIgnoreCase)
-            .Take(4)
+            .Take(5)
             .Select((member, index) => new MemberViewModel
             {
                 Id = member.Id,
