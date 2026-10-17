@@ -6,23 +6,41 @@
     <article class="member-card tint-@(string.IsNullOrWhiteSpace(Item.CardColor) ? "blue" : Item.CardColor)">
         <!-- Photo Avatar Section -->
         <div class="avatar-area">
-            @if (!string.IsNullOrEmpty(Item.AvatarUrl))
-            {
-                <img src="@Item.AvatarUrl" alt="@Item.FullName" class="avatar-img" loading="lazy" />
-            }
-            else
-            {
-                <div class="avatar-placeholder" aria-hidden="true">
-                    <div class="placeholder-icon-wrap">
-                        <svg class="placeholder-icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                    </div>
-                    <span class="placeholder-text">Fotoğraf yakında</span>
-                </div>
-            }
+    @if (!string.IsNullOrEmpty(Item.AvatarUrl))
+    {
+        <!-- Fotoğrafın bulanık arka planı -->
+        <div class="avatar-backdrop" aria-hidden="true">
+            <img src="@Item.AvatarUrl" alt="" loading="lazy" />
         </div>
+
+        <!-- Fotoğrafın tamamını gösteren ana görsel -->
+        <img src="@Item.AvatarUrl"
+             alt="@Item.FullName"
+             class="avatar-img"
+             loading="lazy" />
+    }
+    else
+    {
+        <div class="avatar-placeholder" aria-hidden="true">
+            <div class="placeholder-icon-wrap">
+                <svg class="placeholder-icon"
+                     viewBox="0 0 24 24"
+                     width="28"
+                     height="28"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.75"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </div>
+
+            <span class="placeholder-text">Fotoğraf yakında</span>
+        </div>
+    }
+</div>
 
         <!-- Info & Socials Section -->
         <div class="member-info-row">

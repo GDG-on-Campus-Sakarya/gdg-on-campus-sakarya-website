@@ -1,8 +1,15 @@
-<div class="sidebar-wrapper d-flex flex-column h-100 bg-white border-end" style="border-color: #E0E2E6 !important;">
+@using Microsoft.AspNetCore.Components
+
+<div class="sidebar-wrapper d-flex flex-column h-100 bg-white border-end"
+     style="border-color: #E0E2E6 !important;">
+
     <!-- Brand / Community Header -->
-    <div class="px-4 py-3 d-flex align-items-center gap-3 border-bottom" style="border-color: #ECEFF1 !important; min-height: 65px;">
-        <div class="d-flex align-items-center justify-content-center rounded-3 shadow-sm" style="width: 38px; height: 38px; background: #FFFFFF; border: 1px solid #E0E2E6;">
-            <!-- Google 4-color dot cluster -->
+    <div class="admin-sidebar-brand px-4 py-3 d-flex align-items-center gap-3 border-bottom"
+         style="border-color: #ECEFF1 !important; min-height: 65px;">
+
+        <div class="d-flex align-items-center justify-content-center rounded-3 shadow-sm"
+             style="width: 38px; height: 38px; background: #FFFFFF; border: 1px solid #E0E2E6; flex-shrink: 0;">
+
             <div class="d-flex flex-wrap" style="width: 18px; height: 18px; gap: 2px;">
                 <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #4285F4;"></span>
                 <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #EA4335;"></span>
@@ -10,105 +17,163 @@
                 <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #34A853;"></span>
             </div>
         </div>
-        <div class="overflow-hidden">
-            <div class="fw-bold text-dark text-truncate" style="font-size: 0.95rem; letter-spacing: -0.2px;">Community Admin</div>
-            <div class="text-muted text-truncate" style="font-size: 0.725rem;">GDG on Campus Sakarya</div>
+
+        <div class="overflow-hidden flex-grow-1">
+            <div class="fw-bold text-dark text-truncate"
+                 style="font-size: 0.95rem; letter-spacing: -0.2px;">
+                Community Admin
+            </div>
+
+            <div class="text-muted text-truncate" style="font-size: 0.725rem;">
+                GDG on Campus Sakarya
+            </div>
         </div>
+
+        <!-- Mobile Close Button -->
+        <button type="button"
+                class="admin-mobile-sidebar-close"
+                aria-label="Menüyü kapat"
+                @onclick="OnCloseRequested">
+            <span class="material-symbols-outlined" aria-hidden="true">close</span>
+        </button>
     </div>
 
     <!-- Navigation List -->
     <div class="nav-scrollable flex-grow-1 px-3 py-3 overflow-y-auto">
         <nav class="d-flex flex-column gap-1">
-            <!-- Section: DASHBOARD -->
+
             <div class="nav-item">
-                <NavLink class="nav-pill-link" href="/admin" Match="NavLinkMatch.All">
+                <NavLink class="nav-pill-link"
+                         href="/admin"
+                         Match="NavLinkMatch.All"
+                         @onclick="OnCloseRequested">
                     <span class="material-symbols-outlined nav-icon">dashboard</span>
                     <span class="nav-text">Dashboard</span>
                 </NavLink>
             </div>
 
-            <!-- Section: CONTENT -->
             <div class="nav-section-title mt-3 mb-1 px-3">İçerik Yönetimi</div>
 
             <div class="nav-item">
-                <NavLink class="nav-pill-link" href="/admin/projects" Match="NavLinkMatch.Prefix">
+                <NavLink class="nav-pill-link"
+                         href="/admin/projects"
+                         Match="NavLinkMatch.Prefix"
+                         @onclick="OnCloseRequested">
                     <span class="material-symbols-outlined nav-icon">folder_open</span>
                     <span class="nav-text">Projeler</span>
                 </NavLink>
             </div>
 
             <div class="nav-item">
-                <NavLink class="nav-pill-link" href="/admin/technologies" Match="NavLinkMatch.Prefix">
+                <NavLink class="nav-pill-link"
+                         href="/admin/technologies"
+                         Match="NavLinkMatch.Prefix"
+                         @onclick="OnCloseRequested">
                     <span class="material-symbols-outlined nav-icon">code</span>
                     <span class="nav-text">Teknolojiler</span>
                 </NavLink>
             </div>
 
             <div class="nav-item">
-                <NavLink class="nav-pill-link" href="/admin/events" Match="NavLinkMatch.Prefix">
+                <NavLink class="nav-pill-link"
+                         href="/admin/events"
+                         Match="NavLinkMatch.Prefix"
+                         @onclick="OnCloseRequested">
                     <span class="material-symbols-outlined nav-icon">event</span>
                     <span class="nav-text">Etkinlikler</span>
                 </NavLink>
             </div>
 
-            <!-- Section: PEOPLE -->
-            <div class="nav-section-title mt-3 mb-1 px-3">Topluluk & Ekip</div>
+            <div class="nav-section-title mt-3 mb-1 px-3">Topluluk &amp; Ekip</div>
 
             <div class="nav-item">
-                <NavLink class="nav-pill-link" href="/admin/members" Match="NavLinkMatch.Prefix">
+                <NavLink class="nav-pill-link"
+                         href="/admin/members"
+                         Match="NavLinkMatch.Prefix"
+                         @onclick="OnCloseRequested">
                     <span class="material-symbols-outlined nav-icon">group</span>
                     <span class="nav-text">Üyeler</span>
                 </NavLink>
             </div>
 
             <div class="nav-item">
-                <NavLink class="nav-pill-link" href="/admin/teams" Match="NavLinkMatch.Prefix">
+                <NavLink class="nav-pill-link"
+                         href="/admin/teams"
+                         Match="NavLinkMatch.Prefix"
+                         @onclick="OnCloseRequested">
                     <span class="material-symbols-outlined nav-icon">groups</span>
                     <span class="nav-text">Ekipler</span>
                 </NavLink>
             </div>
 
-            <!-- Section: SYSTEM -->
             <div class="nav-section-title mt-3 mb-1 px-3">Sistem</div>
 
             <div class="nav-item">
-                <NavLink class="nav-pill-link" href="/admin/messages" Match="NavLinkMatch.Prefix">
+                <NavLink class="nav-pill-link"
+                         href="/admin/messages"
+                         Match="NavLinkMatch.Prefix"
+                         @onclick="OnCloseRequested">
                     <span class="material-symbols-outlined nav-icon">mail</span>
                     <span class="nav-text">Gelen Mesajlar</span>
                 </NavLink>
             </div>
 
             <div class="nav-item">
-                <NavLink class="nav-pill-link" href="/admin/settings" Match="NavLinkMatch.Prefix">
+                <NavLink class="nav-pill-link"
+                         href="/admin/settings"
+                         Match="NavLinkMatch.Prefix"
+                         @onclick="OnCloseRequested">
                     <span class="material-symbols-outlined nav-icon">settings</span>
                     <span class="nav-text">Ayarlar</span>
                 </NavLink>
             </div>
+
         </nav>
     </div>
 
     <!-- User / Admin Quick Card at Bottom -->
-    <div class="p-3 border-top mt-auto" style="border-color: #ECEFF1 !important; background-color: #FAFBFD;">
+    <div class="p-3 border-top mt-auto"
+         style="border-color: #ECEFF1 !important; background-color: #FAFBFD;">
+
         <AuthorizeView>
             <Authorized>
                 <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm" 
+
+                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm"
                          style="width: 36px; height: 36px; background-color: #4285F4; font-size: 0.85rem;">
-                        @(context.User.Identity?.Name?.Substring(0, Math.Min(2, context.User.Identity.Name.Length)).ToUpper() ?? "AD")
+                        @(context.User.Identity?.Name is string userName && userName.Length > 0
+                            ? userName[..Math.Min(2, userName.Length)].ToUpperInvariant()
+                            : "AD")
                     </div>
+
                     <div class="overflow-hidden flex-grow-1">
-                        <div class="fw-semibold text-dark text-truncate" style="font-size: 0.85rem;">@(context.User.Identity?.Name ?? "Yönetici")</div>
-                        <div class="text-muted text-truncate" style="font-size: 0.725rem;">Lead Administrator</div>
+                        <div class="fw-semibold text-dark text-truncate"
+                             style="font-size: 0.85rem;">
+                            @(context.User.Identity?.Name ?? "Yönetici")
+                        </div>
+
+                        <div class="text-muted text-truncate" style="font-size: 0.725rem;">
+                            Lead Administrator
+                        </div>
                     </div>
-                    <a href="/admin/settings" class="btn-google-icon" title="Profil & Ayarlar">
+
+                    <a href="/admin/settings"
+                       class="btn-google-icon"
+                       title="Profil & Ayarlar">
                         <span class="material-symbols-outlined" style="font-size: 18px;">tune</span>
                     </a>
+
                 </div>
             </Authorized>
+
             <NotAuthorized>
-                <a href="/admin/login" class="btn btn-google-primary btn-sm w-100 justify-content-center">Giriş Yap</a>
+                <a href="/admin/login"
+                   class="btn btn-google-primary btn-sm w-100 justify-content-center">
+                    Giriş Yap
+                </a>
             </NotAuthorized>
         </AuthorizeView>
+
     </div>
 </div>
 
@@ -155,4 +220,29 @@
         color: #5F6368;
         transition: color 0.15s ease;
     }
+
+    .admin-mobile-sidebar-close {
+        display: none;
+    }
+
+    @@media (max-width: 767.98px) {
+        .admin-mobile-sidebar-close {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 40px;
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            background: #F1F3F4;
+            color: #202124;
+            cursor: pointer;
+        }
+    }
 </style>
+
+@code {
+    [Parameter]
+    public EventCallback OnCloseRequested { get; set; }
+}

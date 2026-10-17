@@ -9,72 +9,86 @@
 <PageTitle>GDG on Campus Sakarya - Ana Sayfa</PageTitle>
 
 <div class="home-wrapper">
-    <!-- SECTION 1: HERO BANNER -->
     <section class="hero-section text-center">
         <div class="container-custom">
-            <!-- GDG Brackets Logo -->
             <div class="hero-logo-box">
                 <GdgBracketsLogo Width="80" Height="50" />
             </div>
 
-            <!-- Main Heading with Brand Colors -->
             <h1 class="hero-title">
-                <span class="c-blue">GDG</span> <span class="c-red">on</span> <span class="c-yellow">Campus</span> <span class="c-green">Sakarya</span>
+                <span class="c-blue">GDG</span>
+                <span class="c-red">on</span>
+                <span class="c-yellow">Campus</span>
+                <span class="c-green">Sakarya</span>
             </h1>
 
-            <!-- Subtitle -->
             <p class="hero-subtitle">
-                Merak eden, üreten ve paylaşan öğrencileri bir araya getiriyoruz. Geleceğin teknolojilerini Sakarya Üniversitesi'nde birlikte keşfetmeye hazır mısın?
+                Merak eden, üreten ve paylaşan öğrencileri bir araya getiriyoruz.
+                Geleceğin teknolojilerini Sakarya Üniversitesi'nde birlikte
+                keşfetmeye hazır mısın?
             </p>
 
-            <!-- Hero Action Buttons -->
             <div class="hero-actions">
                 <a href="/projects" class="btn-action-primary hero-btn">
                     <span>Projeleri İncele</span>
-                    <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor" aria-hidden="true">
-                        <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    <svg viewBox="0 0 20 20" width="16" height="16"
+                         fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd"
+                              d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                              clip-rule="evenodd" />
                     </svg>
                 </a>
+
                 <a href="/events" class="btn-action-outlined hero-btn">
                     <span>Etkinliklere Göz At</span>
                 </a>
             </div>
 
-            <!-- Scroll Down Indicator -->
             <div class="scroll-indicator" aria-hidden="true">
                 <div class="scroll-dot"></div>
             </div>
         </div>
     </section>
 
-    <!-- SECTION 2: TOP BENTO GRID (UPCOMING EVENT COUNTDOWN & QUICK STATS) -->
     <section class="section-container">
         <div class="container-custom">
             <div class="top-bento-grid">
-                <!-- Left Countdown Bento Card -->
                 <div class="countdown-card">
                     <div class="countdown-badge">
                         <span class="pulse-dot" aria-hidden="true"></span>
-                        <span>@(string.IsNullOrWhiteSpace(upcomingEvent?.CategoryTag) ? "YAKLAŞAN ETKİNLİK" : upcomingEvent.CategoryTag)</span>
+                        <span>
+                            @(string.IsNullOrWhiteSpace(upcomingEvent?.CategoryTag)
+                                ? "YAKLAŞAN ETKİNLİK"
+                                : upcomingEvent.CategoryTag)
+                        </span>
                     </div>
 
-                    <h2 class="countdown-title">@(upcomingEvent?.Title ?? "Etkinlik Planlanıyor")</h2>
-                    <p class="countdown-sub">@(upcomingEvent != null ? "İlk etkinliğimize kalan süre" : "Yaklaşan etkinlikler için bizi takip edin.")</p>
+                    <h2 class="countdown-title">
+                        @(upcomingEvent?.Title ?? "Etkinlik Planlanıyor")
+                    </h2>
 
-                    <!-- Countdown Numbers Grid -->
+                    <p class="countdown-sub">
+                        @(upcomingEvent != null
+                            ? "İlk etkinliğimize kalan süre"
+                            : "Yaklaşan etkinlikler için bizi takip edin.")
+                    </p>
+
                     <div class="countdown-boxes-grid">
                         <div class="cd-box">
                             <span class="cd-num">@days.ToString("D2")</span>
                             <span class="cd-label">Gün</span>
                         </div>
+
                         <div class="cd-box">
                             <span class="cd-num">@hours.ToString("D2")</span>
                             <span class="cd-label">Saat</span>
                         </div>
+
                         <div class="cd-box">
                             <span class="cd-num">@minutes.ToString("D2")</span>
                             <span class="cd-label">Dakika</span>
                         </div>
+
                         <div class="cd-box">
                             <span class="cd-num">@seconds.ToString("D2")</span>
                             <span class="cd-label">Saniye</span>
@@ -82,42 +96,64 @@
                     </div>
                 </div>
 
-                <!-- Right Column Stacked Cards -->
                 <div class="bento-stats-stack">
-                    <!-- Member Stat Card -->
                     <div class="stat-card green-stat-card">
                         <div class="stat-card-header">
                             <div class="stat-icon-wrap" aria-hidden="true">
-                                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <svg viewBox="0 0 24 24" width="22" height="22"
+                                     fill="none" stroke="currentColor"
+                                     stroke-width="2.2" stroke-linecap="round"
+                                     stroke-linejoin="round">
                                     <line x1="18" y1="20" x2="18" y2="10"></line>
                                     <line x1="12" y1="20" x2="12" y2="4"></line>
                                     <line x1="6" y1="20" x2="6" y2="14"></line>
                                 </svg>
                             </div>
+
                             <span class="growth-badge">+18% bu dönem</span>
                         </div>
+
                         <div class="stat-card-content">
-                            <span class="stat-number">@(totalMembers > 0 ? $"{totalMembers}+" : "0")</span>
+                            <span class="stat-number">
+                                @(totalMembers > 0 ? $"{totalMembers}+" : "0")
+                            </span>
                             <span class="stat-label">Aktif Üye</span>
                         </div>
-                        <p class="stat-desc">Birlikte öğrenen, paylaşan ve üreten bir topluluk.</p>
+
+                        <p class="stat-desc">
+                            Birlikte öğrenen, paylaşan ve üreten bir topluluk.
+                        </p>
                     </div>
 
-                    <!-- Official community page card (the Discord invite has not been verified) -->
                     <div class="stat-card yellow-stat-card">
                         <div class="discord-card-row">
                             <div class="discord-info">
                                 <div class="discord-icon-wrap" aria-hidden="true">
-                                    <span class="material-symbols-outlined" aria-hidden="true">groups</span>
+                                    <span class="material-symbols-outlined"
+                                          aria-hidden="true">groups</span>
                                 </div>
+
                                 <div class="discord-texts">
-                                    <h3 class="discord-title">Topluluğa katıl, bağlantıda kal.</h3>
-                                    <p class="discord-sub">Resmi topluluk sayfamızdan bize katıl.</p>
+                                    <h3 class="discord-title">
+                                        Topluluğa katıl, bağlantıda kal.
+                                    </h3>
+
+                                    <p class="discord-sub">
+                                        Resmi topluluk sayfamızdan bize katıl.
+                                    </p>
                                 </div>
                             </div>
-                            <a href="@SiteLinks.JoinUrl" target="_blank" rel="noopener noreferrer" class="circle-action-btn" aria-label="Resmi Topluluk Sayfasına Git">
-                                <svg viewBox="0 0 20 20" width="18" height="18" fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+
+                            <a href="@SiteLinks.JoinUrl"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="circle-action-btn"
+                               aria-label="Resmi Topluluk Sayfasına Git">
+                                <svg viewBox="0 0 20 20" width="18" height="18"
+                                     fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd"
+                                          d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                                          clip-rule="evenodd" />
                                 </svg>
                             </a>
                         </div>
@@ -127,7 +163,6 @@
         </div>
     </section>
 
-    <!-- SECTION 3: EVENTS LISTING -->
     <section class="section-container" id="etkinlikler">
         <div class="container-custom">
             <div class="section-header-row">
@@ -135,15 +170,20 @@
                     <span class="section-kicker kicker-blue">ETKİNLİKLERİMİZ</span>
                     <h2 class="section-heading">Yaklaşan Buluşmalar</h2>
                 </div>
-                <a href="/events" class="see-all-action" aria-label="Tüm etkinlikleri görüntüle">
+
+                <a href="/events" class="see-all-action"
+                   aria-label="Tüm etkinlikleri görüntüle">
                     <span>Tüm etkinlikler</span>
-                    <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor" aria-hidden="true">
-                        <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    <svg viewBox="0 0 20 20" width="16" height="16"
+                         fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd"
+                              d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                              clip-rule="evenodd" />
                     </svg>
                 </a>
             </div>
 
-            @if (events != null && events.Any())
+            @if (events.Any())
             {
                 <div class="events-grid">
                     @foreach (var ev in events)
@@ -161,7 +201,6 @@
         </div>
     </section>
 
-    <!-- SECTION 4: OUR TEAM -->
     <section class="section-container" id="ekibimiz">
         <div class="container-custom">
             <div class="section-header-row">
@@ -169,25 +208,32 @@
                     <span class="section-kicker kicker-red">BİZİ TANIYIN</span>
                     <h2 class="section-heading">Ekibimiz</h2>
                 </div>
+
                 <div class="header-right-meta">
                     <p class="section-side-desc">
-                        Farklı disiplinlerden, aynı meraktan. Topluluğu birlikte büyütüyoruz.
+                        Farklı disiplinlerden, aynı meraktan.
+                        Topluluğu birlikte büyütüyoruz.
                     </p>
-                    <a href="/team" class="see-all-action" aria-label="Tüm ekip üyelerini görüntüle">
+
+                    <a href="/team" class="see-all-action"
+                       aria-label="Tüm ekip üyelerini görüntüle">
                         <span>Tüm ekibi gör</span>
-                        <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor" aria-hidden="true">
-                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        <svg viewBox="0 0 20 20" width="16" height="16"
+                             fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd"
+                                  d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                                  clip-rule="evenodd" />
                         </svg>
                     </a>
                 </div>
             </div>
 
-            @if (members != null && members.Any())
+            @if (members.Any())
             {
                 <div class="members-grid">
-                    @foreach (var m in members)
+                    @foreach (var member in members)
                     {
-                        <MemberCard @key="m.Id" Item="m" />
+                        <MemberCard @key="member.Id" Item="member" />
                     }
                 </div>
             }
@@ -200,7 +246,6 @@
         </div>
     </section>
 
-    <!-- SECTION 5: CLUB PROJECTS -->
     <section class="section-container pb-section" id="projeler">
         <div class="container-custom">
             <div class="section-header-row">
@@ -208,25 +253,31 @@
                     <span class="section-kicker kicker-green">FİKİRDEN ÜRÜNE</span>
                     <h2 class="section-heading">Kulüp Projeleri</h2>
                 </div>
+
                 <div class="header-right-meta">
                     <p class="section-side-desc">
                         Teknolojiyi gerçek sorunlara çözüm üretmek için kullanıyoruz.
                     </p>
-                    <a href="/projects" class="see-all-action" aria-label="Tüm projeleri görüntüle">
+
+                    <a href="/projects" class="see-all-action"
+                       aria-label="Tüm projeleri görüntüle">
                         <span>Tüm projeler</span>
-                        <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor" aria-hidden="true">
-                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        <svg viewBox="0 0 20 20" width="16" height="16"
+                             fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd"
+                                  d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                                  clip-rule="evenodd" />
                         </svg>
                     </a>
                 </div>
             </div>
 
-            @if (projects != null && projects.Any())
+            @if (projects.Any())
             {
                 <div class="projects-grid">
-                    @foreach (var p in projects)
+                    @foreach (var project in projects)
                     {
-                        <ProjectCard @key="p.Id" Item="p" />
+                        <ProjectCard @key="project.Id" Item="project" />
                     }
                 </div>
             }
@@ -245,7 +296,7 @@
     private List<EventViewModel> events = new();
     private List<MemberViewModel> members = new();
     private List<ProjectViewModel> projects = new();
-    private int totalMembers = 0;
+    private int totalMembers;
 
     private int days;
     private int hours;
@@ -255,7 +306,12 @@
     protected override async Task OnInitializedAsync()
     {
         var allEvents = await EventService.GetAllAsync();
-        var upcomingEvents = allEvents.Where(e => !e.IsPast).OrderBy(e => e.Date).ToList();
+
+        var upcomingEvents = allEvents
+            .Where(e => !e.IsPast)
+            .OrderBy(e => e.Date)
+            .ToList();
+
         var firstUpcoming = upcomingEvents.FirstOrDefault();
 
         if (firstUpcoming != null)
@@ -266,7 +322,9 @@
                 Title = firstUpcoming.Title,
                 Description = firstUpcoming.Description,
                 Date = firstUpcoming.Date,
-                FormattedDate = firstUpcoming.Date.ToString("dd MMMM yyyy", new CultureInfo("tr-TR")).ToUpper(),
+                FormattedDate = firstUpcoming.Date
+                    .ToString("dd MMMM yyyy", new CultureInfo("tr-TR"))
+                    .ToUpper(),
                 Time = firstUpcoming.Date.ToString("HH:mm"),
                 Location = firstUpcoming.Location,
                 CategoryTag = "YAKLAŞAN ETKİNLİK",
@@ -275,56 +333,113 @@
             };
         }
 
-        events = upcomingEvents.Take(3).Select((e, idx) => new EventViewModel
-        {
-            Id = e.Id,
-            Title = e.Title,
-            Description = e.Description,
-            Date = e.Date,
-            FormattedDate = e.Date.ToString("dd MMMM yyyy", new CultureInfo("tr-TR")).ToUpper(),
-            Time = e.Date.ToString("HH:mm"),
-            Location = e.Location,
-            CategoryTag = "ETKİNLİK",
-            CategoryColor = idx % 3 == 0 ? "blue" : (idx % 3 == 1 ? "red" : "yellow"),
-            ImageUrl = e.ImageUrl
-        }).ToList();
+        events = upcomingEvents
+            .Take(3)
+            .Select((eventItem, index) => new EventViewModel
+            {
+                Id = eventItem.Id,
+                Title = eventItem.Title,
+                Description = eventItem.Description,
+                Date = eventItem.Date,
+                FormattedDate = eventItem.Date
+                    .ToString("dd MMMM yyyy", new CultureInfo("tr-TR"))
+                    .ToUpper(),
+                Time = eventItem.Date.ToString("HH:mm"),
+                Location = eventItem.Location,
+                CategoryTag = "ETKİNLİK",
+                CategoryColor = index % 3 == 0
+                    ? "blue"
+                    : index % 3 == 1
+                        ? "red"
+                        : "yellow",
+                ImageUrl = eventItem.ImageUrl
+            })
+            .ToList();
 
         var dbProjects = await ProjectService.GetAllAsync(featuredOnly: true);
+
         if (dbProjects.Count == 0)
         {
             dbProjects = await ProjectService.GetAllAsync();
         }
 
-        projects = dbProjects.Take(4).Select((p, idx) => new ProjectViewModel
-        {
-            Id = p.Id,
-            Name = p.Name,
-            Description = p.Description,
-            Category = p.IsFeatured ? "ÖNE ÇIKAN PROJE" : "KULÜP PROJESİ",
-            ProjectNumber = (idx + 1).ToString("D2"),
-            ThemeColor = idx % 4 == 0 ? "blue" : (idx % 4 == 1 ? "green" : (idx % 4 == 2 ? "yellow" : "red")),
-            GitHubUrl = p.GitHubUrl,
-            LiveUrl = p.LiveDemoUrl,
-            Technologies = p.Technologies.Select(t => t.Name).ToList()
-        }).ToList();
+        projects = dbProjects
+            .Take(4)
+            .Select((project, index) => new ProjectViewModel
+            {
+                Id = project.Id,
+                Name = project.Name,
+                Description = project.Description,
+                Category = project.IsFeatured
+                    ? "ÖNE ÇIKAN PROJE"
+                    : "KULÜP PROJESİ",
+                ProjectNumber = (index + 1).ToString("D2"),
+                ThemeColor = index % 4 == 0
+                    ? "blue"
+                    : index % 4 == 1
+                        ? "green"
+                        : index % 4 == 2
+                            ? "yellow"
+                            : "red",
+                GitHubUrl = project.GitHubUrl,
+                LiveUrl = project.LiveDemoUrl,
+                Technologies = project.Technologies
+                    .Select(technology => technology.Name)
+                    .ToList()
+            })
+            .ToList();
 
+        // Ekip üyelerini ve ekip adlarını veritabanından al.
         var dbMembers = await MemberService.GetAllAsync();
+        var dbTeams = await TeamService.GetAllAsync();
+
         totalMembers = dbMembers.Count;
+
+        var teamNamesById = dbTeams.ToDictionary(
+            team => team.Id,
+            team => team.Name);
+
+        var memberColors = new[] { "blue", "red", "yellow", "green" };
+
+        // Ana sayfada gösterilecek üye kartlarını oluştur.
+        members = dbMembers
+            .Take(4)
+            .Select((member, index) => new MemberViewModel
+            {
+                Id = member.Id,
+                FullName = member.FullName,
+                Role = member.Role,
+                TeamName = teamNamesById.TryGetValue(
+                    member.TeamId,
+                    out var teamName)
+                        ? teamName
+                        : null,
+                AvatarUrl = member.AvatarUrl,
+                GitHubUrl = member.GitHubUrl,
+                LinkedInUrl = member.LinkedInUrl,
+                CardColor = memberColors[index % memberColors.Length]
+            })
+            .ToList();
 
         CalculateRemainingTime();
     }
 
     private void CalculateRemainingTime()
     {
-        if (upcomingEvent == null) return;
-        var nowTurkey = DateTime.UtcNow.AddHours(3);
-        var diff = upcomingEvent.Date - nowTurkey;
-        if (diff.TotalSeconds > 0)
+        if (upcomingEvent == null)
         {
-            days = diff.Days;
-            hours = diff.Hours;
-            minutes = diff.Minutes;
-            seconds = diff.Seconds;
+            return;
+        }
+
+        var nowTurkey = DateTime.UtcNow.AddHours(3);
+        var difference = upcomingEvent.Date - nowTurkey;
+
+        if (difference.TotalSeconds > 0)
+        {
+            days = difference.Days;
+            hours = difference.Hours;
+            minutes = difference.Minutes;
+            seconds = difference.Seconds;
         }
         else
         {

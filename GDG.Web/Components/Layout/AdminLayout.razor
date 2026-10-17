@@ -2,16 +2,37 @@
 @inject NavigationManager Navigation
 
 <div class="google-admin-layout d-flex vh-100 overflow-hidden">
+
+    <!-- Mobile backdrop -->
+    <button type="button"
+            class="admin-sidebar-backdrop @(isMobileSidebarOpen ? "visible" : "")"
+            aria-label="Yan menüyü kapat"
+            tabindex="-1"
+            @onclick="CloseMobileSidebar">
+    </button>
+
     <!-- Left Sidebar -->
-    <aside class="google-sidebar flex-shrink-0" style="width: 260px; height: 100vh;">
-        <AdminNavMenu />
+    <aside class="google-sidebar flex-shrink-0 @(isMobileSidebarOpen ? "mobile-open" : "")">
+        <AdminNavMenu OnCloseRequested="CloseMobileSidebar" />
     </aside>
 
     <!-- Main Content Area -->
     <div class="google-main-wrapper d-flex flex-column flex-grow-1 overflow-hidden" style="background-color: #F8F9FA;">
         <!-- Top Google Header -->
         <header class="google-top-header d-flex align-items-center justify-content-between px-4 bg-white border-bottom flex-shrink-0" 
+        
                 style="height: 65px; border-color: #E0E2E6 !important; z-index: 100;">
+                <!-- Mobile Sidebar Toggle -->
+<button type="button"
+        class="admin-mobile-menu-toggle"
+        @onclick="ToggleMobileSidebar"
+        aria-label="Yönetim menüsünü aç"
+        aria-expanded="@isMobileSidebarOpen">
+    <span class="material-symbols-outlined" aria-hidden="true">
+        menu
+    </span>
+</button>
+                
             <!-- Left: Breadcrumb / Section Info -->
             <div class="d-flex align-items-center gap-2">
                 <span class="d-none d-md-inline text-muted small fw-medium">GDG Sakarya</span>
@@ -99,6 +120,17 @@
 </div>
 
 @code {
+    private bool isMobileSidebarOpen = false;
+
+private void ToggleMobileSidebar()
+{
+    isMobileSidebarOpen = !isMobileSidebarOpen;
+}
+
+private void CloseMobileSidebar()
+{
+    isMobileSidebarOpen = false;
+}
     private static string GetUserInitials(string? name)
     {
         if (string.IsNullOrWhiteSpace(name)) return "AD";

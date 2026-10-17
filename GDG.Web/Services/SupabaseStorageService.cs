@@ -13,6 +13,7 @@ namespace GDG.Web.Services
     public sealed class SupabaseStorageService
     {
         private const long MaxAvatarSizeBytes = 5 * 1024 * 1024;
+        private const long MaxEventPosterSizeBytes = 8 * 1024 * 1024;
 
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
@@ -25,10 +26,41 @@ namespace GDG.Web.Services
             _configuration = configuration;
         }
 
-        public async Task<string> UploadMemberAvatarAsync(
+        public Task<string> UploadMemberAvatarAsync(
             Stream imageStream,
             string contentType,
             CancellationToken cancellationToken = default)
+        {
+            return UploadImageAsync(
+                imageStream,
+                contentType,
+                "members",
+                MaxAvatarSizeBytes,
+                "Üye fotoğrafı",
+                cancellationToken);
+        }
+
+        public Task<string> UploadEventPosterAsync(
+            Stream imageStream,
+            string contentType,
+            CancellationToken cancellationToken = default)
+        {
+            return UploadImageAsync(
+                imageStream,
+                contentType,
+                "events",
+                MaxEventPosterSizeBytes,
+                "Etkinlik afişi",
+                cancellationToken);
+        }
+
+        private async Task<string> UploadImageAsync(
+            Stream imageStream,
+            string contentType,
+            string folder,
+            long maxSizeBytes,
+            string fileDescription,
+            CancellationToken cancellationToken)
         {
             var projectUrl = _configuration["Supabase:Url"];
             var bucket = _configuration["Supabase:StorageBucket"];
@@ -65,7 +97,6 @@ namespace GDG.Web.Services
                     "Yalnızca JPG, PNG ve WebP görselleri yüklenebilir.")
             };
 
-            // Dosya boyutunu akış okunurken sınırla.
             await using var memoryStream = new MemoryStream();
 
             var buffer = new byte[81920];
@@ -77,12 +108,15 @@ namespace GDG.Web.Services
                     cancellationToken);
 
                 if (bytesRead == 0)
+                {
                     break;
+                }
 
-                if (memoryStream.Length + bytesRead > MaxAvatarSizeBytes)
+                if (memoryStream.Length + bytesRead > maxSizeBytes)
                 {
                     throw new InvalidOperationException(
-                        "Fotoğrafın boyutu 5 MB sınırını aşıyor.");
+                        $"{fileDescription} boyutu " +
+                        $"{maxSizeBytes / (1024 * 1024)} MB sınırını aşıyor.");
                 }
 
                 await memoryStream.WriteAsync(
@@ -98,15 +132,15 @@ namespace GDG.Web.Services
                     "Seçilen dosya boş.");
             }
 
-            // Tarayıcının bildirdiği içerik türüne tek başına güvenme.
+            // Content-Type bilgisini tek başına güvenilir kabul etme.
             if (!HasValidImageSignature(imageBytes, contentType))
             {
                 throw new InvalidOperationException(
-                    "Seçilen dosyanın içeriği geçerli bir JPG, PNG veya WebP görseli değil.");
+                    "Dosyanın içeriği geçerli bir JPG, PNG veya WebP görseli değil.");
             }
 
-            // Aynı isimdeki dosyanın üzerine yazmak yerine benzersiz bir isim kullan.
-            var objectPath = $"members/{Guid.NewGuid():N}{extension}";
+            // Aynı dosyanın üzerine yazmamak için benzersiz isim oluştur.
+            var objectPath = $"{folder}/{Guid.NewGuid():N}{extension}";
 
             var encodedBucket = Uri.EscapeDataString(bucket);
 
@@ -123,7 +157,7 @@ namespace GDG.Web.Services
                 HttpMethod.Post,
                 uploadUrl);
 
-            // Bu anahtar yalnızca sunucuda kullanılmalıdır.
+            // Service Role anahtarı yalnızca sunucu tarafında kullanılmalıdır.
             request.Headers.TryAddWithoutValidation(
                 "apikey",
                 serviceRoleKey);
@@ -144,17 +178,19 @@ namespace GDG.Web.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                var responseBody = await response.Content.ReadAsStringAsync(
-                    cancellationToken);
+                var responseBody =
+                    await response.Content.ReadAsStringAsync(
+                        cancellationToken);
 
                 throw new InvalidOperationException(
-                    $"Fotoğraf Supabase Storage'a yüklenemedi. " +
+                    $"{fileDescription} Supabase Storage'a yüklenemedi. " +
                     $"HTTP {(int)response.StatusCode}. {responseBody}");
             }
 
-            // Public bucket için görüntünün adresi.
+            // Bu URL public bucket için geçerlidir.
             return
-                $"{baseUrl}/storage/v1/object/public/{encodedBucket}/{encodedObjectPath}";
+                $"{baseUrl}/storage/v1/object/public/" +
+                $"{encodedBucket}/{encodedObjectPath}";
         }
 
         private static bool HasValidImageSignature(

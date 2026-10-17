@@ -1,8 +1,8 @@
 @page "/contact"
-@using System.Net.Mail
-@inject ISiteSettingsService SiteSettings
 @inject NavigationManager Navigation
 
+@using System.Net.Mail
+@inject ISiteSettingsService SiteSettings
 <PageTitle>İletişim - @communityName</PageTitle>
 
 <div class="contact-page-wrapper">
@@ -122,8 +122,8 @@
                                 İletişim kurduğunuz için teşekkürler. Mesajınız sistemimize kaydedildi. E-posta bildirimi yapılandırılmadığından bu sayfa otomatik bir yanıt göndermez.
                             </p>
                             <button class="btn-action-outlined mt-3" @onclick="ResetForm">
-                                Yeni Mesaj Gönder
-                            </button>
+    Yeni Mesaj Gönder
+</button>
                         </div>
                     }
                     else
@@ -260,5 +260,6 @@
         }
     }
 
-    private void ResetForm() => Navigation.NavigateTo("/contact", forceLoad: true);
+    private void ResetForm() =>
+    Navigation.NavigateTo("/contact", forceLoad: true);
 }

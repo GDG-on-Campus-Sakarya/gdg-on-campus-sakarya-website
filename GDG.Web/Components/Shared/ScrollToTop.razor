@@ -1,0 +1,41 @@
+@implements IDisposable
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+@code {
+    protected override void OnInitialized()
+    {
+        Navigation.LocationChanged += HandleLocationChanged;
+    }
+
+    private void HandleLocationChanged(
+        object? sender,
+        LocationChangedEventArgs args)
+    {
+        _ = InvokeAsync(ScrollToTopAsync);
+    }
+
+    private async Task ScrollToTopAsync()
+    {
+        try
+        {
+            // Yeni sayfanın render edilmesi için kısa süre bekle.
+            await Task.Delay(150);
+
+            await JS.InvokeVoidAsync("gdgNavigation.scrollToTop");
+        }
+        catch (JSDisconnectedException)
+        {
+            // Kullanıcı sayfadan ayrıldıysa bağlantı kapanmış olabilir.
+        }
+        catch (ObjectDisposedException)
+        {
+            // Bileşen kapatıldıysa işlem yapılmasına gerek yok.
+        }
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= HandleLocationChanged;
+    }
+}

@@ -1,4 +1,5 @@
 @using GDG.Web.Models
+@using GDG.Web.Services
 
 @* EventCard Shared Presentation Component *@
 @if (Item != null)
@@ -71,11 +72,11 @@
 
         <!-- Card Footer Links -->
         <div class="card-footer">
-            <a href="@(string.IsNullOrEmpty(Item.CalendarUrl) ? "https://calendar.google.com" : Item.CalendarUrl)"
-               target="_blank"
-               rel="noopener noreferrer"
-               class="calendar-link"
-               aria-label="@Item.Title etkinliğini takvime ekle">
+            <a href="@GoogleCalendarUrlBuilder.Build(Item)"
+   target="_blank"
+   rel="noopener noreferrer"
+   class="calendar-link"
+   aria-label="@Item.Title etkinliğini takvime ekle">
 
                 <span>Takvime ekle</span>
 

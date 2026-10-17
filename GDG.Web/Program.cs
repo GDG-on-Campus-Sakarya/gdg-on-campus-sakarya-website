@@ -9,6 +9,7 @@ using System.Threading.RateLimiting;
 using GDG.Application.Validation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -161,7 +162,9 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseStaticFiles();
+
 app.UseRouting();
+
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();

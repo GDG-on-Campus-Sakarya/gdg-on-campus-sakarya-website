@@ -279,4 +279,28 @@
     .nav-toggle-btn.open .hamburger-bar:nth-child(3) {
         transform: translateY(-8px) rotate(-45deg);
     }
+
+    /* =========================================================
+   Mobile drawer stacking fix
+   Logo menü panelinin arkasında kalmalı.
+   Menü butonu ise kapatma kontrolü olarak görünmeli.
+   ========================================================= */
+
+@media (max-width: 1023.98px) {
+    .navbar-brand {
+        z-index: 1000;
+    }
+
+    .nav-backdrop {
+        z-index: 1001;
+    }
+
+    .nav-menu {
+        z-index: 1002;
+    }
+
+    .nav-toggle-btn {
+        z-index: 1003;
+    }
+}
 }

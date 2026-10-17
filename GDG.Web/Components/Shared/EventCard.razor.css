@@ -1,4 +1,5 @@
 /* EventCard Isolated Component Styles */
+
 .event-card {
     display: flex;
     flex-direction: column;
@@ -18,15 +19,19 @@
     border-color: rgba(11, 87, 208, 0.3);
 }
 
-/* Header Visual Banner */
+/* Event Poster */
 .card-banner {
-    height: 154px;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    min-height: 154px;
+    max-height: 280px;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    transition: transform var(--transition-normal);
+    background-color: #f8f9fa;
+    transition: background-color var(--transition-normal);
 }
 
 .tint-blue .card-banner {
@@ -49,19 +54,27 @@
 .banner-grid-overlay {
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(rgba(31, 31, 31, 0.08) 1px, transparent 1px);
+    background-image: radial-gradient(
+        rgba(31, 31, 31, 0.08) 1px,
+        transparent 1px
+    );
     background-size: 16px 16px;
     opacity: 0.5;
+    pointer-events: none;
 }
 
+/* Poster'ın tamamını göster; kenarlarını kırpma. */
 .banner-img {
+    display: block;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    object-position: center;
     position: relative;
     z-index: 1;
 }
 
+/* Görsel yoksa kullanılan sembol */
 .banner-symbol {
     position: relative;
     z-index: 2;
@@ -74,10 +87,21 @@
     font-family: var(--font-family-base);
 }
 
-.text-blue { color: var(--blue); }
-.text-red { color: var(--red); }
-.text-yellow { color: #b45309; }
-.text-green { color: var(--green); }
+.text-blue {
+    color: var(--blue);
+}
+
+.text-red {
+    color: var(--red);
+}
+
+.text-yellow {
+    color: #b45309;
+}
+
+.text-green {
+    color: var(--green);
+}
 
 /* Card Body */
 .card-body {
@@ -99,10 +123,29 @@
     margin-bottom: var(--space-3);
 }
 
-.tint-blue .date-badge { background: var(--blue-soft); color: var(--blue); border: 1px solid var(--tint-blue-border); }
-.tint-red .date-badge { background: var(--red-soft); color: var(--red); border: 1px solid var(--tint-red-border); }
-.tint-yellow .date-badge { background: var(--yellow-soft); color: #92400e; border: 1px solid var(--tint-yellow-border); }
-.tint-green .date-badge { background: var(--green-soft); color: var(--green); border: 1px solid var(--tint-green-border); }
+.tint-blue .date-badge {
+    background: var(--blue-soft);
+    color: var(--blue);
+    border: 1px solid var(--tint-blue-border);
+}
+
+.tint-red .date-badge {
+    background: var(--red-soft);
+    color: var(--red);
+    border: 1px solid var(--tint-red-border);
+}
+
+.tint-yellow .date-badge {
+    background: var(--yellow-soft);
+    color: #92400e;
+    border: 1px solid var(--tint-yellow-border);
+}
+
+.tint-green .date-badge {
+    background: var(--green-soft);
+    color: var(--green);
+    border: 1px solid var(--tint-green-border);
+}
 
 .event-title {
     font-size: 1.1875rem;
@@ -163,4 +206,20 @@
 
 .calendar-link:hover {
     color: var(--blue);
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .card-banner {
+        min-height: 140px;
+        max-height: 220px;
+    }
+
+    .card-body {
+        padding: var(--space-4);
+    }
+
+    .card-footer {
+        padding: var(--space-3) var(--space-4);
+    }
 }
